@@ -23,4 +23,24 @@ export async function uploadFile(file, { kind = 'image', relatedTo } = {}) {
   }
 }
 
+/**
+ * Uploads an image or video straight into a project's gallery
+ * (`project_media` table), appended after whatever is already there.
+ */
+export async function uploadProjectMedia(projectId, file, { mediaType = 'image', caption } = {}) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('media_type', mediaType);
+  if (caption) formData.append('caption', caption);
+
+  try {
+    const res = await api.post(`/projects/${projectId}/media`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return { data: res.data?.data, error: null };
+  } catch (err) {
+    return { data: null, error: err.response?.data?.message || err.message };
+  }
+}
+
 export default uploadFile;

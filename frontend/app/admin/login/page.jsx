@@ -36,10 +36,10 @@ export default function AdminLoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="glass rounded-2xl p-8 w-full max-w-md"
+        className="card-premium p-8 w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-accent to-cyan-accent mx-auto mb-4 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-accent to-cyan-accent mx-auto mb-4 flex items-center justify-center shadow-glow">
             <Lock size={20} className="text-white" />
           </div>
           <h1 className="font-display text-2xl font-bold">Admin Login</h1>
@@ -56,7 +56,7 @@ export default function AdminLoginPage() {
               value={form.email}
               onChange={handleChange}
               placeholder="Email address"
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm outline-none focus:border-accent-light transition-colors"
+              className="w-full input-field pl-11 pr-4 py-3 text-sm"
             />
           </div>
           <div className="relative">
@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
               value={form.password}
               onChange={handleChange}
               placeholder="Password"
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm outline-none focus:border-accent-light transition-colors"
+              className="w-full input-field pl-11 pr-4 py-3 text-sm"
             />
           </div>
 

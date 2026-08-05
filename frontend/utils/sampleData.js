@@ -14,7 +14,8 @@ export const sampleProfile = {
   location: 'Dar es Salaam, Tanzania',
   github_url: 'https://github.com',
   linkedin_url: 'https://linkedin.com',
-  twitter_url: 'https://twitter.com',
+  instagram_url: 'https://instagram.com',
+  whatsapp_number: '',
   years_experience: 3,
   available_for_work: true,
 };

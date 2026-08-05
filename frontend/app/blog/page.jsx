@@ -25,7 +25,7 @@ export default async function BlogPage({ searchParams }) {
     <div className="pt-28 pb-24">
       <div className="container-page">
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <p className="text-sm uppercase tracking-widest text-accent-light mb-3">Writing</p>
+          <p className="section-label">Writing</p>
           <h1 className="font-display text-3xl md:text-4xl font-bold">
             From the <span className="text-gradient">Blog</span>
           </h1>

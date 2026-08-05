@@ -14,6 +14,7 @@ const { notFoundHandler, errorHandler } = require('./middleware/error.middleware
 const authRoutes = require('./routes/auth.routes');
 const profileRoutes = require('./routes/profile.routes');
 const projectRoutes = require('./routes/project.routes');
+const projectMediaRoutes = require('./routes/projectMedia.routes');
 const blogRoutes = require('./routes/blog.routes');
 const skillsRoutes = require('./routes/skills.routes');
 const experienceRoutes = require('./routes/experience.routes');
@@ -56,6 +57,7 @@ app.get('/api/health', (_req, res) => res.json({ status: 'ok', env: env.NODE_ENV
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api/projects', projectMediaRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/skills', skillsRoutes);
 app.use('/api/experience', experienceRoutes);

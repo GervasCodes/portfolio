@@ -10,7 +10,8 @@ class ProfileModel extends BaseModel {
     super('profiles', [
       'full_name', 'title', 'tagline', 'bio', 'avatar_url', 'resume_url',
       'email', 'phone', 'location', 'github_url', 'linkedin_url',
-      'twitter_url', 'website_url', 'years_experience', 'available_for_work',
+      'twitter_url', 'instagram_url', 'whatsapp_number',
+      'website_url', 'years_experience', 'available_for_work',
     ]);
   }
 

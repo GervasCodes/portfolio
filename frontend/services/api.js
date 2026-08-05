@@ -39,12 +39,25 @@ export const PortfolioAPI = {
   getProjects: (params) => request(api.get('/projects', { params })),
   getFeaturedProjects: (limit = 6) => request(api.get('/projects/featured', { params: { limit } })),
   getProjectBySlug: (slug) => request(api.get(`/projects/${slug}`)),
+  getProjectById: (id) => request(api.get(`/projects/id/${id}`)),
   createProject: (payload) => request(api.post('/projects', payload)),
   updateProject: (id, payload) => request(api.put(`/projects/${id}`, payload)),
   deleteProject: (id) => request(api.delete(`/projects/${id}`)),
 
+  // Project gallery media (images + videos)
+  getProjectMedia: (projectId) => request(api.get(`/projects/${projectId}/media`)),
+  updateProjectMedia: (projectId, mediaId, payload) =>
+    request(api.put(`/projects/${projectId}/media/${mediaId}`, payload)),
+  deleteProjectMedia: (projectId, mediaId) =>
+    request(api.delete(`/projects/${projectId}/media/${mediaId}`)),
+  reorderProjectMedia: (projectId, orderedIds) =>
+    request(api.put(`/projects/${projectId}/media/reorder`, { orderedIds })),
+
   // Skills
   getSkills: () => request(api.get('/skills')),
+  createSkill: (payload) => request(api.post('/skills', payload)),
+  updateSkill: (id, payload) => request(api.put(`/skills/${id}`, payload)),
+  deleteSkill: (id) => request(api.delete(`/skills/${id}`)),
 
   // Experience
   getExperience: (type) => request(api.get('/experience', { params: type ? { type } : {} })),

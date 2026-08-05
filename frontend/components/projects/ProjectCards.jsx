@@ -22,7 +22,7 @@ export function ProjectCard({ project, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.06 }}
-      className="glass glass-hover rounded-2xl overflow-hidden group flex flex-col"
+      className="card-premium glass-hover overflow-hidden group flex flex-col"
     >
       <Link href={`/projects/${project.slug}`} className="block">
         <div className="relative h-48 bg-gradient-to-br from-accent/30 to-cyan-accent/20 overflow-hidden">
@@ -37,6 +37,13 @@ export function ProjectCard({ project, index = 0 }) {
             <div className="w-full h-full flex items-center justify-center font-display text-2xl text-white/20">
               {project.title?.slice(0, 2).toUpperCase()}
             </div>
+          )}
+          {/* Gradient overlay + hover scrim so title/category always stay legible */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+          {project.featured && (
+            <span className="absolute top-3 right-3 text-[10px] font-medium px-2.5 py-1 rounded-full bg-gradient-to-r from-accent to-cyan-accent text-white shadow-glow">
+              Featured
+            </span>
           )}
         </div>
       </Link>
@@ -59,6 +66,11 @@ export function ProjectCard({ project, index = 0 }) {
                 {tech}
               </span>
             ))}
+            {project.tech_stack.length > 4 && (
+              <span className="text-[11px] px-2.5 py-1 rounded-full bg-white/5 text-white/40 border border-white/10">
+                +{project.tech_stack.length - 4}
+              </span>
+            )}
           </div>
         )}
 

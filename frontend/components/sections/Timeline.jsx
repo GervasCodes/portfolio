@@ -21,8 +21,13 @@ export default function Timeline({ title, items = [] }) {
             transition={{ duration: 0.4, delay: i * 0.08 }}
             className="relative"
           >
-            <span className="absolute -left-[29px] top-1.5 w-3 h-3 rounded-full bg-gradient-to-r from-accent to-cyan-accent" />
-            <div className="glass glass-hover rounded-2xl p-5">
+            <span className="absolute -left-[29px] top-1.5 flex h-3 w-3">
+              {item.is_current && (
+                <span className="absolute inline-flex h-full w-full rounded-full bg-accent-light opacity-60 animate-ping" />
+              )}
+              <span className="relative inline-flex w-3 h-3 rounded-full bg-gradient-to-r from-accent to-cyan-accent" />
+            </span>
+            <div className="card-premium glass-hover p-5">
               <p className="text-xs text-white/40 mb-1">
                 {formatDate(item.start_date)} — {item.is_current ? 'Present' : formatDate(item.end_date)}
               </p>

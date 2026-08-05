@@ -109,7 +109,7 @@ function Input({ label, ...props }) {
   return (
     <div>
       <label className="block text-xs text-white/50 mb-1.5">{label}</label>
-      <input {...props} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent-light transition-colors" />
+      <input {...props} className="w-full input-field px-4 py-2.5 text-sm" />
     </div>
   );
 }
@@ -118,7 +118,7 @@ function TextArea({ label, ...props }) {
   return (
     <div>
       <label className="block text-xs text-white/50 mb-1.5">{label}</label>
-      <textarea {...props} rows={4} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent-light transition-colors resize-none" />
+      <textarea {...props} rows={4} className="w-full input-field px-4 py-2.5 text-sm resize-none" />
     </div>
   );
 }

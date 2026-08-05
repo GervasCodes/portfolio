@@ -16,7 +16,7 @@ export default function Projects({ projects = [] }) {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <p className="text-sm uppercase tracking-widest text-accent-light mb-3">Featured Work</p>
+            <p className="section-label">Featured Work</p>
             <h2 className="font-display text-3xl md:text-4xl font-bold">
               Selected <span className="text-gradient">Projects</span>
             </h2>

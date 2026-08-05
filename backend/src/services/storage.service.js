@@ -81,6 +81,12 @@ class MediaService {
     return { url, path };
   }
 
+  async uploadVideo(file) {
+    const path = this._buildPath('videos', file.originalname);
+    const url = await this.provider.upload(file.buffer, path, file.mimetype);
+    return { url, path };
+  }
+
   async uploadDocument(file) {
     const path = this._buildPath('documents', file.originalname);
     const url = await this.provider.upload(file.buffer, path, file.mimetype);

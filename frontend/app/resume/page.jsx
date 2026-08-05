@@ -24,7 +24,7 @@ export default async function ResumePage() {
       <div className="container-page max-w-4xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-14">
           <div>
-            <p className="text-sm uppercase tracking-widest text-accent-light mb-3">Resume</p>
+            <p className="section-label">Resume</p>
             <h1 className="font-display text-3xl md:text-4xl font-bold">{profile.full_name}</h1>
             <p className="text-white/55 mt-2">{profile.title}</p>
           </div>

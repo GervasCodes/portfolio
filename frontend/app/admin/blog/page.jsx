@@ -138,7 +138,7 @@ export default function AdminBlogPage() {
                 rows={10}
                 required
                 placeholder="## Heading&#10;&#10;Write your post in Markdown..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent-light transition-colors resize-none font-mono"
+                className="w-full input-field px-4 py-2.5 text-sm resize-none font-mono"
               />
             ) : (
               <div className="border border-white/10 rounded-xl px-4 py-3 min-h-[240px] bg-white/5">
@@ -171,7 +171,7 @@ function Input({ label, ...props }) {
   return (
     <div>
       <label className="block text-xs text-white/50 mb-1.5">{label}</label>
-      <input {...props} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent-light transition-colors" />
+      <input {...props} className="w-full input-field px-4 py-2.5 text-sm" />
     </div>
   );
 }

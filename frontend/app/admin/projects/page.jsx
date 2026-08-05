@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, Pencil, Trash2, Upload } from 'lucide-react';
+import { Plus, Pencil, Trash2, Upload, Images } from 'lucide-react';
 import AdminShell from '@/components/layout/AdminShell';
 import Button from '@/components/ui/Buttons';
 import Modal from '@/components/ui/modal';
+import ProjectMediaManager from '@/components/admin/ProjectMediaManager';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { PortfolioAPI } from '@/services/api';
 import { uploadFile } from '@/services/upload';
@@ -21,6 +22,7 @@ export default function AdminProjectsPage() {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [mediaProject, setMediaProject] = useState(null);
 
   const loadProjects = async () => {
     const { data } = await PortfolioAPI.getProjects({ limit: 100 });
@@ -111,6 +113,9 @@ export default function AdminProjectsPage() {
                   </span>
                 </td>
                 <td className="px-5 py-3 text-right">
+                  <button onClick={() => setMediaProject(project)} className="p-2 text-white/50 hover:text-white" aria-label="Manage media">
+                    <Images size={14} />
+                  </button>
                   <button onClick={() => openEdit(project)} className="p-2 text-white/50 hover:text-white" aria-label="Edit">
                     <Pencil size={14} />
                   </button>
@@ -168,6 +173,13 @@ export default function AdminProjectsPage() {
           </div>
         </form>
       </Modal>
+
+      <ProjectMediaManager
+        projectId={mediaProject?.id}
+        projectTitle={mediaProject?.title}
+        open={Boolean(mediaProject)}
+        onClose={() => setMediaProject(null)}
+      />
     </AdminShell>
   );
 }
@@ -176,7 +188,7 @@ function Input({ label, ...props }) {
   return (
     <div>
       <label className="block text-xs text-white/50 mb-1.5">{label}</label>
-      <input {...props} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent-light transition-colors" />
+      <input {...props} className="w-full input-field px-4 py-2.5 text-sm" />
     </div>
   );
 }
@@ -185,7 +197,7 @@ function TextArea({ label, ...props }) {
   return (
     <div>
       <label className="block text-xs text-white/50 mb-1.5">{label}</label>
-      <textarea {...props} rows={4} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent-light transition-colors resize-none" />
+      <textarea {...props} rows={4} className="w-full input-field px-4 py-2.5 text-sm resize-none" />
     </div>
   );
 }

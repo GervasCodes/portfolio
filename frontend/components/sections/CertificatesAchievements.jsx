@@ -22,7 +22,7 @@ export default function CertificatesAchievements({ certificates = [], achievemen
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="glass glass-hover rounded-xl p-4 flex items-center justify-between gap-3"
+                  className="card-premium glass-hover p-4 flex items-center justify-between gap-3"
                 >
                   <div>
                     <p className="font-medium text-sm">{c.title}</p>
@@ -52,7 +52,7 @@ export default function CertificatesAchievements({ certificates = [], achievemen
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="glass glass-hover rounded-xl p-4"
+                  className="card-premium glass-hover p-4"
                 >
                   <p className="font-medium text-sm">{a.title}</p>
                   {a.description && <p className="text-xs text-white/45 mt-1">{a.description}</p>}

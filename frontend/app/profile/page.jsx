@@ -17,7 +17,8 @@ const FIELDS = [
   { name: 'location', label: 'Location' },
   { name: 'github_url', label: 'GitHub URL' },
   { name: 'linkedin_url', label: 'LinkedIn URL' },
-  { name: 'twitter_url', label: 'Twitter URL' },
+  { name: 'instagram_url', label: 'Instagram URL' },
+  { name: 'whatsapp_number', label: 'WhatsApp Number (with country code)' },
   { name: 'website_url', label: 'Website URL' },
   { name: 'years_experience', label: 'Years of Experience', type: 'number' },
 ];

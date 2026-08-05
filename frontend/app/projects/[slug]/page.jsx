@@ -37,9 +37,10 @@ export default async function ProjectDetailPage({ params }) {
           )}
         </div>
 
-        {Array.isArray(project.gallery) && project.gallery.length > 0 && (
+        {((Array.isArray(project.media) && project.media.length > 0) ||
+          (Array.isArray(project.gallery) && project.gallery.length > 0)) && (
           <div className="mb-10">
-            <ProjectGallery images={project.gallery} />
+            <ProjectGallery media={project.media} images={project.gallery} />
           </div>
         )}
 

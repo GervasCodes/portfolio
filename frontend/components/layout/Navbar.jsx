@@ -20,11 +20,18 @@ const LINKS = [
 export default function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    window.addEventListener('scroll', onScroll);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 12);
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      setProgress(max > 0 ? Math.min(window.scrollY / max, 1) : 0);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -36,10 +43,22 @@ export default function Navbar() {
         scrolled ? 'py-3' : 'py-5'
       }`}
     >
+      {/* Page-scroll progress indicator */}
+      <div className="absolute top-0 inset-x-0 h-[2px] bg-transparent">
+        <div
+          className="h-full bg-gradient-to-r from-accent to-cyan-accent transition-[width] duration-150"
+          style={{ width: `${progress * 100}%` }}
+        />
+      </div>
+
       <div className="container-page">
-        <nav className={`glass rounded-2xl flex items-center justify-between px-5 py-3 ${scrolled ? 'shadow-glow' : ''}`}>
+        <nav
+          className={`glass rounded-2xl flex items-center justify-between px-5 py-3 transition-shadow duration-300 ${
+            scrolled ? 'shadow-glow border-white/10' : ''
+          }`}
+        >
           <Link href="/" className="font-display text-lg font-semibold tracking-tight">
-            <span className="text-gradient">GERRY'S</span>
+            <span className="text-gradient">GERRY&apos;S</span>
             <span className="text-white/40">Portfolio</span>
           </Link>
 
@@ -58,7 +77,7 @@ export default function Navbar() {
                     <motion.span
                       layoutId="nav-pill"
                       className="absolute inset-0 bg-white/10 rounded-lg"
-                      transition={{ type: 'spring', duration: 0.5 }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
                   )}
                   <span className="relative z-10">{link.label}</span>
@@ -69,8 +88,9 @@ export default function Navbar() {
 
           <button
             onClick={() => setOpen((o) => !o)}
-            className="md:hidden p-2 rounded-lg glass"
+            className="md:hidden p-2 rounded-lg glass active:scale-95 transition-transform"
             aria-label="Toggle menu"
+            aria-expanded={open}
           >
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -82,19 +102,26 @@ export default function Navbar() {
               initial={{ opacity: 0, y: -10, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: -10, height: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
               className="md:hidden mt-2 glass rounded-2xl overflow-hidden"
             >
               <div className="flex flex-col p-2">
-                {LINKS.map((link) => (
-                  <Link
+                {LINKS.map((link, i) => (
+                  <motion.div
                     key={link.href}
-                    href={link.href}
-                    className={`px-4 py-3 rounded-xl text-sm ${
-                      pathname === link.href ? 'bg-white/10 text-white' : 'text-white/70'
-                    }`}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.03 }}
                   >
-                    {link.label}
-                  </Link>
+                    <Link
+                      href={link.href}
+                      className={`block px-4 py-3 rounded-xl text-sm transition-colors ${
+                        pathname === link.href ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5'
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>

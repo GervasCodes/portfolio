@@ -1,30 +1,44 @@
+'use client';
+
 import Link from 'next/link';
-import { Github, Linkedin, Twitter, Mail } from 'lucide-react';
+import { Github, Linkedin, Instagram, MessageCircle, Mail, ArrowUp } from 'lucide-react';
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
+  const scrollTop = () => {
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="mt-32 border-t border-white/10">
-      <div className="container-page py-12 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div>
+    <footer className="relative mt-32 border-t border-white/10">
+      <div className="container-page py-12 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="text-center md:text-left">
           <p className="font-display text-lg">
-            <span className="text-gradient">GERRY'S</span>
+            <span className="text-gradient">GERRY&apos;S</span>
             <span className="text-white/40">Portfolio</span>
           </p>
           <p className="text-sm text-white/40 mt-1">© {year} All rights reserved.</p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <SocialLink href="https://github.com" icon={<Github size={18} />} label="GitHub" />
           <SocialLink href="https://linkedin.com" icon={<Linkedin size={18} />} label="LinkedIn" />
-          <SocialLink href="https://twitter.com" icon={<Twitter size={18} />} label="Twitter" />
+          <SocialLink href="https://instagram.com" icon={<Instagram size={18} />} label="Instagram" />
+          <SocialLink href="https://wa.me/000000000000" icon={<MessageCircle size={18} />} label="WhatsApp" />
           <SocialLink href="mailto:amgerryofficial@gmail.com" icon={<Mail size={18} />} label="Email" />
         </div>
 
-        <div className="flex gap-6 text-sm text-white/50">
+        <div className="flex items-center gap-6 text-sm text-white/50">
           <Link href="/contacts" className="hover:text-white transition-colors">Contact</Link>
           <Link href="/admin/login" className="hover:text-white transition-colors">Admin</Link>
+          <button
+            onClick={scrollTop}
+            aria-label="Back to top"
+            className="glass glass-hover w-9 h-9 rounded-full flex items-center justify-center text-white/60 hover:text-white"
+          >
+            <ArrowUp size={15} />
+          </button>
         </div>
       </div>
     </footer>

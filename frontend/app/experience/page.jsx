@@ -17,7 +17,7 @@ export default async function ExperiencePage() {
     <div className="pt-28 pb-24">
       <div className="container-page">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-sm uppercase tracking-widest text-accent-light mb-3">Journey</p>
+          <p className="section-label">Journey</p>
           <h1 className="font-display text-3xl md:text-4xl font-bold">
             Experience &amp; <span className="text-gradient">Education</span>
           </h1>

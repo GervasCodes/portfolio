@@ -19,7 +19,7 @@ export default function About({ profile }) {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-sm uppercase tracking-widest text-accent-light mb-3">About Me</p>
+          <p className="section-label">About Me</p>
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
             Turning ideas into <span className="text-gradient">reliable software</span>
           </h2>
@@ -53,11 +53,18 @@ export default function About({ profile }) {
           transition={{ duration: 0.6 }}
           className="grid grid-cols-1 sm:grid-cols-3 gap-4"
         >
-          {stats.map((stat) => (
-            <div key={stat.label} className="glass glass-hover rounded-2xl p-6 text-center">
+          {stats.map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 + i * 0.08 }}
+              className="card-premium glass-hover p-6 text-center"
+            >
               <p className="font-display text-3xl font-bold text-gradient">{stat.value}</p>
-              <p className="text-xs text-white/50 mt-2">{stat.label}</p>
-            </div>
+              <p className="text-xs text-white/50 mt-2 tracking-wide">{stat.label}</p>
+            </motion.div>
           ))}
         </motion.div>
       </div>

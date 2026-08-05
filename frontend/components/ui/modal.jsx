@@ -23,7 +23,7 @@ export default function Modal({ open, onClose, title, children, maxWidth = 'max-
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/75 backdrop-blur-md"
             onClick={onClose}
           />
           <motion.div
@@ -31,7 +31,7 @@ export default function Modal({ open, onClose, title, children, maxWidth = 'max-
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
             transition={{ type: 'spring', duration: 0.4 }}
-            className={`relative w-full ${maxWidth} glass rounded-2xl p-6 max-h-[85vh] overflow-y-auto`}
+            className={`relative w-full ${maxWidth} card-premium p-6 max-h-[85vh] overflow-y-auto shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)]`}
           >
             <div className="flex items-center justify-between mb-4">
               {title && <h3 className="font-display text-lg font-semibold">{title}</h3>}

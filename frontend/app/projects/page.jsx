@@ -19,7 +19,7 @@ export default async function ProjectsPage({ searchParams }) {
     <div className="pt-28 pb-24">
       <div className="container-page">
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <p className="text-sm uppercase tracking-widest text-accent-light mb-3">Portfolio</p>
+          <p className="section-label">Portfolio</p>
           <h1 className="font-display text-3xl md:text-4xl font-bold">
             All <span className="text-gradient">Projects</span>
           </h1>
@@ -33,7 +33,7 @@ export default async function ProjectsPage({ searchParams }) {
             name="q"
             defaultValue={q || ''}
             placeholder="Search projects..."
-            className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent-light w-full sm:w-72"
+            className="input-field px-4 py-2.5 text-sm w-full sm:w-72"
           />
           <button className="glass glass-hover rounded-xl px-5 py-2.5 text-sm">Search</button>
         </form>

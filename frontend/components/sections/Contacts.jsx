@@ -35,7 +35,7 @@ export default function Contacts({ profile }) {
           viewport={{ once: true }}
           className="md:col-span-2"
         >
-          <p className="text-sm uppercase tracking-widest text-accent-light mb-3">Get In Touch</p>
+          <p className="section-label">Get In Touch</p>
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
             Let&apos;s build something <span className="text-gradient">great together</span>
           </h2>
@@ -71,7 +71,7 @@ export default function Contacts({ profile }) {
               value={form.name}
               onChange={handleChange}
               placeholder="Your name"
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-accent-light transition-colors"
+              className="input-field px-4 py-3 text-sm"
             />
             <input
               required
@@ -80,7 +80,7 @@ export default function Contacts({ profile }) {
               value={form.email}
               onChange={handleChange}
               placeholder="Your email"
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-accent-light transition-colors"
+              className="input-field px-4 py-3 text-sm"
             />
           </div>
           <input
@@ -88,7 +88,7 @@ export default function Contacts({ profile }) {
             value={form.subject}
             onChange={handleChange}
             placeholder="Subject"
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-accent-light transition-colors"
+            className="w-full input-field px-4 py-3 text-sm"
           />
           <textarea
             required
@@ -97,7 +97,7 @@ export default function Contacts({ profile }) {
             onChange={handleChange}
             placeholder="Your message"
             rows={5}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-accent-light transition-colors resize-none"
+            className="w-full input-field px-4 py-3 text-sm resize-none"
           />
 
           <Button type="submit" disabled={status === 'loading'} icon={<Send size={16} />}>

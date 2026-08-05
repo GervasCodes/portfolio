@@ -87,7 +87,7 @@ function Field({ label, name, value, onChange }) {
         name={name}
         value={value ?? ''}
         onChange={onChange}
-        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent-light transition-colors"
+        className="w-full input-field px-4 py-2.5 text-sm"
       />
     </div>
   );
