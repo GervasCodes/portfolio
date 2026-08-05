@@ -3,6 +3,9 @@ import { api } from './api';
 /**
  * Uploads a single file (image, resume, or document) to the backend,
  * which streams it to Supabase Storage and returns a public URL.
+ *
+ * NOTE: api.js already sets the baseURL to <host>/api, so the path
+ * here is just '/media' (not '/api/media').
  */
 export async function uploadFile(file, { kind = 'image', relatedTo } = {}) {
   const formData = new FormData();

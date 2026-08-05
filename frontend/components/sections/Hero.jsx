@@ -5,7 +5,7 @@ import { ArrowRight, Download, Sparkles } from 'lucide-react';
 import Button from '@/components/ui/Buttons';
 
 export default function Hero({ profile }) {
-  const name = profile?.full_name || 'GERVAS ARISTARIC';
+  const name = profile?.full_name || 'GERVAS GERVAS';
   const title = profile?.title || 'Full-Stack Software Engineer';
   const tagline = profile?.tagline || 'I design and build production-grade web applications.';
 

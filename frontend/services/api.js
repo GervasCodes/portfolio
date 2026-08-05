@@ -3,7 +3,7 @@ import axios from 'axios';
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://portfolio-backend-7o3j.onrender.com';
 
 export const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: `${BASE_URL}/api`,   // FIX: all backend routes are mounted under /api
   withCredentials: true,
 });
 
