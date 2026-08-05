@@ -1,0 +1,32 @@
+{
+  "name": "portfolio-database",
+  "version": "1.0.0",
+  "description": "Database migrations and seed management for the Portfolio project",
+  "private": true,
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js",
+    "reset": "npm run migrate && npm run seed",
+    "lint": "echo \"No linting configured\"",
+    "test": "echo \"No tests configured\""
+  },
+  "keywords": [
+    "database",
+    "mysql",
+    "aiven",
+    "migrations",
+    "seeds",
+    "sql"
+  ],
+  "author": "",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "mysql2": "^3.23.2"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}

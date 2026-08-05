@@ -39,8 +39,8 @@ export default function Navbar() {
       <div className="container-page">
         <nav className={`glass rounded-2xl flex items-center justify-between px-5 py-3 ${scrolled ? 'shadow-glow' : ''}`}>
           <Link href="/" className="font-display text-lg font-semibold tracking-tight">
-            <span className="text-gradient">Portfolio</span>
-            <span className="text-white/40">.dev</span>
+            <span className="text-gradient">GERRY'S</span>
+            <span className="text-white/40">Portfolio</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-1">

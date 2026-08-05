@@ -9,8 +9,8 @@ export default function Footer() {
       <div className="container-page py-12 flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
           <p className="font-display text-lg">
-            <span className="text-gradient">Portfolio</span>
-            <span className="text-white/40">.dev</span>
+            <span className="text-gradient">GERRY'S</span>
+            <span className="text-white/40">Portfolio</span>
           </p>
           <p className="text-sm text-white/40 mt-1">© {year} All rights reserved.</p>
         </div>
@@ -19,7 +19,7 @@ export default function Footer() {
           <SocialLink href="https://github.com" icon={<Github size={18} />} label="GitHub" />
           <SocialLink href="https://linkedin.com" icon={<Linkedin size={18} />} label="LinkedIn" />
           <SocialLink href="https://twitter.com" icon={<Twitter size={18} />} label="Twitter" />
-          <SocialLink href="mailto:you@example.com" icon={<Mail size={18} />} label="Email" />
+          <SocialLink href="mailto:amgerryofficial@gmail.com" icon={<Mail size={18} />} label="Email" />
         </div>
 
         <div className="flex gap-6 text-sm text-white/50">

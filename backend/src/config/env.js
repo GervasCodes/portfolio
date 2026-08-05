@@ -29,8 +29,12 @@ const env = {
   // Auth
   JWT_SECRET: readVar('JWT_SECRET', 'dev-secret-change-me'),
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
+
+  // Admin credentials — plain-text only in .env during initial setup.
+  // The password is hashed with bcrypt on first startup and stored in the
+  // database; the plain-text value is never persisted or logged.
   ADMIN_EMAIL: readVar('ADMIN_EMAIL', 'admin@example.com'),
-  ADMIN_PASSWORD_HASH: process.env.ADMIN_PASSWORD_HASH || '',
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || '',
 
   // Supabase Storage
   SUPABASE_URL: process.env.SUPABASE_URL || '',

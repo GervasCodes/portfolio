@@ -6,8 +6,8 @@ import { MapPin, Briefcase, Mail } from 'lucide-react';
 export default function About({ profile }) {
   const stats = [
     { label: 'Years of Experience', value: `${profile?.years_experience ?? 3}+` },
-    { label: 'Projects Shipped', value: '20+' },
-    { label: 'Happy Clients', value: '10+' },
+    { label: 'Projects Shipped', value: '3+' },
+    { label: 'Happy Clients', value: '3+' },
   ];
 
   return (
@@ -25,7 +25,7 @@ export default function About({ profile }) {
           </h2>
           <p className="text-white/60 leading-relaxed mb-6">
             {profile?.bio ||
-              'A passionate software engineer specializing in modern full-stack development, clean architecture, and delightful user experiences.'}
+              'Full-Stack Software Engineer passionate about building scalable, high-performance web applications with modern technologies, clean architecture, and intuitive user experiences. Dedicated to creating secure, maintainable, and impactful digital solutions that solve real-world problems.'}
           </p>
 
           <div className="flex flex-col gap-3 text-sm text-white/70">

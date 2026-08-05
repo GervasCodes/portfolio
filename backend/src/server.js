@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 const env = require('./config/env');
 const db = require('./config/database');
 const analyticsService = require('./services/analytics.service');
+const { initializeAdmin } = require('./services/adminInit.service');
 const { notFoundHandler, errorHandler } = require('./middleware/error.middleware');
 
 const authRoutes = require('./routes/auth.routes');
@@ -71,7 +72,11 @@ async function start() {
     console.log('[db] Connected to MySQL');
   } catch (err) {
     console.error('[db] Failed to connect on startup — check DB_* env vars:', err.message);
+    // Continue starting the server; public routes may still be reachable.
   }
+
+  // Idempotent admin seeding — safe to run on every restart.
+  await initializeAdmin();
 
   app.listen(env.PORT, () => {
     console.log(`[server] Portfolio API listening on port ${env.PORT} (${env.NODE_ENV})`);
