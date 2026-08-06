@@ -70,14 +70,25 @@ export default function AdminProjectsPage() {
       ...form,
       tech_stack: form.tech_stack.split(',').map((t) => t.trim()).filter(Boolean),
     };
+
+    let createdProject = null;
     if (editingId) {
       await PortfolioAPI.updateProject(editingId, payload);
     } else {
-      await PortfolioAPI.createProject(payload);
+      const { data } = await PortfolioAPI.createProject(payload);
+      createdProject = data;
     }
+
     setSaving(false);
     setModalOpen(false);
-    loadProjects();
+    await loadProjects();
+
+    // New projects don't have media yet — jump straight into the gallery
+    // manager so adding screenshots/video is part of the same flow instead
+    // of a separate step the user has to remember to come back for.
+    if (createdProject?.id) {
+      setMediaProject(createdProject);
+    }
   };
 
   const handleDelete = async (id) => {
