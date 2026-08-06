@@ -31,11 +31,19 @@ const getProjectById = asyncHandler(async (req, res) => {
 
 const createProject = asyncHandler(async (req, res) => {
   Validator.isString(req.body.title, 'title', { min: 2, max: 150 });
+  // Truncate summary gracefully instead of letting MySQL throw ER_DATA_TOO_LONG
+  if (req.body.summary && req.body.summary.length > 65535) {
+    req.body.summary = req.body.summary.substring(0, 65535);
+  }
   const project = await projectService.create(req.body);
   return ApiResponse.created(res, { message: 'Project created', data: project });
 });
 
 const updateProject = asyncHandler(async (req, res) => {
+  // Truncate summary gracefully instead of letting MySQL throw ER_DATA_TOO_LONG
+  if (req.body.summary && req.body.summary.length > 65535) {
+    req.body.summary = req.body.summary.substring(0, 65535);
+  }
   const project = await projectService.update(req.params.id, req.body);
   return ApiResponse.success(res, { message: 'Project updated', data: project });
 });

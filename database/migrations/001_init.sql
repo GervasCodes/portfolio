@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS projects (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(150) NOT NULL,
   slug VARCHAR(180) NOT NULL UNIQUE,
-  summary VARCHAR(300),
+  summary TEXT,
   description LONGTEXT,
   cover_image_url VARCHAR(500),
   gallery JSON,
