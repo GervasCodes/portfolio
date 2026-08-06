@@ -3,9 +3,9 @@ const {
   listProjects, featuredProjects, getProject, getProjectById,
   createProject, updateProject, deleteProject,
 } = require('../controllers/project.controller');
-const { requireAuth } = require('../middleware/auth.middleware');
+const { requireAuth, attachUserIfPresent } = require('../middleware/auth.middleware');
 
-router.get('/', listProjects);
+router.get('/', attachUserIfPresent, listProjects);
 router.get('/featured', featuredProjects);
 router.get('/id/:id', requireAuth, getProjectById);
 router.get('/:slug', getProject);

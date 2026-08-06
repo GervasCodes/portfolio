@@ -7,6 +7,7 @@ const listProjects = asyncHandler(async (req, res) => {
   const { q, category, page, limit } = req.query;
   const result = await projectService.search({
     q, category, page: Number(page) || 1, limit: Number(limit) || 9,
+    isAdmin: Boolean(req.user), // authenticated admins see drafts too
   });
   return ApiResponse.success(res, {
     data: result.items,

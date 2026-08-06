@@ -48,8 +48,8 @@ class ProjectModel extends BaseModel {
     return rows.map((r) => this._serialize(r));
   }
 
-  async search({ q, category, page = 1, limit = 9 }) {
-    const clauses = [`status = 'published'`];
+  async search({ q, category, page = 1, limit = 9, isAdmin = false }) {
+    const clauses = isAdmin ? [] : [`status = 'published'`];
     const params = [];
 
     if (q) {
@@ -61,13 +61,14 @@ class ProjectModel extends BaseModel {
       params.push(category);
     }
 
+    const whereSql = clauses.length ? clauses.join(' AND ') : '1=1';
     const offset = (page - 1) * limit;
     const rows = await db.query(
-      `SELECT * FROM projects WHERE ${clauses.join(' AND ')} ORDER BY sort_order ASC, id DESC LIMIT ? OFFSET ?`,
+      `SELECT * FROM projects WHERE ${whereSql} ORDER BY sort_order ASC, id DESC LIMIT ? OFFSET ?`,
       [...params, Number(limit), Number(offset)]
     );
     const countRows = await db.query(
-      `SELECT COUNT(*) AS total FROM projects WHERE ${clauses.join(' AND ')}`,
+      `SELECT COUNT(*) AS total FROM projects WHERE ${whereSql}`,
       params
     );
 
