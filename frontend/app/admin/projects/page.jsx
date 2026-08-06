@@ -97,6 +97,12 @@ export default function AdminProjectsPage() {
     loadProjects();
   };
 
+  const toggleStatus = async (project) => {
+    const nextStatus = project.status === 'published' ? 'draft' : 'published';
+    await PortfolioAPI.updateProject(project.id, { status: nextStatus });
+    loadProjects();
+  };
+
   return (
     <AdminShell title="Projects" description="Create, edit, and publish the projects shown on your portfolio.">
       <div className="flex justify-end mb-4">
@@ -119,9 +125,13 @@ export default function AdminProjectsPage() {
                 <td className="px-5 py-3">{project.title}</td>
                 <td className="px-5 py-3 hidden sm:table-cell text-white/50">{project.category}</td>
                 <td className="px-5 py-3">
-                  <span className={`text-xs px-2.5 py-1 rounded-full ${project.status === 'published' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-white/5 text-white/50'}`}>
+                  <button
+                    onClick={() => toggleStatus(project)}
+                    title="Click to toggle Draft / Published"
+                    className={`text-xs px-2.5 py-1 rounded-full transition-colors cursor-pointer ${project.status === 'published' ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}
+                  >
                     {project.status}
-                  </span>
+                  </button>
                 </td>
                 <td className="px-5 py-3 text-right">
                   <button onClick={() => setMediaProject(project)} className="p-2 text-white/50 hover:text-white" aria-label="Manage media">
