@@ -1,6 +1,18 @@
 const BaseModel = require('./BaseModel');
 const db = require('../config/database');
 
+// Cards need *some* image even when the admin never explicitly set a
+// Cover Image — in that case we fall back to the first item uploaded to
+// the project's media gallery (project_media, ordered the same way the
+// gallery/reorder UI orders it), so multi-image projects don't render
+// as a blank placeholder just because "Cover Image" was left empty.
+const FIRST_MEDIA_SUBQUERY = `(
+  SELECT pm.url FROM project_media pm
+  WHERE pm.project_id = p.id AND pm.media_type = 'image'
+  ORDER BY pm.sort_order ASC, pm.id ASC
+  LIMIT 1
+) AS first_media_url`;
+
 class ProjectModel extends BaseModel {
   constructor() {
     super('projects', [
@@ -12,8 +24,10 @@ class ProjectModel extends BaseModel {
 
   _serialize(row) {
     if (!row) return row;
+    const { first_media_url, ...rest } = row;
     return {
-      ...row,
+      ...rest,
+      cover_image_url: row.cover_image_url || first_media_url || null,
       gallery: safeParse(row.gallery, []),
       tech_stack: safeParse(row.tech_stack, []),
       featured: Boolean(row.featured),
@@ -42,33 +56,36 @@ class ProjectModel extends BaseModel {
 
   async findFeatured(limit = 6) {
     const rows = await db.query(
-      `SELECT * FROM projects WHERE featured = 1 AND status = 'published' ORDER BY sort_order ASC, id DESC LIMIT ?`,
+      `SELECT p.*, ${FIRST_MEDIA_SUBQUERY} FROM projects p
+       WHERE p.featured = 1 AND p.status = 'published'
+       ORDER BY p.sort_order ASC, p.id DESC LIMIT ?`,
       [limit]
     );
     return rows.map((r) => this._serialize(r));
   }
 
-  async search({ q, category, page = 1, limit = 9, isAdmin = false }) {
-    const clauses = isAdmin ? [] : [`status = 'published'`];
+  async search({ q, category, page = 1, limit = 9 }) {
+    const clauses = [`p.status = 'published'`];
     const params = [];
 
     if (q) {
-      clauses.push(`(title LIKE ? OR summary LIKE ? OR tech_stack LIKE ?)`);
+      clauses.push(`(p.title LIKE ? OR p.summary LIKE ? OR p.tech_stack LIKE ?)`);
       params.push(`%${q}%`, `%${q}%`, `%${q}%`);
     }
     if (category) {
-      clauses.push(`category = ?`);
+      clauses.push(`p.category = ?`);
       params.push(category);
     }
 
-    const whereSql = clauses.length ? clauses.join(' AND ') : '1=1';
     const offset = (page - 1) * limit;
     const rows = await db.query(
-      `SELECT * FROM projects WHERE ${whereSql} ORDER BY sort_order ASC, id DESC LIMIT ? OFFSET ?`,
+      `SELECT p.*, ${FIRST_MEDIA_SUBQUERY} FROM projects p
+       WHERE ${clauses.join(' AND ')}
+       ORDER BY p.sort_order ASC, p.id DESC LIMIT ? OFFSET ?`,
       [...params, Number(limit), Number(offset)]
     );
     const countRows = await db.query(
-      `SELECT COUNT(*) AS total FROM projects WHERE ${whereSql}`,
+      `SELECT COUNT(*) AS total FROM projects p WHERE ${clauses.join(' AND ')}`,
       params
     );
 
