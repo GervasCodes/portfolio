@@ -20,10 +20,10 @@ export default function Footer() {
         </div>
 
         <div className="flex items-center gap-3">
-          <SocialLink href="https://github.com" icon={<Github size={18} />} label="GitHub" />
+          <SocialLink href="https://github.com/" icon={<Github size={18} />} label="GitHub" />
           <SocialLink href="https://linkedin.com" icon={<Linkedin size={18} />} label="LinkedIn" />
-          <SocialLink href="https://instagram.com" icon={<Instagram size={18} />} label="Instagram" />
-          <SocialLink href="https://wa.me/000000000000" icon={<MessageCircle size={18} />} label="WhatsApp" />
+          <SocialLink href="https://www.instagram.com/tc_gerry/#" icon={<Instagram size={18} />} label="Instagram" />
+          <SocialLink href="https://wa.me/+255622387905" icon={<MessageCircle size={18} />} label="WhatsApp" />
           <SocialLink href="mailto:amgerryofficial@gmail.com" icon={<Mail size={18} />} label="Email" />
         </div>
 

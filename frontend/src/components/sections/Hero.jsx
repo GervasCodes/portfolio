@@ -3,8 +3,8 @@ import { ArrowRight, Download, Sparkles, ChevronDown } from 'lucide-react';
 import Button from '@/components/ui/Buttons';
 
 export default function Hero({ profile }) {
-  const name = profile?.full_name || 'GERVAS ARISTARIC';
-  const title = profile?.title || 'Full-Stack Software Engineer';
+  const name = profile?.full_name || 'GERVAS Gervas';
+  const title = profile?.title || 'Full-Stack Software Developer';
   const tagline = profile?.tagline || 'I design and build production-grade web applications.';
 
   return (
@@ -45,7 +45,7 @@ export default function Hero({ profile }) {
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
           </span>
           <Sparkles size={14} className="text-accent-light" />
-          {profile?.available_for_work ? 'Available for new opportunities' : 'Software Engineer'}
+          {profile?.available_for_work ? 'Available for new opportunities' : 'Software Developer'}
         </motion.div>
 
         <motion.h1
