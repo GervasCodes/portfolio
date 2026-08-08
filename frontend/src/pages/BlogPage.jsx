@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Calendar, Eye } from 'lucide-react';
 import Pagination from '@/components/ui/Pagination';
+import NewsletterSignup from '@/components/sections/NewsletterSignup';
 import { PortfolioAPI } from '@/services/api';
 import { sampleBlogPosts } from '@/utils/sampleData';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -24,6 +25,7 @@ export default function BlogPage() {
 
   const [posts, setPosts] = useState(page === 1 ? sampleBlogPosts : []);
   const [total, setTotal] = useState(sampleBlogPosts.length);
+  const [mostViewed, setMostViewed] = useState([]);
 
   useEffect(() => {
     let mounted = true;
@@ -37,6 +39,15 @@ export default function BlogPage() {
     return () => { mounted = false; };
   }, [page, tag]);
 
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const { data } = await PortfolioAPI.getMostViewedPosts(5);
+      if (mounted && data?.length) setMostViewed(data);
+    })();
+    return () => { mounted = false; };
+  }, []);
+
   return (
     <div className="pt-28 pb-24">
       <div className="container-page">
@@ -46,6 +57,32 @@ export default function BlogPage() {
             From the <span className="text-gradient">Blog</span>
           </h1>
         </div>
+
+        {page === 1 && mostViewed.length > 0 && (
+          <div className="max-w-4xl mx-auto mb-10">
+            <p className="text-xs uppercase tracking-wider text-white/40 mb-3">Most Viewed</p>
+            <div className="flex flex-wrap gap-3">
+              {mostViewed.map((post) => (
+                <Link
+                  key={post.id || post.slug}
+                  to={`/blog/${post.slug}`}
+                  className="glass glass-hover rounded-full px-4 py-2 flex items-center gap-2 text-sm"
+                >
+                  <span className="text-white/80">{post.title}</span>
+                  <span className="flex items-center gap-1 text-xs text-white/40">
+                    <Eye size={12} /> {post.views ?? 0}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {page === 1 && (
+          <div className="max-w-4xl mx-auto mb-10">
+            <NewsletterSignup />
+          </div>
+        )}
 
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {posts.map((post) => (

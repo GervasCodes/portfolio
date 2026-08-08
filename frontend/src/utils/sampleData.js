@@ -4,13 +4,13 @@
  * Every page tries the live API first and only falls back to this.
  */
 export const sampleProfile = {
-  full_name: 'Your Name',
-  title: 'Full-Stack Software Engineer',
+  full_name: 'Gervas Gervas',
+  title: 'Full-Stack Web Developer',
   tagline: 'I design and build production-grade web applications.',
   bio: 'A passionate software engineer specializing in modern full-stack development, clean architecture, and delightful user experiences. I care about scalable systems as much as pixel-perfect interfaces.',
   avatar_url: null,
   resume_url: '#',
-  email: 'you@example.com',
+  email: 'amgerryofficial@example.com',
   location: 'Dar es Salaam, Tanzania',
   github_url: 'https://github.com',
   linkedin_url: 'https://linkedin.com',
@@ -19,7 +19,6 @@ export const sampleProfile = {
   years_experience: 3,
   available_for_work: true,
 };
-
 export const sampleSkills = {
   Languages: [
     { id: 1, name: 'JavaScript', proficiency: 90 },
@@ -39,7 +38,6 @@ export const sampleSkills = {
     { id: 9, name: 'Supabase', proficiency: 75 },
   ],
 };
-
 export const sampleProjects = [
   {
     id: 1,
@@ -54,6 +52,11 @@ export const sampleProjects = [
     live_url: '#',
     cover_image_url: null,
     gallery: [],
+    case_study_enabled: true,
+    case_study_problem: 'Most portfolio templates require editing code and redeploying just to add a project or fix a typo, which discourages keeping the site up to date.',
+    case_study_approach: 'Built a small custom CMS instead of adopting a headless one, so the data model and admin UI could match this site\'s sections exactly.',
+    case_study_architecture: 'React (Vite) frontend, Express/MySQL backend on Aiven, media on Supabase Storage, JWT + refresh-token admin auth.',
+    case_study_results: 'Every section — projects, blog, skills, timeline — is editable from `/admin` with zero code changes or redeploys.',
   },
   {
     id: 2,
@@ -84,12 +87,11 @@ export const sampleProjects = [
     gallery: [],
   },
 ];
-
 export const sampleExperience = [
   {
     id: 1,
     type: 'work',
-    title: 'Software Engineer',
+    title: 'Web Developer',
     organization: 'Freelance / Independent',
     location: 'Remote',
     start_date: '2023-01-01',
@@ -98,21 +100,19 @@ export const sampleExperience = [
     description: 'Designing and building full-stack web applications across multiple industries.',
   },
 ];
-
 export const sampleEducation = [
   {
     id: 1,
     type: 'education',
     title: 'B.Sc. Computer Science',
-    organization: 'University',
+    organization: 'National Institute of Transport',
     location: 'Dar es Salaam, Tanzania',
-    start_date: '2019-09-01',
-    end_date: '2023-06-01',
+    start_date: '2023',
+    end_date: '2026',
     is_current: false,
     description: 'Focused on software engineering, data structures, and distributed systems.',
   },
 ];
-
 export const sampleBlogPosts = [
   {
     id: 1,

@@ -3,6 +3,20 @@ const { ApiResponse } = require('../utills/responce');
 const { asyncHandler } = require('../middleware/error.middleware');
 const Validator = require('../utills/validator');
 
+// Case-study body fields are TEXT columns (65,535 byte cap) same as
+// `summary` — truncate instead of letting MySQL throw ER_DATA_TOO_LONG.
+const CASE_STUDY_FIELDS = [
+  'case_study_problem', 'case_study_approach',
+  'case_study_architecture', 'case_study_results',
+];
+function clampCaseStudyFields(body) {
+  for (const field of CASE_STUDY_FIELDS) {
+    if (body[field] && body[field].length > 65535) {
+      body[field] = body[field].substring(0, 65535);
+    }
+  }
+}
+
 const listProjects = asyncHandler(async (req, res) => {
   const { q, category, page, limit } = req.query;
   const result = await projectService.search({
@@ -36,6 +50,7 @@ const createProject = asyncHandler(async (req, res) => {
   if (req.body.summary && req.body.summary.length > 65535) {
     req.body.summary = req.body.summary.substring(0, 65535);
   }
+  clampCaseStudyFields(req.body);
   const project = await projectService.create(req.body);
   return ApiResponse.created(res, { message: 'Project created', data: project });
 });
@@ -45,6 +60,7 @@ const updateProject = asyncHandler(async (req, res) => {
   if (req.body.summary && req.body.summary.length > 65535) {
     req.body.summary = req.body.summary.substring(0, 65535);
   }
+  clampCaseStudyFields(req.body);
   const project = await projectService.update(req.params.id, req.body);
   return ApiResponse.success(res, { message: 'Project updated', data: project });
 });

@@ -16,6 +16,46 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// When an access token expires (short-lived by design — see
+// JWT_EXPIRES_IN), the backend rejects it with 401. Rather than bouncing
+// the admin to the login page, silently exchange the httpOnly refresh
+// cookie for a new access token via POST /auth/refresh and retry the
+// original request once. Concurrent 401s share a single in-flight refresh
+// so a burst of requests doesn't trigger a burst of rotations.
+let refreshPromise = null;
+const AUTH_ENDPOINTS_TO_SKIP = ['/auth/login', '/auth/login/verify', '/auth/refresh', '/auth/logout'];
+
+api.interceptors.response.use(
+  (res) => res,
+  async (err) => {
+    const { config, response } = err;
+    const isAuthEndpoint = config && AUTH_ENDPOINTS_TO_SKIP.some((p) => config.url?.includes(p));
+
+    if (response?.status !== 401 || isAuthEndpoint || config._retry) {
+      throw err;
+    }
+    config._retry = true;
+
+    try {
+      if (!refreshPromise) {
+        refreshPromise = api.post('/auth/refresh').finally(() => {
+          refreshPromise = null;
+        });
+      }
+      const { data } = await refreshPromise;
+      if (typeof window !== 'undefined' && data?.data?.token) {
+        window.localStorage.setItem('portfolio_token', data.data.token);
+      }
+      return api(config);
+    } catch (refreshErr) {
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('portfolio_token');
+      }
+      throw err;
+    }
+  }
+);
+
 /**
  * Small wrapper so every call site gets `{ data, error }` instead of
  * having to try/catch axios everywhere. Keeps components declarative.
@@ -64,15 +104,33 @@ export const PortfolioAPI = {
 
   // Blog
   getPosts: (params) => request(api.get('/blog', { params })),
+  getMostViewedPosts: (limit = 5) => request(api.get('/blog/most-viewed', { params: { limit } })),
   getPostBySlug: (slug) => request(api.get(`/blog/${slug}`)),
   getAllPostsAdmin: () => request(api.get('/blog/admin/all')),
   createPost: (payload) => request(api.post('/blog', payload)),
   updatePost: (id, payload) => request(api.put(`/blog/${id}`, payload)),
   deletePost: (id) => request(api.delete(`/blog/${id}`)),
 
+  // Blog engagement — reactions are keyed to an anonymous visitor cookie,
+  // no login required.
+  getReactions: (slug) => request(api.get(`/blog/${slug}/reactions`)),
+  setReaction: (slug, emoji) => request(api.post(`/blog/${slug}/reactions`, { emoji })),
+  removeReaction: (slug) => request(api.delete(`/blog/${slug}/reactions`)),
+
+  // Search — combined LIKE search across projects + blog posts.
+  // type: 'all' | 'projects' | 'blog'
+  search: (params) => request(api.get('/search', { params })),
+
   // Contact
   sendContactMessage: (payload) => request(api.post('/contact', payload)),
   getContactMessages: () => request(api.get('/contact')),
+
+  // Newsletter — double opt-in "notify me on new posts" signup
+  subscribeNewsletter: (email) => request(api.post('/newsletter/subscribe', { email })),
+  confirmNewsletter: (token) => request(api.post('/newsletter/confirm', { token })),
+  unsubscribeNewsletter: (token) => request(api.post('/newsletter/unsubscribe', { token })),
+  getNewsletterSubscribers: (limit) => request(api.get('/newsletter/subscribers', { params: { limit } })),
+  getNewsletterStats: (days) => request(api.get('/newsletter/stats', { params: { days } })),
 
   // Certificates
   getCertificates: () => request(api.get('/certificates')),
@@ -93,8 +151,14 @@ export const PortfolioAPI = {
 
   // Auth
   login: (payload) => request(api.post('/auth/login', payload)),
+  verifyMfa: (payload) => request(api.post('/auth/login/verify', payload)),
   logout: () => request(api.post('/auth/logout')),
   me: () => request(api.get('/auth/me')),
+
+  // 2FA (TOTP) management — requires an existing admin session.
+  setupTotp: () => request(api.get('/auth/2fa/setup')),
+  enableTotp: (code) => request(api.post('/auth/2fa/enable', { code })),
+  disableTotp: (password) => request(api.post('/auth/2fa/disable', { password })),
 };
 
 export default PortfolioAPI;

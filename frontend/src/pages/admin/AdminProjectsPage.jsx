@@ -11,6 +11,8 @@ import { uploadFile } from '@/services/upload';
 const EMPTY_FORM = {
   title: '', summary: '', description: '', category: '', repo_url: '', live_url: '',
   tech_stack: '', featured: false, status: 'draft', cover_image_url: '',
+  case_study_enabled: false, case_study_problem: '', case_study_approach: '',
+  case_study_architecture: '', case_study_results: '',
 };
 
 export default function AdminProjectsPage() {
@@ -45,13 +47,23 @@ export default function AdminProjectsPage() {
       ...EMPTY_FORM,
       ...project,
       tech_stack: Array.isArray(project.tech_stack) ? project.tech_stack.join(', ') : '',
+      // These are nullable TEXT columns — coerce null to '' so the
+      // textareas stay controlled inputs.
+      case_study_problem: project.case_study_problem || '',
+      case_study_approach: project.case_study_approach || '',
+      case_study_architecture: project.case_study_architecture || '',
+      case_study_results: project.case_study_results || '',
     });
     setModalOpen(true);
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
+    const next = { ...form, [name]: type === 'checkbox' ? checked : value };
+    // Case-study layout is a featured-project option — turning "Featured"
+    // off hides (and clears) it rather than leaving an orphaned toggle.
+    if (name === 'featured' && !checked) next.case_study_enabled = false;
+    setForm(next);
   };
 
   const handleCoverUpload = async (e) => {
@@ -175,6 +187,34 @@ export default function AdminProjectsPage() {
               </select>
             </label>
           </div>
+
+          {form.featured && (
+            <div className="border-t border-white/10 pt-4">
+              <label className="flex items-center gap-2 text-sm text-white/70 mb-1">
+                <input
+                  type="checkbox"
+                  name="case_study_enabled"
+                  checked={form.case_study_enabled}
+                  onChange={handleChange}
+                  className="accent-accent"
+                />
+                Use case-study layout on the project page
+              </label>
+              <p className="text-xs text-white/40 mb-3">
+                Replaces the plain description with four structured sections.
+                Markdown is supported in each. Leave a section blank to omit it.
+              </p>
+
+              {form.case_study_enabled && (
+                <div className="space-y-4">
+                  <TextArea label="Problem" name="case_study_problem" value={form.case_study_problem} onChange={handleChange} placeholder="What problem was this project solving?" />
+                  <TextArea label="Approach" name="case_study_approach" value={form.case_study_approach} onChange={handleChange} placeholder="How did you approach it?" />
+                  <TextArea label="Architecture" name="case_study_architecture" value={form.case_study_architecture} onChange={handleChange} placeholder="Key technical/architectural decisions" />
+                  <TextArea label="Results" name="case_study_results" value={form.case_study_results} onChange={handleChange} placeholder="Outcome, metrics, or impact" />
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="flex justify-end gap-3 pt-2">
             <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>

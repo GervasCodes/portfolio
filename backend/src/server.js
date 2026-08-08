@@ -21,6 +21,8 @@ const experienceRoutes = require('./routes/experience.routes');
 const mediaRoutes = require('./routes/media.routes');
 const contactRoutes = require('./routes/contact.routes');
 const miscRoutes = require('./routes/misc.routes');
+const searchRoutes = require('./routes/search.routes');
+const newsletterRoutes = require('./routes/newsletter.routes');
 
 const app = express();
 
@@ -32,7 +34,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan(env.isProduction() ? 'combined' : 'dev'));
 
-// Basic API-wide rate limiting to protect the contact form / login route.
+// Basic API-wide rate limiting for everything under /api. Auth endpoints
+// get their own, much stricter limiters on top of this (see
+// routes/auth.routes.js + middleware/rateLimiters.js).
 app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
 
 // Fire-and-forget page-view tracking for public GET requests.
@@ -63,6 +67,8 @@ app.use('/api/skills', skillsRoutes);
 app.use('/api/experience', experienceRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 app.use('/api', miscRoutes);
 
 app.use(notFoundHandler);

@@ -17,7 +17,11 @@ const uploadMedia = asyncHandler(async (req, res) => {
     file_url: result.url,
     file_type: kind,
     mime_type: req.file.mimetype,
-    size_bytes: req.file.size,
+    // Images may have been resized/recompressed before upload (see
+    // MediaService.uploadImage) — `result.size` reflects what was
+    // actually stored; other kinds pass through untouched, so fall
+    // back to the original upload size.
+    size_bytes: result.size ?? req.file.size,
     related_to: req.body.related_to || null,
   });
 

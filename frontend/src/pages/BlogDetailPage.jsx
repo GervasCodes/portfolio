@@ -2,14 +2,69 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, Eye } from 'lucide-react';
 import Markdown from '@/components/ui/Markdown';
+import Seo from '@/components/seo/Seo';
 import { PortfolioAPI } from '@/services/api';
 import { sampleBlogPosts } from '@/utils/sampleData';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { useSiteSettings, buildTitle } from '@/hooks/useSiteSettings';
+import { absoluteUrl, truncate, stripMarkdown, resolveImage } from '@/utils/seo';
+
+// Kept in sync with backend `ALLOWED_REACTIONS` (blogEngagement.service.js).
+const REACTION_EMOJIS = ['👍', '❤️', '🔥', '🎉', '💡'];
 
 function formatDate(date) {
   if (!date) return '';
   return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function ReactionBar({ slug }) {
+  const [counts, setCounts] = useState({});
+  const [mine, setMine] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const { data } = await PortfolioAPI.getReactions(slug);
+      if (!mounted || !data) return;
+      setCounts(data.counts || {});
+      setMine(data.mine || null);
+    })();
+    return () => { mounted = false; };
+  }, [slug]);
+
+  async function handleClick(emoji) {
+    if (busy) return;
+    setBusy(true);
+    const { data } = mine === emoji
+      ? await PortfolioAPI.removeReaction(slug)
+      : await PortfolioAPI.setReaction(slug, emoji);
+    if (data) {
+      setCounts(data.counts || {});
+      setMine(data.mine ?? null);
+    }
+    setBusy(false);
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-white/10">
+      {REACTION_EMOJIS.map((emoji) => (
+        <button
+          key={emoji}
+          type="button"
+          onClick={() => handleClick(emoji)}
+          disabled={busy}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors disabled:opacity-50 ${
+            mine === emoji
+              ? 'bg-accent/20 border-accent/50 text-white'
+              : 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10'
+          }`}
+        >
+          <span>{emoji}</span>
+          <span className="text-xs">{counts[emoji] ?? 0}</span>
+        </button>
+      ))}
+    </div>
+  );
 }
 
 export default function BlogDetailPage() {
@@ -18,7 +73,7 @@ export default function BlogDetailPage() {
   const [post, setPost] = useState(fallback);
 
   const settings = useSiteSettings();
-  useDocumentTitle(buildTitle(post ? post.title : 'Blog Post', settings));
+  const pageTitle = buildTitle(post ? post.title : 'Blog Post', settings);
 
   useEffect(() => {
     let mounted = true;
@@ -32,8 +87,31 @@ export default function BlogDetailPage() {
 
   if (!post) return null;
 
+  const description = truncate(post.excerpt || stripMarkdown(post.content));
+  const image = resolveImage(post.cover_image_url);
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description,
+    url: absoluteUrl(`/blog/${post.slug}`),
+    ...(image ? { image } : {}),
+    ...(post.published_at ? { datePublished: post.published_at, dateModified: post.published_at } : {}),
+    ...(Array.isArray(post.tags) && post.tags.length ? { keywords: post.tags.join(', ') } : {}),
+    author: { '@type': 'Person', name: settings?.site_title || 'Author' },
+  };
+
   return (
     <div className="pt-28 pb-24">
+      <Seo
+        title={pageTitle}
+        description={description}
+        path={`/blog/${post.slug}`}
+        image={image}
+        type="article"
+        siteName={settings?.site_title}
+        structuredData={structuredData}
+      />
       <div className="container-page max-w-3xl">
         <Link to="/blog" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white mb-8">
           <ArrowLeft size={16} /> Back to Blog
@@ -57,6 +135,8 @@ export default function BlogDetailPage() {
             ))}
           </div>
         )}
+
+        <ReactionBar slug={post.slug} />
       </div>
     </div>
   );

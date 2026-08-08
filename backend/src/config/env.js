@@ -28,7 +28,20 @@ const env = {
 
   // Auth
   JWT_SECRET: readVar('JWT_SECRET', 'dev-secret-change-me'),
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
+  // Access token — deliberately short-lived now that refresh-token rotation
+  // handles staying signed in; a leaked access token is only useful for a
+  // few minutes.
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '15m',
+
+  // Refresh token — long-lived, rotated on every use, revocable server-side
+  // (see database/migrations/008_refresh_tokens.sql). This is what actually
+  // keeps the admin signed in across visits; the access token above is not.
+  REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN || '30d',
+
+  // 2FA (TOTP) — short-lived token issued after password check, exchanged
+  // for a full session once a valid authenticator code is supplied.
+  MFA_TOKEN_EXPIRES_IN: process.env.MFA_TOKEN_EXPIRES_IN || '5m',
+  TOTP_ISSUER: process.env.TOTP_ISSUER || 'Portfolio Admin',
 
   // Admin credentials — plain-text only in .env during initial setup.
   // The password is hashed with bcrypt on first startup and stored in the

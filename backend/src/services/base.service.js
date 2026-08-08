@@ -18,6 +18,10 @@ class BaseService {
   async beforeCreate(data) { return data; }
   async afterCreate(record) { return record; }
   async beforeUpdate(id, data) { return data; }
+  // `previous` is the pre-update record (already fetched for the 404
+  // check), handed to subclasses that need to react to a *transition*
+  // (e.g. draft -> published) rather than just the new state.
+  async afterUpdate(id, record, previous) { return record; }
 
   async list(options = {}) {
     return this.model.findAll(options);
@@ -36,9 +40,10 @@ class BaseService {
   }
 
   async update(id, data) {
-    await this.getById(id); // ensures 404 if missing
+    const previous = await this.getById(id); // ensures 404 if missing
     const prepared = await this.beforeUpdate(id, data);
-    return this.model.update(id, prepared);
+    const record = await this.model.update(id, prepared);
+    return this.afterUpdate(id, record, previous);
   }
 
   async remove(id) {

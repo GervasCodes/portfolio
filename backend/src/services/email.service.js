@@ -29,14 +29,15 @@ class EmailNotification extends NotificationService {
     }
   }
 
-  async send({ to, subject, message, html }) {
+  async send({ to, subject, message, html, bcc }) {
     if (!this.transporter) {
-      console.warn('[email] SMTP not configured — skipping send. Message was:', { to, subject });
+      console.warn('[email] SMTP not configured — skipping send. Message was:', { to, subject, bcc });
       return { skipped: true };
     }
     return this.transporter.sendMail({
       from: `"Portfolio" <${env.SMTP_USER}>`,
       to,
+      ...(bcc && bcc.length ? { bcc } : {}),
       subject,
       text: message,
       html: html || `<p>${message}</p>`,
@@ -62,10 +63,37 @@ async function notifyNewContactMessage(contact) {
   });
 }
 
+/** Double opt-in step 1: ask a new/re-subscribing newsletter signup to confirm their email. */
+async function notifyNewsletterConfirm(email, confirmUrl) {
+  return emailNotification.send({
+    to: email,
+    subject: 'Confirm your subscription',
+    message: `Thanks for subscribing! Confirm your email to start getting notified about new posts:\n\n${confirmUrl}\n\nIf you didn't request this, you can safely ignore this email — you won't be subscribed unless you click the link.`,
+  });
+}
+
+/**
+ * "Notify me on new posts" — fans a single new-post announcement out to
+ * every confirmed subscriber via BCC (one send, and subscribers never see
+ * each other's addresses) rather than one email per subscriber.
+ */
+async function notifyNewsletterOfNewPost(post, subscriberEmails) {
+  if (!subscriberEmails.length) return { skipped: true, reason: 'no confirmed subscribers' };
+  const url = `${env.CLIENT_URL}/blog/${post.slug}`;
+  return emailNotification.send({
+    to: env.CONTACT_RECEIVER_EMAIL,
+    bcc: subscriberEmails,
+    subject: `New post: ${post.title}`,
+    message: `A new post just went up${post.excerpt ? `:\n\n${post.excerpt}` : '.'}\n\nRead it here: ${url}`,
+  });
+}
+
 module.exports = {
   NotificationService,
   EmailNotification,
   FutureSMSNotification,
   emailNotification,
   notifyNewContactMessage,
+  notifyNewsletterConfirm,
+  notifyNewsletterOfNewPost,
 };

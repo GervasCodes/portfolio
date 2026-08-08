@@ -20,6 +20,8 @@ const BlogDetailPage = lazy(() => import('@/pages/BlogDetailPage'));
 const ResumePage = lazy(() => import('@/pages/ResumePage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const ContactsPage = lazy(() => import('@/pages/ContactsPage'));
+const SearchPage = lazy(() => import('@/pages/SearchPage'));
+const NewsletterStatusPage = lazy(() => import('@/pages/NewsletterStatusPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 const AdminLoginPage = lazy(() => import('@/pages/admin/AdminLoginPage'));
@@ -48,6 +50,9 @@ export default function App() {
           <Route path="/resume" element={<ResumePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/contacts" element={<ContactsPage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/newsletter/confirm" element={<NewsletterStatusPage />} />
+          <Route path="/newsletter/unsubscribe" element={<NewsletterStatusPage />} />
 
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/profile" element={<AdminProfilePage />} />

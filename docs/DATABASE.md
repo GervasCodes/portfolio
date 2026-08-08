@@ -13,7 +13,11 @@ Seeds live in `database/seeds/*.sql`.
 
 ## Schema overview
 - **profiles** — singleton row with owner bio/contact/social links
-- **projects** — portfolio projects (`gallery`, `tech_stack` stored as JSON)
+- **projects** — portfolio projects (`gallery`, `tech_stack` stored as JSON);
+  optional case-study layout (`case_study_enabled` + `case_study_problem` /
+  `_approach` / `_architecture` / `_results`) as an alternate write-up format
+- **newsletter_subscribers** — "notify me on new posts" double opt-in signups
+  (`pending` -> `confirmed` -> optionally `unsubscribed`)
 - **skills** — name/category/proficiency, grouped by category in the API
 - **experiences** — shared table for both `work` and `education` timeline entries
 - **blogs** — articles with `tags` (JSON), `status`, `views`

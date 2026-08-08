@@ -41,12 +41,26 @@ class BlogModel extends BaseModel {
     await db.query(`UPDATE blogs SET views = views + 1 WHERE id = ?`, [id]);
   }
 
-  async paginatePublished({ page = 1, limit = 6, tag } = {}) {
+  async getMostViewed({ limit = 5 } = {}) {
+    const rows = await db.query(
+      `SELECT * FROM blogs WHERE status = 'published' ORDER BY views DESC, published_at DESC LIMIT ?`,
+      [Number(limit)]
+    );
+    return rows.map((r) => this._serialize(r));
+  }
+
+  async paginatePublished({ page = 1, limit = 6, tag, q } = {}) {
     const clauses = [`status = 'published'`];
     const params = [];
     if (tag) {
       clauses.push(`tags LIKE ?`);
       params.push(`%"${tag}"%`);
+    }
+    // Simple LIKE-based search across title/excerpt/tags — same shape as
+    // ProjectModel#search, used by the combined /api/search endpoint.
+    if (q) {
+      clauses.push(`(title LIKE ? OR excerpt LIKE ? OR tags LIKE ?)`);
+      params.push(`%${q}%`, `%${q}%`, `%${q}%`);
     }
     const offset = (page - 1) * limit;
     const rows = await db.query(

@@ -25,6 +25,23 @@
 See `.env.example` at the repo root — copy it to `backend/.env` for local dev, and
 mirror the same keys in your hosting provider's dashboard for production.
 
+## GitHub Actions: CI and automated backups
+- `.github/workflows/ci.yml` runs backend lint + tests and frontend lint + build on
+  every push/PR to `main`. No secrets are required — it never touches the real
+  database or Supabase project (DB-dependent tests are skipped automatically; the
+  frontend build's sitemap fetch fails open to static routes if the API is
+  unreachable).
+- `.github/workflows/backup.yml` runs `backend/scripts/backup.js` on a daily cron
+  (03:00 UTC) plus a manual "Run workflow" trigger, dumping the database and
+  uploading it to Supabase Storage under `backups/`. This one **does** need repo
+  secrets set under Settings → Secrets and variables → Actions:
+  - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_SSL`
+  - `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_BUCKET`
+  - Optional: `BACKUP_PREFIX` (default `backups`), `BACKUP_RETENTION_COUNT`
+    (default `14`)
+- To restore a backup: download the `.sql.gz` file from Supabase Storage, then
+  `gunzip -c portfolio-backup-<timestamp>.sql.gz | mysql -h <host> -u <user> -p <database>`.
+
 ## Generating the admin password hash
 ```
 node -e "console.log(require('bcryptjs').hashSync('yourpassword', 10))"

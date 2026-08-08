@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Search as SearchIcon } from 'lucide-react';
 
 const LINKS = [
   { href: '/', label: 'Home' },
@@ -16,9 +16,12 @@ const LINKS = [
 
 export default function Navbar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
     const onScroll = () => {
@@ -32,7 +35,19 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    setOpen(false);
+    setSearchOpen(false);
+  }, [pathname]);
+
+  const submitSearch = (e) => {
+    e.preventDefault();
+    if (!searchValue.trim()) return;
+    navigate(`/search?q=${encodeURIComponent(searchValue.trim())}`);
+    setSearchValue('');
+    setSearchOpen(false);
+    setOpen(false);
+  };
 
   return (
     <header
@@ -81,16 +96,63 @@ export default function Navbar() {
                 </Link>
               );
             })}
+
+            <div className="flex items-center ml-1">
+              <AnimatePresence mode="wait">
+                {searchOpen ? (
+                  <motion.form
+                    key="search-input"
+                    onSubmit={submitSearch}
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={{ width: 200, opacity: 1 }}
+                    exit={{ width: 0, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    className="overflow-hidden"
+                  >
+                    <input
+                      autoFocus
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                      onBlur={() => { if (!searchValue) setSearchOpen(false); }}
+                      placeholder="Search..."
+                      className="input-field px-3 py-1.5 text-sm w-full"
+                    />
+                  </motion.form>
+                ) : (
+                  <motion.button
+                    key="search-toggle"
+                    type="button"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setSearchOpen(true)}
+                    className="p-2 rounded-lg text-white/60 hover:text-white transition-colors"
+                    aria-label="Open search"
+                  >
+                    <SearchIcon size={16} />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
-          <button
-            onClick={() => setOpen((o) => !o)}
-            className="md:hidden p-2 rounded-lg glass active:scale-95 transition-transform"
-            aria-label="Toggle menu"
-            aria-expanded={open}
-          >
-            {open ? <X size={18} /> : <Menu size={18} />}
-          </button>
+          <div className="flex items-center gap-1 md:hidden">
+            <Link
+              to="/search"
+              className="p-2 rounded-lg glass active:scale-95 transition-transform"
+              aria-label="Search"
+            >
+              <SearchIcon size={18} />
+            </Link>
+            <button
+              onClick={() => setOpen((o) => !o)}
+              className="p-2 rounded-lg glass active:scale-95 transition-transform"
+              aria-label="Toggle menu"
+              aria-expanded={open}
+            >
+              {open ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          </div>
         </nav>
 
         <AnimatePresence>

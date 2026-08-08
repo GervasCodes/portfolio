@@ -16,11 +16,67 @@ const IGNORABLE = new Set([
 ]);
 
 function splitStatements(sql) {
-  // Split on semicolons that are not inside strings, strip empty results
-  return sql
-    .split(/;/)
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0 && !s.startsWith('--') && s !== '');
+  // A small character-scan, not a full SQL tokenizer — but real SQL
+  // tokenization is what's actually needed here. A semicolon is only a
+  // statement terminator when it's not inside a `--` comment AND not
+  // inside a quoted string literal:
+  //   -- a semicolon in a comment, e.g. "cookie); `ip_address`"
+  //   COMMENT 'base32 secret; set during setup'  -- a semicolon in a string
+  // Splitting on `;` first (the original approach) or stripping comments
+  // line-by-line without string-awareness (this function's first fix)
+  // both mis-split cases like these — the comment/string tail then
+  // slips through as its own "statement" and gets sent to MySQL as
+  // invalid SQL.
+  const statements = [];
+  let current = '';
+  let inString = null; // null, or the quote char (' or ") currently open
+
+  for (let i = 0; i < sql.length; i++) {
+    const ch = sql[i];
+    const next = sql[i + 1];
+
+    if (inString) {
+      current += ch;
+      if (ch === inString) {
+        if (next === inString) {
+          // Escaped quote via doubling ('' or ""): consume both, stay in string.
+          current += next;
+          i++;
+        } else {
+          inString = null;
+        }
+      } else if (ch === '\\' && next !== undefined) {
+        // Backslash-escape (MySQL's default sql_mode): consume the next
+        // char as literal so a `\'` doesn't end the string early.
+        current += next;
+        i++;
+      }
+      continue;
+    }
+
+    if (ch === "'" || ch === '"') {
+      inString = ch;
+      current += ch;
+      continue;
+    }
+
+    if (ch === '-' && next === '-') {
+      // Line comment: skip to (but not past) the next newline.
+      while (i < sql.length && sql[i] !== '\n') i++;
+      continue;
+    }
+
+    if (ch === ';') {
+      statements.push(current);
+      current = '';
+      continue;
+    }
+
+    current += ch;
+  }
+  if (current.trim()) statements.push(current);
+
+  return statements.map((s) => s.trim()).filter((s) => s.length > 0);
 }
 
 async function migrate() {
@@ -84,7 +140,11 @@ async function migrate() {
   await connection.end();
 }
 
-migrate().catch((err) => {
-  console.error('Migration failed:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  migrate().catch((err) => {
+    console.error('Migration failed:', err);
+    process.exit(1);
+  });
+}
+
+module.exports = { splitStatements };

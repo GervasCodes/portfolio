@@ -15,7 +15,14 @@
 - [x] **Backend integration tests against a real MySQL 8 database** (`tests/integration.test.js`,
       gated behind `INTEGRATION_TEST_DB=1`) — covers project/blog creation, slug lookup,
       pagination, and view-count tracking
-- [x] GitHub Actions CI (backend tests + frontend production build on every push/PR)
+- [x] GitHub Actions CI (`.github/workflows/ci.yml`) — backend lint + `node --test` and
+      frontend lint + production build, on every push/PR to `main`
+- [x] Automated database backups (`.github/workflows/backup.yml`, daily cron) — dumps
+      Aiven MySQL to a gzipped `.sql.gz` file and uploads it to Supabase Storage
+      (`backend/scripts/backup.js`), pruning old backups beyond a retention count
+- [x] Image optimization on upload — JPEG/PNG/WebP are resized (2000px max edge) and
+      recompressed via `sharp` before being stored in Supabase (`storage.service.js`);
+      SVGs and GIFs are left untouched
 - [x] Verified end-to-end against a real MySQL instance: migrations, seeding, the full
       Express server booting, and every route (auth, profile, projects, blog, skills,
       settings, analytics, contact, 404 handling) manually exercised with curl
@@ -33,7 +40,6 @@
   don't support placeholders in LIMIT/OFFSET — switched the DB wrapper to `query()`
 
 ## Not yet implemented
-- [ ] Image cropping/optimization on upload — files go to Supabase as-is
 - [ ] Actual deployment (see `docs/DEPLOYMENT.md` for the manual steps — needs your
       own Aiven MySQL, Supabase, and SMTP credentials)
 - [ ] Next.js major-version bump to clear a transitive `postcss` advisory bundled
