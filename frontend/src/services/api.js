@@ -99,8 +99,11 @@ export const PortfolioAPI = {
   updateSkill: (id, payload) => request(api.put(`/skills/${id}`, payload)),
   deleteSkill: (id) => request(api.delete(`/skills/${id}`)),
 
-  // Experience
+  // Experience & Education (same table, disambiguated by `type`)
   getExperience: (type) => request(api.get('/experience', { params: type ? { type } : {} })),
+  createExperience: (payload) => request(api.post('/experience', payload)),
+  updateExperience: (id, payload) => request(api.put(`/experience/${id}`, payload)),
+  deleteExperience: (id) => request(api.delete(`/experience/${id}`)),
 
   // Blog
   getPosts: (params) => request(api.get('/blog', { params })),

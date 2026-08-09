@@ -5,6 +5,10 @@
 :root {
   --font-inter: 'Inter', sans-serif;
   --font-space: 'Space Grotesk', sans-serif;
+  /* Fallback before Navbar measures its own real height on mount (see
+     components/layout/Navbar.jsx) — generous enough to cover the fixed
+     header on any screen size so content never starts out hidden under it. */
+  --navbar-h: 132px;
 }
 
 * { scroll-behavior: smooth; }

@@ -38,7 +38,7 @@ export default function ProfilePage() {
     : null;
 
   return (
-    <div className="pt-28 pb-24">
+    <div className="pb-24" style={{ paddingTop: 'calc(var(--navbar-h) + 1.5rem)' }}>
       <div className="container-page max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

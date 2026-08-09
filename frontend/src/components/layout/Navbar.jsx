@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Search as SearchIcon } from 'lucide-react';
@@ -17,11 +17,34 @@ const LINKS = [
 export default function Navbar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const headerRef = useRef(null);
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+
+  // The header's real height changes across breakpoints (scrolled vs not,
+  // brand text wrapping on narrow phones, the mobile menu opening, etc.),
+  // so any page that reserves static top padding to avoid sitting under
+  // this fixed header can end up hidden behind it on some devices. Track
+  // the actual rendered height and publish it as a CSS var so pages can
+  // pad against the real number instead of a guessed constant.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return undefined;
+    const setVar = () => {
+      document.documentElement.style.setProperty('--navbar-h', `${el.offsetHeight}px`);
+    };
+    setVar();
+    const observer = new ResizeObserver(setVar);
+    observer.observe(el);
+    window.addEventListener('resize', setVar);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', setVar);
+    };
+  }, [scrolled, open, searchOpen]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -51,6 +74,7 @@ export default function Navbar() {
 
   return (
     <header
+      ref={headerRef}
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled ? 'py-3' : 'py-5'
       }`}

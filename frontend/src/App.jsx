@@ -32,6 +32,7 @@ const NotFoundPage = lazyWithRetry(() => import('@/pages/NotFoundPage'));
 const AdminLoginPage = lazyWithRetry(() => import('@/pages/admin/AdminLoginPage'));
 const AdminProfilePage = lazyWithRetry(() => import('@/pages/admin/AdminProfilePage'));
 const AdminSkillsPage = lazyWithRetry(() => import('@/pages/admin/AdminSkillsPage'));
+const AdminExperiencePage = lazyWithRetry(() => import('@/pages/admin/AdminExperiencePage'));
 const AdminProjectsPage = lazyWithRetry(() => import('@/pages/admin/AdminProjectsPage'));
 const AdminBlogPage = lazyWithRetry(() => import('@/pages/admin/AdminBlogPage'));
 const AdminCertificatesPage = lazyWithRetry(() => import('@/pages/admin/AdminCertificatesPage'));
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/profile" element={<AdminProfilePage />} />
           <Route path="/admin/skills" element={<AdminSkillsPage />} />
+          <Route path="/admin/experience" element={<AdminExperiencePage />} />
           <Route path="/admin/projects" element={<AdminProjectsPage />} />
           <Route path="/admin/blog" element={<AdminBlogPage />} />
           <Route path="/admin/certificates" element={<AdminCertificatesPage />} />

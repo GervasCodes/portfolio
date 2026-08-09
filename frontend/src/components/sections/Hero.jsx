@@ -14,7 +14,10 @@ export default function Hero({ profile }) {
       <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-cyan-accent/20 rounded-full blur-[120px] pointer-events-none animate-float-slower" />
       <div className="absolute top-10 right-1/4 w-[220px] h-[220px] bg-accent-light/10 rounded-full blur-[100px] pointer-events-none animate-float-slow" />
 
-      <div className="container-page relative z-10 pt-40 md:pt-44 pb-20">
+      <div
+        className="container-page relative z-10 pb-20"
+        style={{ paddingTop: 'calc(var(--navbar-h) + 2rem)' }}
+      >
         {profile?.avatar_url && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
