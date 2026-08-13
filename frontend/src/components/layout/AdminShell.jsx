@@ -3,7 +3,7 @@ import Sidebar from './Sidebar';
 /** Shared dashboard shell (Sidebar + content area) for every admin page except /admin/login. */
 export default function AdminShell({ title, description, children }) {
   return (
-    <div className="min-h-screen p-4 md:p-6 flex flex-col md:flex-row gap-6 bg-grid">
+    <div className="min-h-screen p-4 md:p-6 flex flex-col md:flex-row gap-6">
       <Sidebar />
       <div className="flex-1 min-w-0">
         {(title || description) && (

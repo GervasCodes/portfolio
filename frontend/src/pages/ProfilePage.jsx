@@ -56,7 +56,15 @@ export default function ProfilePage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-white/30 text-xs">No photo</span>
+                  <span className="font-display text-2xl text-white/30">
+                    {(profile?.full_name || 'Your Name')
+                      .split(' ')
+                      .filter(Boolean)
+                      .slice(0, 2)
+                      .map((w) => w[0])
+                      .join('')
+                      .toUpperCase()}
+                  </span>
                 )}
               </div>
             </div>

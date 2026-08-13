@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import SiteChrome from '@/components/layout/SiteChrome';
 import ScrollToTop from '@/components/layout/ScrollToTop';
+import PageViewTracker from '@/components/layout/PageViewTracker';
 import PageLoader from '@/components/layout/PageLoader';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 
@@ -43,6 +44,7 @@ export default function App() {
   return (
     <SiteChrome>
       <ScrollToTop />
+      <PageViewTracker />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<HomePage />} />

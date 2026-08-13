@@ -7,15 +7,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#05060a',
+        // Natural, premium palette: deep charcoal-green canvas, warm ivory
+        // text, sage-green primary accent, muted gold/bronze secondary accent.
+        background: '#0c0f0d',
         surface: 'rgba(255,255,255,0.04)',
         border: 'rgba(255,255,255,0.08)',
         accent: {
-          DEFAULT: '#7c3aed',
-          light: '#a78bfa',
-          glow: '#8b5cf6',
+          DEFAULT: '#6f8f6b',
+          light: '#9fbd97',
+          glow: '#86a67f',
         },
-        cyan: { accent: '#22d3ee' },
+        cyan: { accent: '#c9a267' },
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'sans-serif'],
@@ -23,10 +25,9 @@ export default {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(circle, var(--tw-gradient-stops))',
-        'grid-pattern': 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
       },
       boxShadow: {
-        glow: '0 0 40px -10px rgba(124,58,237,0.55)',
+        glow: '0 0 40px -10px rgba(111,143,107,0.55)',
       },
     },
   },

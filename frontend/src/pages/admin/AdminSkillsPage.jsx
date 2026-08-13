@@ -110,8 +110,8 @@ export default function AdminSkillsPage() {
                 <Bar dataKey="avg" radius={[6, 6, 0, 0]} fill="url(#skillGradient)" />
                 <defs>
                   <linearGradient id="skillGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#7c3aed" />
-                    <stop offset="100%" stopColor="#22d3ee" />
+                    <stop offset="0%" stopColor="#6f8f6b" />
+                    <stop offset="100%" stopColor="#c9a267" />
                   </linearGradient>
                 </defs>
               </BarChart>

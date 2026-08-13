@@ -27,10 +27,10 @@ INSERT INTO projects (title, slug, summary, description, tech_stack, category, f
  'Production-grade personal portfolio built with Next.js, Express, MySQL, and Supabase Storage, featuring a private CMS for managing all content.',
  JSON_ARRAY('Next.js', 'Express', 'MySQL', 'Supabase'), 'Full-Stack', TRUE, 'published', 1);
 
-INSERT INTO experiences (type, title, organization, location, start_date, is_current, description, sort_order) VALUES
-('work', 'Software Engineer', 'Freelance / Independent', 'Remote', '2023-01-01', TRUE,
+INSERT INTO experiences (type, title, organization, location, start_date, end_date, is_current, description, sort_order) VALUES
+('work', 'Software Engineer', 'Freelance / Independent', 'Remote', '2023-01-01', NULL, TRUE,
  'Designing and building full-stack web applications for clients across multiple industries.', 1),
-('education', 'B.Sc. Computer Science', 'University', 'Dar es Salaam, Tanzania', '2019-09-01', FALSE,
+('education', 'B.Sc. Computer Science', 'University', 'Dar es Salaam, Tanzania', '2023-09-01', '2026-06-01', FALSE,
  'Focused on software engineering, data structures, and distributed systems.', 1);
 
 INSERT INTO settings (setting_key, setting_value) VALUES

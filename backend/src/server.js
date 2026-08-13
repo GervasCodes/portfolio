@@ -7,7 +7,6 @@ const rateLimit = require('express-rate-limit');
 
 const env = require('./config/env');
 const db = require('./config/database');
-const analyticsService = require('./services/analytics.service');
 const { initializeAdmin } = require('./services/adminInit.service');
 const { notFoundHandler, errorHandler } = require('./middleware/error.middleware');
 
@@ -38,21 +37,6 @@ app.use(morgan(env.isProduction() ? 'combined' : 'dev'));
 // get their own, much stricter limiters on top of this (see
 // routes/auth.routes.js + middleware/rateLimiters.js).
 app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
-
-// Fire-and-forget page-view tracking for public GET requests.
-app.use((req, _res, next) => {
-  if (req.method === 'GET' && req.path.startsWith('/api')) {
-    analyticsService
-      .recordVisit({
-        path: req.path,
-        referrer: req.get('referer'),
-        userAgent: req.get('user-agent'),
-        ip: req.ip,
-      })
-      .catch(() => {}); // analytics must never break the request
-  }
-  next();
-});
 
 // --- Health check ---
 app.get('/api/health', (_req, res) => res.json({ status: 'ok', env: env.NODE_ENV }));

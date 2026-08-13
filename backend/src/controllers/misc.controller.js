@@ -42,8 +42,26 @@ const updateSettings = asyncHandler(async (req, res) => {
 const getAnalytics = asyncHandler(async (req, res) =>
   ApiResponse.success(res, { data: await analyticsService.getSummary({ days: Number(req.query.days) || 30 }) }));
 
+// Records one real page view per call. Called explicitly by the frontend
+// router on each public route change, instead of the old approach of
+// logging every internal API request (which counted a single page load
+// as many "visits" — one per data fetch — and made the numbers meaningless).
+const recordPageView = asyncHandler(async (req, res) => {
+  const path = typeof req.body?.path === 'string' ? req.body.path.slice(0, 255) : null;
+  if (!path || !path.startsWith('/') || path.startsWith('/admin')) {
+    return ApiResponse.success(res, { message: 'Ignored' });
+  }
+  await analyticsService.recordVisit({
+    path,
+    referrer: req.get('referer'),
+    userAgent: req.get('user-agent'),
+    ip: req.ip,
+  });
+  return ApiResponse.success(res, { message: 'Recorded' });
+});
+
 module.exports = {
   listCertificates, createCertificate, updateCertificate, deleteCertificate,
   listAchievements, createAchievement, updateAchievement, deleteAchievement,
-  getSettings, updateSettings, getAnalytics,
+  getSettings, updateSettings, getAnalytics, recordPageView,
 };

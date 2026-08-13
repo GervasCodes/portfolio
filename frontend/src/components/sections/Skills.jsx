@@ -58,7 +58,7 @@ export default function Skills({ grouped = {} }) {
                   <PolarGrid stroke="rgba(255,255,255,0.1)" />
                   <PolarAngleAxis dataKey="category" tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 11 }} />
                   <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 9 }} />
-                  <Radar dataKey="avg" stroke="#22d3ee" fill="#7c3aed" fillOpacity={0.45} />
+                  <Radar dataKey="avg" stroke="#c9a267" fill="#6f8f6b" fillOpacity={0.45} />
                   <Tooltip
                     contentStyle={{ background: 'rgba(15,15,20,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }}
                   />

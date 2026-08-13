@@ -2,7 +2,7 @@ const router = require('express').Router();
 const {
   listCertificates, createCertificate, updateCertificate, deleteCertificate,
   listAchievements, createAchievement, updateAchievement, deleteAchievement,
-  getSettings, updateSettings, getAnalytics,
+  getSettings, updateSettings, getAnalytics, recordPageView,
 } = require('../controllers/misc.controller');
 const { requireAuth } = require('../middleware/auth.middleware');
 
@@ -20,5 +20,6 @@ router.get('/settings', getSettings);
 router.put('/settings', requireAuth, updateSettings);
 
 router.get('/analytics', requireAuth, getAnalytics);
+router.post('/analytics/pageview', recordPageView);
 
 module.exports = router;

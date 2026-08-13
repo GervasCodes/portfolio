@@ -8,7 +8,7 @@ export default function Hero({ profile }) {
   const tagline = profile?.tagline || 'I design and build production-grade web applications.';
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-grid bg-noise">
+    <section className="relative min-h-screen overflow-hidden bg-noise">
       {/* Ambient glow — layered + slowly drifting for a less static hero */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent/30 rounded-full blur-[140px] pointer-events-none animate-float-slow" />
       <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-cyan-accent/20 rounded-full blur-[120px] pointer-events-none animate-float-slower" />

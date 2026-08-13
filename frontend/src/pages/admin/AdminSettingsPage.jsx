@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Save, Mail, BarChart3, ShieldCheck, ShieldOff, Users } from 'lucide-react';
+import { Save, Mail, Activity, ShieldCheck, ShieldOff, Users } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import AdminShell from '@/components/layout/AdminShell';
 import Button from '@/components/ui/Buttons';
@@ -50,7 +50,9 @@ export default function AdminSettingsPage() {
         </div>
 
         <div className="glass rounded-2xl p-6">
-          <h2 className="font-semibold mb-4 flex items-center gap-2"><BarChart3 size={16} /> Traffic (30 days)</h2>
+          <h2 className="font-semibold mb-4 flex items-center gap-2">
+            <Activity size={16} className="text-accent-light" /> Traffic (30 days)
+          </h2>
           {analytics ? (
             <div className="space-y-3 text-sm">
               <Stat label="Total Visits" value={analytics.totalVisits} />
@@ -81,11 +83,11 @@ export default function AdminSettingsPage() {
                       contentStyle={{ background: 'rgba(15,15,20,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }}
                       cursor={{ stroke: 'rgba(255,255,255,0.1)' }}
                     />
-                    <Area type="monotone" dataKey="signups" stroke="#22d3ee" fill="url(#newsletterGradient)" strokeWidth={2} />
+                    <Area type="monotone" dataKey="signups" stroke="#c9a267" fill="url(#newsletterGradient)" strokeWidth={2} />
                     <defs>
                       <linearGradient id="newsletterGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#22d3ee" stopOpacity={0.4} />
-                        <stop offset="100%" stopColor="#22d3ee" stopOpacity={0} />
+                        <stop offset="0%" stopColor="#c9a267" stopOpacity={0.4} />
+                        <stop offset="100%" stopColor="#c9a267" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                   </AreaChart>

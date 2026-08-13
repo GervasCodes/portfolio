@@ -151,6 +151,7 @@ export const PortfolioAPI = {
   getSettings: () => request(api.get('/settings')),
   updateSettings: (payload) => request(api.put('/settings', payload)),
   getAnalytics: (days) => request(api.get('/analytics', { params: { days } })),
+  recordPageView: (path) => request(api.post('/analytics/pageview', { path })),
 
   // Auth
   login: (payload) => request(api.post('/auth/login', payload)),
