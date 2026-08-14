@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Download, Sparkles, ChevronDown } from 'lucide-react';
+import { ArrowRight, Download, ChevronDown } from 'lucide-react';
 import Button from '@/components/ui/Buttons';
 
 export default function Hero({ profile }) {
@@ -9,6 +9,18 @@ export default function Hero({ profile }) {
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-noise">
+      {/* Subtle real photo for texture/depth — heavily darkened so text stays fully legible */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img
+          src="https://images.pexels.com/photos/34804003/pexels-photo-34804003.jpeg?auto=compress&cs=tinysrgb&w=1920"
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          className="w-full h-full object-cover opacity-[0.08]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
+      </div>
+
       {/* Ambient glow — layered + slowly drifting for a less static hero */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent/30 rounded-full blur-[140px] pointer-events-none animate-float-slow" />
       <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-cyan-accent/20 rounded-full blur-[120px] pointer-events-none animate-float-slower" />
@@ -41,14 +53,24 @@ export default function Hero({ profile }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="glass inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs text-white/70 mb-8"
+          className="relative inline-flex items-center gap-2.5 pl-3 pr-4 py-2 rounded-full text-xs mb-8 overflow-hidden bg-gradient-to-r from-accent/15 via-white/5 to-cyan-accent/15 border border-accent/25 backdrop-blur-sm"
         >
-          <span className="relative flex h-2 w-2">
+          {/* Slow-moving shine sweep for a bit of life without being busy */}
+          <span className="absolute inset-0 -translate-x-full animate-shine bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          <span className="relative flex h-2 w-2 shrink-0">
             <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
           </span>
-          <Sparkles size={14} className="text-accent-light" />
-          {profile?.available_for_work ? 'Available for new opportunities' : 'Software Developer'}
+          <span className="relative flex items-center gap-1.5 text-white/80 font-medium">
+            {profile?.available_for_work ? (
+              <>
+                Available for new opportunities
+                <span className="hidden sm:inline text-white/40 font-normal">— freelance &amp; full-time</span>
+              </>
+            ) : (
+              'Software Developer'
+            )}
+          </span>
         </motion.div>
 
         <motion.h1

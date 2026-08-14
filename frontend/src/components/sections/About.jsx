@@ -49,21 +49,32 @@ export default function About({ profile }) {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4"
         >
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 + i * 0.08 }}
-              className="card-premium glass-hover p-6 text-center"
-            >
-              <p className="font-display text-3xl font-bold text-gradient">{stat.value}</p>
-              <p className="text-xs text-white/50 mt-2 tracking-wide">{stat.label}</p>
-            </motion.div>
-          ))}
+          <div className="relative rounded-2xl overflow-hidden border border-white/10 mb-4 aspect-[16/10]">
+            <img
+              src="https://images.pexels.com/photos/34803978/pexels-photo-34803978.jpeg?auto=compress&cs=tinysrgb&w=1200"
+              alt="Developer workspace with a laptop showing code, a plant, and a cup of coffee"
+              loading="lazy"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/0 to-background/0" />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {stats.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 + i * 0.08 }}
+                className="card-premium glass-hover p-6 text-center"
+              >
+                <p className="font-display text-3xl font-bold text-gradient">{stat.value}</p>
+                <p className="text-xs text-white/50 mt-2 tracking-wide">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>
