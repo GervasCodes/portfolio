@@ -26,10 +26,25 @@ export default function ResumePage() {
       ]);
       if (!mounted) return;
 
-      setProfile(profileRes.data || sampleProfile);
-      setWork(workRes.data?.length ? workRes.data : sampleExperience);
-      setEducation(eduRes.data?.length ? eduRes.data : sampleEducation);
-      setSkills(skillsRes.data && Object.keys(skillsRes.data).length ? skillsRes.data : sampleSkills);
+      // Same reasoning as ExperiencePage: only substitute placeholder
+      // sample content for a genuinely empty, successful response — not
+      // for a failed request, which previously looked identical and made
+      // real edits appear to "revert" to old placeholder text.
+      if (profileRes.data) setProfile(profileRes.data);
+      else if (!profileRes.error) setProfile(sampleProfile);
+      else console.error('Failed to load profile:', profileRes.error);
+
+      if (workRes.data?.length) setWork(workRes.data);
+      else if (!workRes.error) setWork(sampleExperience);
+      else console.error('Failed to load work experience:', workRes.error);
+
+      if (eduRes.data?.length) setEducation(eduRes.data);
+      else if (!eduRes.error) setEducation(sampleEducation);
+      else console.error('Failed to load education:', eduRes.error);
+
+      if (skillsRes.data && Object.keys(skillsRes.data).length) setSkills(skillsRes.data);
+      else if (!skillsRes.error) setSkills(sampleSkills);
+      else console.error('Failed to load skills:', skillsRes.error);
     })();
     return () => { mounted = false; };
   }, []);

@@ -36,6 +36,7 @@ export default function AdminExperiencePage() {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm('work'));
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   const load = async () => {
     const { data } = await PortfolioAPI.getExperience();
@@ -58,11 +59,13 @@ export default function AdminExperiencePage() {
   const openCreate = () => {
     setEditingId(null);
     setForm(emptyForm(tab));
+    setError('');
     setModalOpen(true);
   };
 
   const openEdit = (item) => {
     setEditingId(item.id);
+    setError('');
     setForm({
       ...emptyForm(item.type),
       ...item,
@@ -80,20 +83,33 @@ export default function AdminExperiencePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
+    setError('');
     const payload = { ...form, end_date: form.is_current ? null : (form.end_date || null) };
-    if (editingId) {
-      await PortfolioAPI.updateExperience(editingId, payload);
-    } else {
-      await PortfolioAPI.createExperience(payload);
-    }
+    const { error: saveError } = editingId
+      ? await PortfolioAPI.updateExperience(editingId, payload)
+      : await PortfolioAPI.createExperience(payload);
     setSaving(false);
+
+    // Previously this ignored `error` and always closed the modal + reloaded,
+    // so a failed save (e.g. an expired admin session) would silently
+    // re-fetch and show the old, unchanged data — looking like the edit
+    // had just reverted itself. Now a failed save stays open with the
+    // entered data intact and tells you why, instead of quietly discarding it.
+    if (saveError) {
+      setError(`Couldn't save: ${saveError}`);
+      return;
+    }
     setModalOpen(false);
     load();
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this entry?')) return;
-    await PortfolioAPI.deleteExperience(id);
+    const { error: deleteError } = await PortfolioAPI.deleteExperience(id);
+    if (deleteError) {
+      setError(`Couldn't delete: ${deleteError}`);
+      return;
+    }
     load();
   };
 
@@ -102,6 +118,11 @@ export default function AdminExperiencePage() {
       title="Experience & Education"
       description="Work history and education entries shown on your Experience page."
     >
+      {error && (
+        <div className="mb-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm px-4 py-3">
+          {error}
+        </div>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="glass rounded-xl p-1 flex gap-1">
           {TABS.map(({ key, label, icon: Icon }) => (

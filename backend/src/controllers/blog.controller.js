@@ -15,10 +15,12 @@ function ensureViewerKey(req, res) {
   let viewerKey = req.cookies?.[VIEWER_COOKIE];
   if (!viewerKey) {
     viewerKey = crypto.randomBytes(16).toString('hex');
+    // Same cross-site reasoning as the auth cookies in auth.controller.js —
+    // frontend and API are different origins, so this needs SameSite=None
+    // (+ Secure) in production or the browser drops it on axios requests.
     res.cookie(VIEWER_COOKIE, viewerKey, {
       httpOnly: true,
-      secure: env.isProduction(),
-      sameSite: 'lax',
+      ...(env.isProduction() ? { secure: true, sameSite: 'none' } : { secure: false, sameSite: 'lax' }),
       maxAge: VIEWER_COOKIE_MAX_AGE,
     });
   }

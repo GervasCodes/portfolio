@@ -1,5 +1,6 @@
-const nodemailer = require('nodemailer');
 const env = require('../config/env');
+
+const BREVO_ENDPOINT = 'https://api.brevo.com/v3/smtp/email';
 
 /**
  * NotificationService — common interface for any way of alerting the
@@ -15,33 +16,45 @@ class NotificationService {
   }
 }
 
+/** Sends mail via the Brevo transactional email HTTP API (not SMTP). */
 class EmailNotification extends NotificationService {
   constructor() {
     super();
-    this.transporter = null;
-    if (env.SMTP_HOST && env.SMTP_USER) {
-      this.transporter = nodemailer.createTransport({
-        host: env.SMTP_HOST,
-        port: env.SMTP_PORT,
-        secure: env.SMTP_PORT === 465,
-        auth: { user: env.SMTP_USER, pass: env.SMTP_PASSWORD },
-      });
-    }
+    this.configured = Boolean(env.BREVO_API_KEY && env.BREVO_SENDER_EMAIL);
   }
 
   async send({ to, subject, message, html, bcc }) {
-    if (!this.transporter) {
-      console.warn('[email] SMTP not configured — skipping send. Message was:', { to, subject, bcc });
+    if (!this.configured) {
+      console.warn('[email] Brevo not configured — skipping send. Message was:', { to, subject, bcc });
       return { skipped: true };
     }
-    return this.transporter.sendMail({
-      from: `"Portfolio" <${env.SMTP_USER}>`,
-      to,
-      ...(bcc && bcc.length ? { bcc } : {}),
+
+    const toList = Array.isArray(to) ? to : [to];
+    const body = {
+      sender: { email: env.BREVO_SENDER_EMAIL, name: env.BREVO_SENDER_NAME },
+      to: toList.map((email) => ({ email })),
+      ...(bcc && bcc.length ? { bcc: bcc.map((email) => ({ email })) } : {}),
       subject,
-      text: message,
-      html: html || `<p>${message}</p>`,
+      textContent: message,
+      htmlContent: html || `<p>${message}</p>`,
+    };
+
+    const res = await fetch(BREVO_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'api-key': env.BREVO_API_KEY,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(body),
     });
+
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      throw new Error(`Brevo send failed (${res.status}): ${errBody || res.statusText}`);
+    }
+
+    return res.json();
   }
 }
 

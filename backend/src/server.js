@@ -25,6 +25,16 @@ const newsletterRoutes = require('./routes/newsletter.routes');
 
 const app = express();
 
+// Render (like most PaaS hosts) puts the app behind a reverse proxy, which
+// sets X-Forwarded-For/Proto on every request. Without telling Express to
+// trust that proxy, two things break: express-rate-limit can't safely
+// derive a per-client key from X-Forwarded-For (see the
+// ERR_ERL_UNEXPECTED_X_FORWARDED_FOR warning this used to throw on every
+// request) and req.secure/req.protocol are wrong, which matters for the
+// `secure`/cross-site cookie logic in auth.controller.js. `1` trusts
+// exactly one hop (Render's own proxy), which is correct for this setup.
+app.set('trust proxy', 1);
+
 // --- Global middleware ---
 app.use(helmet());
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));

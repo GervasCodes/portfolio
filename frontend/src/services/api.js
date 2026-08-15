@@ -48,8 +48,17 @@ api.interceptors.response.use(
       }
       return api(config);
     } catch (refreshErr) {
+      // Refresh failed — the admin session is dead (expired refresh token,
+      // or it never reached the server at all, as happened with the
+      // SameSite=Lax cross-site cookie bug). Whatever the admin was doing
+      // (e.g. saving an experience/resume edit) has failed too. Send them
+      // back to login instead of leaving them on a page that will keep
+      // silently failing every subsequent save.
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem('portfolio_token');
+        if (!window.location.pathname.startsWith('/admin/login')) {
+          window.location.href = '/admin/login';
+        }
       }
       throw err;
     }

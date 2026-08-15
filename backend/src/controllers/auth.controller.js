@@ -47,11 +47,29 @@ function signMfaToken(admin) {
   );
 }
 
+// The frontend (gervasportfolio.onrender.com) and this API
+// (gervasportfolio-api.onrender.com) are different origins, so these are
+// cross-site cookies from the browser's point of view. `SameSite=Lax`
+// (the old setting) is only sent on top-level navigations — it is
+// stripped from the fetch/XHR requests axios makes here, which silently
+// broke the token refresh flow: the access token (15m) would expire, the
+// browser would never actually send `refresh_token` back on
+// POST /api/auth/refresh, refresh would fail, and the in-flight admin
+// edit would fail with it. The UI didn't surface that error, so it just
+// looked like the save had reverted to the old data. `SameSite=None`
+// (only valid together with `Secure`, which we already set in
+// production) is what's required for a cookie to survive a cross-site
+// request.
+function crossSiteCookieOptions() {
+  return env.isProduction()
+    ? { secure: true, sameSite: 'none' }
+    : { secure: false, sameSite: 'lax' };
+}
+
 function setAccessCookie(res, token) {
   res.cookie('token', token, {
     httpOnly: true,
-    secure: env.isProduction(),
-    sameSite: 'lax',
+    ...crossSiteCookieOptions(),
     maxAge: parseDurationMs(env.JWT_EXPIRES_IN, 15 * 60 * 1000),
   });
 }
@@ -59,8 +77,7 @@ function setAccessCookie(res, token) {
 function setRefreshCookie(res, rawToken, ttlMs) {
   res.cookie('refresh_token', rawToken, {
     httpOnly: true,
-    secure: env.isProduction(),
-    sameSite: 'lax',
+    ...crossSiteCookieOptions(),
     path: '/api/auth',
     maxAge: ttlMs,
   });

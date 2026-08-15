@@ -54,11 +54,18 @@ const env = {
   SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY || '',
   SUPABASE_BUCKET: process.env.SUPABASE_BUCKET || 'portfolio-media',
 
-  // Email notifications
-  SMTP_HOST: process.env.SMTP_HOST || '',
-  SMTP_PORT: Number(process.env.SMTP_PORT) || 587,
-  SMTP_USER: process.env.SMTP_USER || '',
-  SMTP_PASSWORD: process.env.SMTP_PASSWORD || '',
+  // Email notifications — sent via the Brevo (formerly Sendinblue)
+  // transactional email HTTP API instead of raw SMTP. SMTP from Render
+  // was failing outright (ETIMEDOUT connecting, then 535 auth failures),
+  // and an HTTPS API call is generally more reliable than an SMTP socket
+  // from a PaaS host anyway — no port/firewall concerns, no credential
+  // rotation via app passwords.
+  // Get BREVO_API_KEY from https://app.brevo.com/settings/keys/api
+  // BREVO_SENDER_EMAIL must be a sender verified in that Brevo account
+  // (Settings -> Senders, Domains & Dedicated IPs -> Senders).
+  BREVO_API_KEY: process.env.BREVO_API_KEY || '',
+  BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL || '',
+  BREVO_SENDER_NAME: process.env.BREVO_SENDER_NAME || 'Portfolio',
   CONTACT_RECEIVER_EMAIL: process.env.CONTACT_RECEIVER_EMAIL || process.env.ADMIN_EMAIL || '',
 
   isProduction() {

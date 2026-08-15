@@ -1,11 +1,4 @@
-# Render Blueprint — codifies service config so it's version-controlled
-# instead of living only in the Dashboard. Deploy via Render Dashboard ->
-# New -> Blueprint, pointing at this repo.
-#
-# NOTE: Render static sites do NOT read a `_redirects` file (that's a
-# Netlify/Cloudflare Pages convention). The `routes` rewrite rule below
-# is what actually makes client-side routes (e.g. /about) work on
-# direct load and on refresh — without it every non-root path 404s.
+
 services:
   - type: web
     name: gervasportfolio

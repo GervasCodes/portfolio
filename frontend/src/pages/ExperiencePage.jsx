@@ -21,8 +21,19 @@ export default function ExperiencePage() {
       ]);
       if (!mounted) return;
 
-      setWork(workRes.data?.length ? workRes.data : sampleExperience);
-      setEducation(eduRes.data?.length ? eduRes.data : sampleEducation);
+      // Only fall back to the placeholder sample content when the API call
+      // actually succeeded and came back genuinely empty (e.g. a brand-new
+      // portfolio with no entries yet). Previously this used the sample
+      // data any time `.data` was falsy, which includes a *failed* request
+      // (data is null on error) — so a transient API error looked
+      // identical to "your real edits reverted to placeholder text".
+      if (workRes.data?.length) setWork(workRes.data);
+      else if (!workRes.error) setWork(sampleExperience);
+      else console.error('Failed to load work experience:', workRes.error);
+
+      if (eduRes.data?.length) setEducation(eduRes.data);
+      else if (!eduRes.error) setEducation(sampleEducation);
+      else console.error('Failed to load education:', eduRes.error);
     })();
     return () => { mounted = false; };
   }, []);

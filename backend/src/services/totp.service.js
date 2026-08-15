@@ -5,7 +5,7 @@ const env = require('../config/env');
 /**
  * TotpService — thin wrapper around speakeasy/qrcode so controllers never
  * touch either library directly (same rationale as EmailNotification
- * wrapping nodemailer: swap the implementation later without touching
+ * wrapping the Brevo API: swap the implementation later without touching
  * callers).
  */
 class TotpService {
