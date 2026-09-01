@@ -49,7 +49,7 @@ export default function NewsletterStatusPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 text-center pt-28">
       <div className="max-w-sm">
-        {state === 'loading' && <Loader2 className="animate-spin mx-auto mb-4 text-white/40" size={32} />}
+        {state === 'loading' && <Loader2 className="animate-spin mx-auto mb-4 text-white/50" size={32} />}
         {state === 'done' && <CheckCircle2 className="mx-auto mb-4 text-emerald-400" size={40} />}
         {state === 'error' && <XCircle className="mx-auto mb-4 text-red-400" size={40} />}
 
@@ -64,7 +64,7 @@ export default function NewsletterStatusPage() {
           <Button href="/blog" icon={<Home size={16} />}>Back to the Blog</Button>
         )}
         <p className="mt-6 text-sm">
-          <Link to="/" className="text-white/40 hover:text-white">Return to homepage</Link>
+          <Link to="/" className="text-white/50 hover:text-white">Return to homepage</Link>
         </p>
       </div>
     </div>

@@ -80,7 +80,7 @@ export default function AdminBlogPage() {
 
       <div className="glass rounded-2xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="text-left text-white/40 border-b border-white/10">
+          <thead className="text-left text-white/50 border-b border-white/10">
             <tr>
               <th className="px-5 py-3 font-medium">Title</th>
               <th className="px-5 py-3 font-medium hidden sm:table-cell">Views</th>
@@ -109,7 +109,7 @@ export default function AdminBlogPage() {
               </tr>
             ))}
             {!posts.length && (
-              <tr><td colSpan={4} className="px-5 py-8 text-center text-white/40">No posts yet.</td></tr>
+              <tr><td colSpan={4} className="px-5 py-8 text-center text-white/50">No posts yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -180,7 +180,7 @@ function TabButton({ active, onClick, icon, label }) {
       type="button"
       onClick={onClick}
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs ${
-        active ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'
+        active ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/70'
       }`}
     >
       {icon} {label}

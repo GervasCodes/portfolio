@@ -59,8 +59,8 @@ const getReactions = asyncHandler(async (req, res) => {
 const setReaction = asyncHandler(async (req, res) => {
   const post = await blogService.getBySlug(req.params.slug);
   const viewerKey = ensureViewerKey(req, res);
-  Validator.isString(req.body.emoji, 'emoji', { min: 1, max: 8 });
-  const data = await blogEngagementService.setReaction(post.id, viewerKey, req.body.emoji);
+  Validator.isString(req.body.reaction, 'reaction', { min: 1, max: 16 });
+  const data = await blogEngagementService.setReaction(post.id, viewerKey, req.body.reaction);
   return ApiResponse.success(res, { message: 'Reaction saved', data });
 });
 

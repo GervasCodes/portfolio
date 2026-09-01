@@ -51,7 +51,7 @@ export default function Pagination({ basePath, page, limit, total, extraParams =
             {p}
           </Link>
         ) : (
-          <span key={p} className="w-10 h-10 flex items-center justify-center text-white/30 text-sm select-none">
+          <span key={p} className="w-10 h-10 flex items-center justify-center text-white/60 text-sm select-none">
             …
           </span>
         )

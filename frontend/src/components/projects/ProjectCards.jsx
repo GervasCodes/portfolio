@@ -63,7 +63,7 @@ export function ProjectCard({ project, index = 0 }) {
               </span>
             ))}
             {project.tech_stack.length > 4 && (
-              <span className="text-[11px] px-2.5 py-1 rounded-full bg-white/5 text-white/40 border border-white/10">
+              <span className="text-[11px] px-2.5 py-1 rounded-full bg-white/5 text-white/50 border border-white/10">
                 +{project.tech_stack.length - 4}
               </span>
             )}
@@ -82,7 +82,7 @@ export function ProjectCard({ project, index = 0 }) {
               href={project.repo_url}
               target="_blank"
               rel="noreferrer"
-              className="ml-auto text-white/40 hover:text-white"
+              className="ml-auto text-white/50 hover:text-white"
               aria-label="View source code"
             >
               <Github size={16} />

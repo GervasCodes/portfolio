@@ -30,7 +30,7 @@ export default function NewsletterSignup({ className = '' }) {
 
   if (status === 'done') {
     return (
-      <div className={`glass rounded-2xl p-6 flex items-center gap-3 ${className}`}>
+      <div role="status" aria-live="polite" className={`glass rounded-2xl p-6 flex items-center gap-3 ${className}`}>
         <CheckCircle2 className="text-emerald-400 shrink-0" size={22} />
         <p className="text-sm text-white/70">{message}</p>
       </div>
@@ -44,7 +44,9 @@ export default function NewsletterSignup({ className = '' }) {
       </h3>
       <p className="text-sm text-white/50 mb-4">No spam — just an email when something new goes up.</p>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+        <label htmlFor="newsletter-email" className="sr-only">Your email</label>
         <input
+          id="newsletter-email"
           type="email"
           required
           value={email}
@@ -56,7 +58,7 @@ export default function NewsletterSignup({ className = '' }) {
           {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
         </Button>
       </form>
-      {status === 'error' && <p className="text-sm text-red-400 mt-2">{message}</p>}
+      {status === 'error' && <p role="alert" className="text-sm text-red-400 mt-2">{message}</p>}
     </div>
   );
 }

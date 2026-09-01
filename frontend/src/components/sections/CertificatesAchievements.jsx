@@ -27,7 +27,7 @@ export default function CertificatesAchievements({ certificates = [], achievemen
                     <p className="text-xs text-white/45">{c.issuer}</p>
                   </div>
                   {c.credential_url && (
-                    <a href={c.credential_url} target="_blank" rel="noreferrer" className="text-white/40 hover:text-white">
+                    <a href={c.credential_url} target="_blank" rel="noreferrer" className="text-white/50 hover:text-white">
                       <ExternalLink size={14} />
                     </a>
                   )}

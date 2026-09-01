@@ -1,8 +1,8 @@
 node_modules/
 .env
 .env.local
-.next/
 dist/
 build/
+stats.html
 *.log
 .DS_Store

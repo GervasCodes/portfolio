@@ -21,6 +21,7 @@ export default function AdminLoginPage() {
   const finishLogin = (data) => {
     if (typeof window !== 'undefined' && data?.token) {
       window.localStorage.setItem('portfolio_token', data.token);
+      if (data?.csrfToken) window.localStorage.setItem('portfolio_csrf', data.csrfToken);
     }
     navigate('/admin/profile');
   };
@@ -76,8 +77,10 @@ export default function AdminLoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="relative">
-                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
+                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60" />
+                <label htmlFor="admin-email" className="sr-only">Email address</label>
                 <input
+                  id="admin-email"
                   required
                   type="email"
                   name="email"
@@ -88,8 +91,10 @@ export default function AdminLoginPage() {
                 />
               </div>
               <div className="relative">
-                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
+                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60" />
+                <label htmlFor="admin-password" className="sr-only">Password</label>
                 <input
+                  id="admin-password"
                   required
                   type="password"
                   name="password"
@@ -100,7 +105,7 @@ export default function AdminLoginPage() {
                 />
               </div>
 
-              {status === 'error' && <p className="text-sm text-red-400">{errorMsg}</p>}
+              {status === 'error' && <p role="alert" className="text-sm text-red-400">{errorMsg}</p>}
 
               <Button type="submit" disabled={status === 'loading'} className="w-full justify-center" icon={<LogIn size={16} />}>
                 {status === 'loading' ? 'Signing in...' : 'Sign In'}
@@ -118,7 +123,9 @@ export default function AdminLoginPage() {
             </div>
 
             <form onSubmit={handleVerifyCode} className="space-y-4">
+              <label htmlFor="admin-mfa-code" className="sr-only">6-digit authentication code</label>
               <input
+                id="admin-mfa-code"
                 required
                 autoFocus
                 type="text"
@@ -131,7 +138,7 @@ export default function AdminLoginPage() {
                 className="w-full input-field px-4 py-3 text-center text-lg tracking-[0.5em]"
               />
 
-              {status === 'error' && <p className="text-sm text-red-400">{errorMsg}</p>}
+              {status === 'error' && <p role="alert" className="text-sm text-red-400">{errorMsg}</p>}
 
               <Button type="submit" disabled={status === 'loading' || code.length !== 6} className="w-full justify-center" icon={<ShieldCheck size={16} />}>
                 {status === 'loading' ? 'Verifying...' : 'Verify & Sign In'}
@@ -139,7 +146,7 @@ export default function AdminLoginPage() {
               <button
                 type="button"
                 onClick={() => { setMfaToken(null); setCode(''); setStatus('idle'); setErrorMsg(''); }}
-                className="w-full flex items-center justify-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
+                className="w-full flex items-center justify-center gap-1.5 text-xs text-white/50 hover:text-white/70 transition-colors"
               >
                 <ArrowLeft size={12} /> Back to password
               </button>

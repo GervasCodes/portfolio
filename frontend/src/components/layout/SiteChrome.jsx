@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import SkipToContent from './SkipToContent';
 
 /**
  * The public Navbar/Footer don't belong on admin screens (which have
@@ -11,13 +12,19 @@ export default function SiteChrome({ children }) {
   const isAdmin = pathname?.startsWith('/admin');
 
   if (isAdmin) {
-    return <main className="min-h-screen bg-background">{children}</main>;
+    return (
+      <>
+        <SkipToContent />
+        <main id="main-content" tabIndex={-1} className="min-h-screen bg-background">{children}</main>
+      </>
+    );
   }
 
   return (
     <>
+      <SkipToContent />
       <Navbar />
-      <main className="min-h-screen">{children}</main>
+      <main id="main-content" tabIndex={-1} className="min-h-screen">{children}</main>
       <Footer />
     </>
   );

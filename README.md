@@ -105,8 +105,8 @@ The system should be designed so that new modules and integrations can be introd
 
 ## Frontend
 
-* Next.js
-* React
+* React (Vite)
+* React Router
 * Tailwind CSS
 * Framer Motion
 

@@ -24,8 +24,8 @@ INSERT INTO skills (name, category, proficiency, sort_order) VALUES
 INSERT INTO projects (title, slug, summary, description, tech_stack, category, featured, status, sort_order) VALUES
 ('Developer Portfolio & CMS', 'developer-portfolio-cms',
  'A full-stack portfolio with a custom admin dashboard.',
- 'Production-grade personal portfolio built with Next.js, Express, MySQL, and Supabase Storage, featuring a private CMS for managing all content.',
- JSON_ARRAY('Next.js', 'Express', 'MySQL', 'Supabase'), 'Full-Stack', TRUE, 'published', 1);
+ 'Production-grade personal portfolio built with React (Vite), Express, MySQL, and Supabase Storage, featuring a private CMS for managing all content.',
+ JSON_ARRAY('React', 'Vite', 'Express', 'MySQL', 'Supabase'), 'Full-Stack', TRUE, 'published', 1);
 
 INSERT INTO experiences (type, title, organization, location, start_date, end_date, is_current, description, sort_order) VALUES
 ('work', 'Software Engineer', 'Freelance / Independent', 'Remote', '2023-01-01', NULL, TRUE,

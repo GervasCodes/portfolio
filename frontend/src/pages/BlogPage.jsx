@@ -60,7 +60,7 @@ export default function BlogPage() {
 
         {page === 1 && mostViewed.length > 0 && (
           <div className="max-w-4xl mx-auto mb-10">
-            <p className="text-xs uppercase tracking-wider text-white/40 mb-3">Most Viewed</p>
+            <p className="text-xs uppercase tracking-wider text-white/50 mb-3">Most Viewed</p>
             <div className="flex flex-wrap gap-3">
               {mostViewed.map((post) => (
                 <Link
@@ -69,7 +69,7 @@ export default function BlogPage() {
                   className="glass glass-hover rounded-full px-4 py-2 flex items-center gap-2 text-sm"
                 >
                   <span className="text-white/80">{post.title}</span>
-                  <span className="flex items-center gap-1 text-xs text-white/40">
+                  <span className="flex items-center gap-1 text-xs text-white/50">
                     <Eye size={12} /> {post.views ?? 0}
                   </span>
                 </Link>
@@ -91,7 +91,7 @@ export default function BlogPage() {
               to={`/blog/${post.slug}`}
               className="glass glass-hover rounded-2xl p-6 flex flex-col"
             >
-              <div className="flex items-center gap-4 text-xs text-white/40 mb-3">
+              <div className="flex items-center gap-4 text-xs text-white/50 mb-3">
                 <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(post.published_at)}</span>
                 <span className="flex items-center gap-1"><Eye size={12} /> {post.views ?? 0}</span>
               </div>

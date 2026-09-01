@@ -147,12 +147,12 @@ export default function AdminExperiencePage() {
         {visibleItems.map((item) => (
           <div key={item.id} className="glass rounded-2xl p-5 flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-xs text-white/40 mb-1">
+              <p className="text-xs text-white/50 mb-1">
                 {formatDate(item.start_date)} — {item.is_current ? 'Present' : formatDate(item.end_date)}
               </p>
               <h3 className="font-semibold">{item.title}</h3>
               {item.organization && <p className="text-sm text-accent-light">{item.organization}</p>}
-              {item.location && <p className="text-xs text-white/40 mt-0.5">{item.location}</p>}
+              {item.location && <p className="text-xs text-white/50 mt-0.5">{item.location}</p>}
               {item.description && <p className="text-sm text-white/55 mt-2">{item.description}</p>}
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -166,7 +166,7 @@ export default function AdminExperiencePage() {
           </div>
         ))}
         {!visibleItems.length && (
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-white/50">
             No {tab === 'work' ? 'work experience' : 'education'} entries yet.
           </p>
         )}

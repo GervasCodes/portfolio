@@ -4,7 +4,7 @@
  * Every page tries the live API first and only falls back to this.
  */
 export const sampleProfile = {
-  full_name: 'Gervas Gervas',
+  full_name: 'Gervas Aristaric',
   title: 'Full-Stack Web Developer',
   tagline: 'I design and build production-grade web applications.',
   bio: 'A passionate software engineer specializing in modern full-stack development, clean architecture, and delightful user experiences. I care about scalable systems as much as pixel-perfect interfaces.',
@@ -44,8 +44,8 @@ export const sampleProjects = [
     title: 'Developer Portfolio & CMS',
     slug: 'developer-portfolio-cms',
     summary: 'A full-stack portfolio with a private admin dashboard.',
-    description: 'Production-grade personal portfolio built with Next.js, Express, MySQL, and Supabase Storage, featuring a custom CMS for managing every section without touching code.',
-    tech_stack: ['Next.js', 'Express', 'MySQL', 'Supabase', 'Tailwind CSS'],
+    description: 'Production-grade personal portfolio built with React (Vite), Express, MySQL, and Supabase Storage, featuring a custom CMS for managing every section without touching code.',
+    tech_stack: ['React', 'Vite', 'Express', 'MySQL', 'Supabase', 'Tailwind CSS'],
     category: 'Full-Stack',
     featured: true,
     repo_url: '#',
@@ -57,6 +57,7 @@ export const sampleProjects = [
     case_study_approach: 'Built a small custom CMS instead of adopting a headless one, so the data model and admin UI could match this site\'s sections exactly.',
     case_study_architecture: 'React (Vite) frontend, Express/MySQL backend on Aiven, media on Supabase Storage, JWT + refresh-token admin auth.',
     case_study_results: 'Every section — projects, blog, skills, timeline — is editable from `/admin` with zero code changes or redeploys.',
+    case_study_lessons: 'Building the CMS data model first, before any page UI, made every later section (blog, skills, projects) faster to add — the pattern was already established.',
   },
   {
     id: 2,
@@ -107,8 +108,8 @@ export const sampleEducation = [
     title: 'B.Sc. Computer Science',
     organization: 'National Institute of Transport',
     location: 'Dar es Salaam, Tanzania',
-    start_date: '2023-10-24',
-    end_date: '2026-06-29',
+    start_date: '2023',
+    end_date: '2026',
     is_current: false,
     description: 'Focused on software engineering, data structures, and distributed systems.',
   },

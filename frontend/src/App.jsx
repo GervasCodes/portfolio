@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import SiteChrome from '@/components/layout/SiteChrome';
 import ScrollToTop from '@/components/layout/ScrollToTop';
 import PageViewTracker from '@/components/layout/PageViewTracker';
@@ -41,39 +42,55 @@ const AdminAchievementsPage = lazyWithRetry(() => import('@/pages/admin/AdminAch
 const AdminSettingsPage = lazyWithRetry(() => import('@/pages/admin/AdminSettingsPage'));
 
 export default function App() {
+  const location = useLocation();
+
   return (
     <SiteChrome>
       <ScrollToTop />
       <PageViewTracker />
       <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/skills" element={<SkillsPage />} />
-          <Route path="/experience" element={<ExperiencePage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/projects/:slug" element={<ProjectDetailPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:slug" element={<BlogDetailPage />} />
-          <Route path="/resume" element={<ResumePage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/contacts" element={<ContactsPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/newsletter/confirm" element={<NewsletterStatusPage />} />
-          <Route path="/newsletter/unsubscribe" element={<NewsletterStatusPage />} />
+        {/* mode="wait" finishes the outgoing page's fade-out before the
+            incoming one fades in, so the two never cross-fade over each
+            other. Respects prefers-reduced-motion automatically via the
+            MotionConfig wrapping the whole app in main.jsx. */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18, ease: 'easeInOut' }}
+          >
+            <Routes location={location}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/skills" element={<SkillsPage />} />
+              <Route path="/experience" element={<ExperiencePage />} />
+              <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/projects/:slug" element={<ProjectDetailPage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:slug" element={<BlogDetailPage />} />
+              <Route path="/resume" element={<ResumePage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/contacts" element={<ContactsPage />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/newsletter/confirm" element={<NewsletterStatusPage />} />
+              <Route path="/newsletter/unsubscribe" element={<NewsletterStatusPage />} />
 
-          <Route path="/admin/login" element={<AdminLoginPage />} />
-          <Route path="/admin/profile" element={<AdminProfilePage />} />
-          <Route path="/admin/skills" element={<AdminSkillsPage />} />
-          <Route path="/admin/experience" element={<AdminExperiencePage />} />
-          <Route path="/admin/projects" element={<AdminProjectsPage />} />
-          <Route path="/admin/blog" element={<AdminBlogPage />} />
-          <Route path="/admin/certificates" element={<AdminCertificatesPage />} />
-          <Route path="/admin/achievements" element={<AdminAchievementsPage />} />
-          <Route path="/admin/setting" element={<AdminSettingsPage />} />
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route path="/admin/profile" element={<AdminProfilePage />} />
+              <Route path="/admin/skills" element={<AdminSkillsPage />} />
+              <Route path="/admin/experience" element={<AdminExperiencePage />} />
+              <Route path="/admin/projects" element={<AdminProjectsPage />} />
+              <Route path="/admin/blog" element={<AdminBlogPage />} />
+              <Route path="/admin/certificates" element={<AdminCertificatesPage />} />
+              <Route path="/admin/achievements" element={<AdminAchievementsPage />} />
+              <Route path="/admin/setting" element={<AdminSettingsPage />} />
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </motion.div>
+        </AnimatePresence>
       </Suspense>
     </SiteChrome>
   );

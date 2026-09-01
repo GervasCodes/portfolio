@@ -19,10 +19,11 @@ class ProjectModel extends BaseModel {
       'title', 'slug', 'summary', 'description', 'cover_image_url',
       'gallery', 'tech_stack', 'category', 'repo_url', 'live_url',
       'featured', 'status', 'sort_order',
-      // Case-study layout (Problem -> Approach -> Architecture -> Results),
-      // an alternate way of presenting a featured project's write-up.
+      // Case-study layout (Problem -> Approach -> Architecture -> Results
+      // -> Lessons Learned), an alternate way of presenting a featured
+      // project's write-up.
       'case_study_enabled', 'case_study_problem', 'case_study_approach',
-      'case_study_architecture', 'case_study_results',
+      'case_study_architecture', 'case_study_results', 'case_study_lessons',
     ]);
   }
 

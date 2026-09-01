@@ -2,11 +2,12 @@ const router = require('express').Router();
 const {
   submitContact, listContacts, markContactRead, deleteContact,
 } = require('../controllers/contact.controller');
-const { requireAuth } = require('../middleware/auth.middleware');
+const { requireAuth, verifyCsrf } = require('../middleware/auth.middleware');
+const { contactLimiter } = require('../middleware/rateLimiters');
 
-router.post('/', submitContact);
+router.post('/', contactLimiter, submitContact);
 router.get('/', requireAuth, listContacts);
-router.patch('/:id/read', requireAuth, markContactRead);
-router.delete('/:id', requireAuth, deleteContact);
+router.patch('/:id/read', requireAuth, verifyCsrf, markContactRead);
+router.delete('/:id', requireAuth, verifyCsrf, deleteContact);
 
 module.exports = router;

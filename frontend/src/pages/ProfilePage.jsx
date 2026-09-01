@@ -56,7 +56,7 @@ export default function ProfilePage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="font-display text-2xl text-white/30">
+                  <span className="font-display text-2xl text-white/60">
                     {(profile?.full_name || 'Your Name')
                       .split(' ')
                       .filter(Boolean)

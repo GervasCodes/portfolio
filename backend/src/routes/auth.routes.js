@@ -9,7 +9,7 @@ const {
   enableTotp,
   disableTotp,
 } = require('../controllers/auth.controller');
-const { requireAuth } = require('../middleware/auth.middleware');
+const { requireAuth, verifyCsrf } = require('../middleware/auth.middleware');
 const { loginLimiter, refreshLimiter } = require('../middleware/rateLimiters');
 
 router.post('/login', loginLimiter, login);
@@ -22,7 +22,7 @@ router.get('/me', requireAuth, me);
 // unenroll (bootstrapping 2FA over an unauthenticated connection would
 // defeat the point of it).
 router.get('/2fa/setup', requireAuth, setupTotp);
-router.post('/2fa/enable', requireAuth, enableTotp);
-router.post('/2fa/disable', requireAuth, disableTotp);
+router.post('/2fa/enable', requireAuth, verifyCsrf, enableTotp);
+router.post('/2fa/disable', requireAuth, verifyCsrf, disableTotp);
 
 module.exports = router;

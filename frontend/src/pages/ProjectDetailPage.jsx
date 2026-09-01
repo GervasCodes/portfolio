@@ -105,14 +105,15 @@ export default function ProjectDetailPage() {
   );
 }
 
-// Problem -> Approach -> Architecture -> Results, in that reading order.
-// Sections with no content (admin left the field blank) are skipped
-// entirely rather than rendering an empty heading.
+// Problem -> Approach -> Architecture -> Results -> Lessons Learned, in
+// that reading order. Sections with no content (admin left the field
+// blank) are skipped entirely rather than rendering an empty heading.
 const CASE_STUDY_SECTIONS = [
   { key: 'case_study_problem', label: 'Problem' },
   { key: 'case_study_approach', label: 'Approach' },
   { key: 'case_study_architecture', label: 'Architecture' },
   { key: 'case_study_results', label: 'Results' },
+  { key: 'case_study_lessons', label: 'Lessons Learned' },
 ];
 
 function CaseStudy({ project }) {

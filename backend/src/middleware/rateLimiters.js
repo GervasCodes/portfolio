@@ -46,4 +46,33 @@ const refreshLimiter = rateLimit({
   handler: jsonRateLimitHandler,
 });
 
-module.exports = { loginLimiter, refreshLimiter };
+/**
+ * Guards POST /contact. Sits underneath the API-wide 300/15min limiter,
+ * but a public contact form is an easy target for spam/abuse scripts
+ * that the generic limiter alone wouldn't catch quickly — this caps it
+ * much tighter, per IP, regardless of success/failure (an attacker
+ * doesn't need a "successful" submission to spam an inbox).
+ */
+const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: jsonRateLimitHandler,
+});
+
+/**
+ * Guards POST /newsletter/subscribe. Same reasoning as contactLimiter —
+ * a public signup endpoint that sends an email on every hit is an easy
+ * way to spam a mailbox (someone else's, via the confirmation email) if
+ * left uncapped beyond the generic API-wide limiter.
+ */
+const newsletterLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: jsonRateLimitHandler,
+});
+
+module.exports = { loginLimiter, refreshLimiter, contactLimiter, newsletterLimiter };

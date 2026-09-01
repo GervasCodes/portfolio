@@ -7,11 +7,22 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-// Attach the admin JWT (if present) to every request.
+// Attach the admin JWT (if present) to every request, plus the CSRF
+// token on state-changing methods. The Bearer header alone already makes
+// these requests immune to the cookie-riding CSRF vector the backend
+// guards against (see middleware/auth.middleware.js's verifyCsrf), but
+// sending the CSRF header too costs nothing and adds a second layer.
+const MUTATING_METHODS = new Set(['post', 'put', 'patch', 'delete']);
+
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const token = window.localStorage.getItem('portfolio_token');
     if (token) config.headers.Authorization = `Bearer ${token}`;
+
+    if (MUTATING_METHODS.has((config.method || '').toLowerCase())) {
+      const csrfToken = window.localStorage.getItem('portfolio_csrf');
+      if (csrfToken) config.headers['X-CSRF-Token'] = csrfToken;
+    }
   }
   return config;
 });
@@ -45,6 +56,7 @@ api.interceptors.response.use(
       const { data } = await refreshPromise;
       if (typeof window !== 'undefined' && data?.data?.token) {
         window.localStorage.setItem('portfolio_token', data.data.token);
+        if (data?.data?.csrfToken) window.localStorage.setItem('portfolio_csrf', data.data.csrfToken);
       }
       return api(config);
     } catch (refreshErr) {
@@ -56,6 +68,7 @@ api.interceptors.response.use(
       // silently failing every subsequent save.
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem('portfolio_token');
+        window.localStorage.removeItem('portfolio_csrf');
         if (!window.location.pathname.startsWith('/admin/login')) {
           window.location.href = '/admin/login';
         }
@@ -126,7 +139,7 @@ export const PortfolioAPI = {
   // Blog engagement — reactions are keyed to an anonymous visitor cookie,
   // no login required.
   getReactions: (slug) => request(api.get(`/blog/${slug}/reactions`)),
-  setReaction: (slug, emoji) => request(api.post(`/blog/${slug}/reactions`, { emoji })),
+  setReaction: (slug, reaction) => request(api.post(`/blog/${slug}/reactions`, { reaction })),
   removeReaction: (slug) => request(api.delete(`/blog/${slug}/reactions`)),
 
   // Search — combined LIKE search across projects + blog posts.

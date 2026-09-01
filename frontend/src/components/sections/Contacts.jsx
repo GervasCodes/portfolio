@@ -63,52 +63,68 @@ export default function Contacts({ profile }) {
           className="md:col-span-3 glass rounded-2xl p-6 md:p-8 space-y-4"
         >
           <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="contact-name" className="sr-only">Your name</label>
+              <input
+                id="contact-name"
+                required
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Your name"
+                className="input-field px-4 py-3 text-sm w-full"
+              />
+            </div>
+            <div>
+              <label htmlFor="contact-email" className="sr-only">Your email</label>
+              <input
+                id="contact-email"
+                required
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="Your email"
+                className="input-field px-4 py-3 text-sm w-full"
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="contact-subject" className="sr-only">Subject</label>
             <input
-              required
-              name="name"
-              value={form.name}
+              id="contact-subject"
+              name="subject"
+              value={form.subject}
               onChange={handleChange}
-              placeholder="Your name"
-              className="input-field px-4 py-3 text-sm"
-            />
-            <input
-              required
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="Your email"
-              className="input-field px-4 py-3 text-sm"
+              placeholder="Subject"
+              className="w-full input-field px-4 py-3 text-sm"
             />
           </div>
-          <input
-            name="subject"
-            value={form.subject}
-            onChange={handleChange}
-            placeholder="Subject"
-            className="w-full input-field px-4 py-3 text-sm"
-          />
-          <textarea
-            required
-            name="message"
-            value={form.message}
-            onChange={handleChange}
-            placeholder="Your message"
-            rows={5}
-            className="w-full input-field px-4 py-3 text-sm resize-none"
-          />
+          <div>
+            <label htmlFor="contact-message" className="sr-only">Your message</label>
+            <textarea
+              id="contact-message"
+              required
+              name="message"
+              value={form.message}
+              onChange={handleChange}
+              placeholder="Your message"
+              rows={5}
+              className="w-full input-field px-4 py-3 text-sm resize-none"
+            />
+          </div>
 
           <Button type="submit" disabled={status === 'loading'} icon={<Send size={16} />}>
             {status === 'loading' ? 'Sending...' : 'Send Message'}
           </Button>
 
           {status === 'success' && (
-            <p className="flex items-center gap-2 text-sm text-emerald-400">
+            <p role="status" aria-live="polite" className="flex items-center gap-2 text-sm text-emerald-400">
               <CheckCircle2 size={16} /> Message sent — thank you for reaching out!
             </p>
           )}
           {status === 'error' && (
-            <p className="text-sm text-red-400">{errorMsg || 'Something went wrong. Please try again.'}</p>
+            <p role="alert" aria-live="assertive" className="text-sm text-red-400">{errorMsg || 'Something went wrong. Please try again.'}</p>
           )}
         </motion.form>
       </div>

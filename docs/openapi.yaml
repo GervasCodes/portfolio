@@ -1,0 +1,741 @@
+openapi: 3.0.3
+info:
+  title: Portfolio API
+  version: "1.0"
+  description: |
+    API for the portfolio's CMS-backed content (profile, projects, blog,
+    skills, experience, media, contact, newsletter, certificates,
+    achievements, settings, analytics) plus single-admin authentication.
+
+    This spec is generated from, and should be kept in sync with,
+    `docs/API.md` — that file remains the more narrative explanation of
+    auth/CSRF/rate-limiting behavior; this file is the machine-readable
+    contract (useful for generating API clients, Postman collections, or
+    request validation).
+
+    All endpoints are available under both `/api/...` and `/api/v1/...`
+    (identical — see server.js). Every response uses the envelope
+    described in `ApiResponse` below.
+servers:
+  - url: /api
+    description: Unversioned (kept working for the current frontend)
+  - url: /api/v1
+    description: Versioned (preferred for new integrations)
+
+security:
+  - bearerAuth: []
+  - cookieAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Authorization: Bearer <token>. Requests using this are exempt from
+        the CSRF check described below.
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+      description: >
+        httpOnly session cookie set on login/refresh. State-changing
+        requests (POST/PUT/PATCH/DELETE) authenticated this way must also
+        send a matching `X-CSRF-Token` header — see csrfToken below.
+
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        statusCode:
+          type: integer
+        message:
+          type: string
+        data:
+          nullable: true
+        meta:
+          type: object
+          nullable: true
+    ApiError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+        message:
+          type: string
+
+  parameters:
+    csrfHeader:
+      name: X-CSRF-Token
+      in: header
+      required: false
+      description: Required only for cookie-authenticated state-changing requests.
+      schema:
+        type: string
+
+  responses:
+    Unauthorized:
+      description: Missing/invalid/expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Forbidden:
+      description: Missing/invalid CSRF token (cookie-authenticated requests only)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Log in with email + password
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: >
+            Session issued directly, or `{ mfaRequired: true, mfaToken }`
+            if the account has 2FA enabled.
+
+  /auth/login/verify:
+    post:
+      tags: [Auth]
+      summary: Second step of login when 2FA is enabled
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mfaToken, code]
+              properties:
+                mfaToken: { type: string }
+                code: { type: string, minLength: 6, maxLength: 6 }
+      responses:
+        '200': { description: Session issued }
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Rotate the refresh token and issue a new access token
+      security: []
+      responses:
+        '200': { description: New session pair issued }
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Revoke the refresh token and clear auth cookies
+      security: []
+      responses:
+        '200': { description: Logged out }
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Current admin identity + 2FA status
+      responses:
+        '200': { description: OK }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/2fa/setup:
+    get:
+      tags: [Auth]
+      summary: Generate a pending TOTP secret
+      responses:
+        '200': { description: '{ secret, otpauthUrl, qrCodeDataUrl }' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/2fa/enable:
+    post:
+      tags: [Auth]
+      summary: Confirm the pending secret and turn 2FA on
+      parameters: [{ $ref: '#/components/parameters/csrfHeader' }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties: { code: { type: string } }
+      responses:
+        '200': { description: 2FA enabled }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /auth/2fa/disable:
+    post:
+      tags: [Auth]
+      summary: Turn 2FA off
+      parameters: [{ $ref: '#/components/parameters/csrfHeader' }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties: { password: { type: string } }
+      responses:
+        '200': { description: 2FA disabled }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /profile:
+    get:
+      tags: [Profile]
+      summary: Get the single profile record
+      security: []
+      responses:
+        '200': { description: OK }
+    put:
+      tags: [Profile]
+      summary: Create/update the profile (upsert)
+      parameters: [{ $ref: '#/components/parameters/csrfHeader' }]
+      responses:
+        '200': { description: Saved }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /projects:
+    get:
+      tags: [Projects]
+      summary: Paginated, filterable published projects
+      security: []
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: category, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: limit, in: query, schema: { type: integer } }
+      responses:
+        '200': { description: OK }
+    post:
+      tags: [Projects]
+      summary: Create a project
+      parameters: [{ $ref: '#/components/parameters/csrfHeader' }]
+      responses:
+        '201': { description: Created }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /projects/featured:
+    get:
+      tags: [Projects]
+      summary: Featured, published projects
+      security: []
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, default: 6 } }
+      responses:
+        '200': { description: OK }
+
+  /projects/id/{id}:
+    get:
+      tags: [Projects]
+      summary: Single project by id (for editing)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200': { description: OK }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /projects/{slug}:
+    get:
+      tags: [Projects]
+      summary: Single published project by slug
+      security: []
+      parameters:
+        - { name: slug, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: OK }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /projects/{id}:
+    put:
+      tags: [Projects]
+      summary: Update a project
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '200': { description: Updated }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    delete:
+      tags: [Projects]
+      summary: Delete a project
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /blog:
+    get:
+      tags: [Blog]
+      summary: Paginated published posts
+      security: []
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: limit, in: query, schema: { type: integer } }
+        - { name: tag, in: query, schema: { type: string } }
+      responses:
+        '200': { description: OK }
+    post:
+      tags: [Blog]
+      summary: Create a post
+      parameters: [{ $ref: '#/components/parameters/csrfHeader' }]
+      responses:
+        '201': { description: Created }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /blog/most-viewed:
+    get:
+      tags: [Blog]
+      summary: Top published posts by view count
+      security: []
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, default: 5 } }
+      responses:
+        '200': { description: OK }
+
+  /blog/admin/all:
+    get:
+      tags: [Blog]
+      summary: All posts, including drafts
+      responses:
+        '200': { description: OK }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /blog/{slug}:
+    get:
+      tags: [Blog]
+      summary: Single post (increments view count, deduped per visitor/24h)
+      security: []
+      parameters:
+        - { name: slug, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: OK }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /blog/{slug}/reactions:
+    get:
+      tags: [Blog]
+      summary: Reaction counts + the caller's own reaction
+      security: []
+      parameters:
+        - { name: slug, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: OK }
+    post:
+      tags: [Blog]
+      summary: Set/swap the caller's reaction
+      security: []
+      parameters:
+        - { name: slug, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reaction]
+              properties:
+                reaction:
+                  type: string
+                  enum: [like, love, fire, celebrate, idea]
+      responses:
+        '200': { description: OK }
+    delete:
+      tags: [Blog]
+      summary: Remove the caller's reaction
+      security: []
+      parameters:
+        - { name: slug, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: OK }
+
+  /blog/{id}:
+    put:
+      tags: [Blog]
+      summary: Update a post
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '200': { description: Updated }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    delete:
+      tags: [Blog]
+      summary: Delete a post
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /skills:
+    get:
+      tags: [Skills]
+      summary: Skills grouped by category
+      security: []
+      responses:
+        '200': { description: OK }
+    post:
+      tags: [Skills]
+      summary: Create a skill
+      parameters: [{ $ref: '#/components/parameters/csrfHeader' }]
+      responses:
+        '201': { description: Created }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /skills/{id}:
+    put:
+      tags: [Skills]
+      summary: Update a skill
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '200': { description: Updated }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    delete:
+      tags: [Skills]
+      summary: Delete a skill
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /experience:
+    get:
+      tags: [Experience]
+      summary: List entries, optionally filtered
+      security: []
+      parameters:
+        - { name: type, in: query, schema: { type: string, enum: [work, education] } }
+      responses:
+        '200': { description: OK }
+    post:
+      tags: [Experience]
+      summary: Create an entry
+      parameters: [{ $ref: '#/components/parameters/csrfHeader' }]
+      responses:
+        '201': { description: Created }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /experience/{id}:
+    put:
+      tags: [Experience]
+      summary: Update an entry
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '200': { description: Updated }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    delete:
+      tags: [Experience]
+      summary: Delete an entry
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /media:
+    get:
+      tags: [Media]
+      summary: List uploaded media records
+      responses:
+        '200': { description: OK }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Media]
+      summary: Upload to Supabase Storage
+      parameters: [{ $ref: '#/components/parameters/csrfHeader' }]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: { type: string, format: binary }
+                kind: { type: string, enum: [image, resume, document] }
+      responses:
+        '201': { description: Uploaded }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /media/{id}:
+    delete:
+      tags: [Media]
+      summary: Delete a media record
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /contact:
+    post:
+      tags: [Contact]
+      summary: Submit the public contact form
+      security: []
+      description: Rate-limited to 5 requests / 15 min per IP.
+      responses:
+        '201': { description: Submitted }
+        '429': { description: Too many requests }
+    get:
+      tags: [Contact]
+      summary: List submitted messages
+      responses:
+        '200': { description: OK }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /contact/{id}/read:
+    patch:
+      tags: [Contact]
+      summary: Mark a message as read
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '200': { description: Updated }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /contact/{id}:
+    delete:
+      tags: [Contact]
+      summary: Delete a message
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /newsletter/subscribe:
+    post:
+      tags: [Newsletter]
+      summary: Start (or restart) double opt-in
+      security: []
+      description: Rate-limited to 5 requests / 15 min per IP.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties: { email: { type: string, format: email } }
+      responses:
+        '200': { description: OK }
+        '429': { description: Too many requests }
+
+  /newsletter/confirm:
+    post:
+      tags: [Newsletter]
+      summary: Confirm a pending subscription
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties: { token: { type: string } }
+      responses:
+        '200': { description: OK }
+
+  /newsletter/unsubscribe:
+    post:
+      tags: [Newsletter]
+      summary: Unsubscribe
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties: { token: { type: string } }
+      responses:
+        '200': { description: OK }
+
+  /newsletter/subscribers:
+    get:
+      tags: [Newsletter]
+      summary: List subscribers, most recent first
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, default: 200 } }
+      responses:
+        '200': { description: OK }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /newsletter/stats:
+    get:
+      tags: [Newsletter]
+      summary: Totals + daily signup counts
+      parameters:
+        - { name: days, in: query, schema: { type: integer, default: 30 } }
+      responses:
+        '200': { description: OK }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /certificates:
+    get:
+      tags: [Certificates]
+      summary: List certificates
+      security: []
+      responses:
+        '200': { description: OK }
+    post:
+      tags: [Certificates]
+      summary: Create a certificate
+      parameters: [{ $ref: '#/components/parameters/csrfHeader' }]
+      responses:
+        '201': { description: Created }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /certificates/{id}:
+    put:
+      tags: [Certificates]
+      summary: Update a certificate
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '200': { description: Updated }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    delete:
+      tags: [Certificates]
+      summary: Delete a certificate
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /achievements:
+    get:
+      tags: [Achievements]
+      summary: List achievements
+      security: []
+      responses:
+        '200': { description: OK }
+    post:
+      tags: [Achievements]
+      summary: Create an achievement
+      parameters: [{ $ref: '#/components/parameters/csrfHeader' }]
+      responses:
+        '201': { description: Created }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /achievements/{id}:
+    put:
+      tags: [Achievements]
+      summary: Update an achievement
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '200': { description: Updated }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    delete:
+      tags: [Achievements]
+      summary: Delete an achievement
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { $ref: '#/components/parameters/csrfHeader' }
+      responses:
+        '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /settings:
+    get:
+      tags: [Settings]
+      summary: Key/value site settings
+      security: []
+      responses:
+        '200': { description: OK }
+    put:
+      tags: [Settings]
+      summary: Bulk-update settings
+      parameters: [{ $ref: '#/components/parameters/csrfHeader' }]
+      responses:
+        '200': { description: Updated }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /analytics:
+    get:
+      tags: [Analytics]
+      summary: Visit totals, top pages, daily trend
+      parameters:
+        - { name: days, in: query, schema: { type: integer, default: 30 } }
+      responses:
+        '200': { description: OK }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /analytics/pageview:
+    post:
+      tags: [Analytics]
+      summary: Record a page view
+      security: []
+      responses:
+        '201': { description: Recorded }
+
+  /health:
+    get:
+      tags: [Misc]
+      summary: Health check
+      security: []
+      responses:
+        '200': { description: '{ status: "ok", env }' }

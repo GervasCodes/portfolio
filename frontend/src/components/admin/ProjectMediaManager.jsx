@@ -85,9 +85,9 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
         {error && <p className="text-sm text-red-400">{error}</p>}
 
         {loading ? (
-          <p className="text-sm text-white/40 py-8 text-center">Loading gallery…</p>
+          <p className="text-sm text-white/50 py-8 text-center">Loading gallery…</p>
         ) : items.length === 0 ? (
-          <p className="text-sm text-white/40 py-8 text-center">
+          <p className="text-sm text-white/50 py-8 text-center">
             No media yet — upload screenshots or a demo video for this project.
           </p>
         ) : (
@@ -112,7 +112,7 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
                 </div>
 
                 <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-                  <span className="text-[10px] uppercase tracking-wide text-white/40">{item.media_type}</span>
+                  <span className="text-[10px] uppercase tracking-wide text-white/50">{item.media_type}</span>
                   <input
                     defaultValue={item.caption || ''}
                     placeholder="Caption (optional)"
@@ -127,7 +127,7 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
                       onClick={() => move(i, -1)}
                       disabled={i === 0}
                       aria-label="Move up"
-                      className="p-1 text-white/40 hover:text-white disabled:opacity-20 disabled:pointer-events-none"
+                      className="p-1 text-white/50 hover:text-white disabled:opacity-20 disabled:pointer-events-none"
                     >
                       <ArrowUp size={14} />
                     </button>
@@ -135,7 +135,7 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
                       onClick={() => move(i, 1)}
                       disabled={i === items.length - 1}
                       aria-label="Move down"
-                      className="p-1 text-white/40 hover:text-white disabled:opacity-20 disabled:pointer-events-none"
+                      className="p-1 text-white/50 hover:text-white disabled:opacity-20 disabled:pointer-events-none"
                     >
                       <ArrowDown size={14} />
                     </button>
@@ -143,7 +143,7 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
                   <button
                     onClick={() => handleDelete(item.id)}
                     aria-label="Delete"
-                    className="p-1 text-white/40 hover:text-red-400"
+                    className="p-1 text-white/50 hover:text-red-400"
                   >
                     <Trash2 size={14} />
                   </button>

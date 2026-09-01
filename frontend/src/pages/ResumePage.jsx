@@ -50,7 +50,7 @@ export default function ResumePage() {
   }, []);
 
   return (
-    <div className="pt-28 pb-24">
+    <div className="pt-28 pb-24 resume-print-area">
       <div className="container-page max-w-4xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-14">
           <div>
@@ -59,7 +59,9 @@ export default function ResumePage() {
             <p className="text-white/55 mt-2">{profile.title}</p>
           </div>
           {profile.resume_url && (
-            <Button href={profile.resume_url} icon={<Download size={16} />}>Download PDF</Button>
+            <div className="print:hidden">
+              <Button href={profile.resume_url} icon={<Download size={16} />}>Download PDF</Button>
+            </div>
           )}
         </div>
 

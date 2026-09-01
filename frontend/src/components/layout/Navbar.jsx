@@ -89,13 +89,14 @@ export default function Navbar() {
 
       <div className="container-page">
         <nav
+          aria-label="Primary"
           className={`glass rounded-2xl flex items-center justify-between px-5 py-3 transition-shadow duration-300 ${
             scrolled ? 'shadow-glow border-white/10' : ''
           }`}
         >
           <Link to="/" className="font-display text-lg font-semibold tracking-tight">
             <span className="text-gradient">GERRY&apos;S</span>
-            <span className="text-white/40">Portfolio</span>
+            <span className="text-white/50">Portfolio</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-1">
@@ -105,6 +106,7 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   to={link.href}
+                  aria-current={active ? 'page' : undefined}
                   className={`relative px-3 py-2 text-sm rounded-lg transition-colors ${
                     active ? 'text-white' : 'text-white/60 hover:text-white'
                   }`}
@@ -173,6 +175,7 @@ export default function Navbar() {
               className="p-2 rounded-lg glass active:scale-95 transition-transform"
               aria-label="Toggle menu"
               aria-expanded={open}
+              aria-controls="mobile-nav-menu"
             >
               {open ? <X size={18} /> : <Menu size={18} />}
             </button>
@@ -181,7 +184,9 @@ export default function Navbar() {
 
         <AnimatePresence>
           {open && (
-            <motion.div
+            <motion.nav
+              id="mobile-nav-menu"
+              aria-label="Mobile"
               initial={{ opacity: 0, y: -10, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: -10, height: 0 }}
@@ -198,6 +203,7 @@ export default function Navbar() {
                   >
                     <Link
                       to={link.href}
+                      aria-current={pathname === link.href ? 'page' : undefined}
                       className={`block px-4 py-3 rounded-xl text-sm transition-colors ${
                         pathname === link.href ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5'
                       }`}
@@ -207,7 +213,7 @@ export default function Navbar() {
                   </motion.div>
                 ))}
               </div>
-            </motion.div>
+            </motion.nav>
           )}
         </AnimatePresence>
       </div>

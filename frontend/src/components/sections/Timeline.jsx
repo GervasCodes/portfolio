@@ -26,7 +26,7 @@ export default function Timeline({ title, items = [] }) {
               <span className="relative inline-flex w-3 h-3 rounded-full bg-gradient-to-r from-accent to-cyan-accent" />
             </span>
             <div className="card-premium glass-hover p-5">
-              <p className="text-xs text-white/40 mb-1">
+              <p className="text-xs text-white/50 mb-1">
                 {formatDate(item.start_date)} — {item.is_current ? 'Present' : formatDate(item.end_date)}
               </p>
               <h3 className="font-semibold">{item.title}</h3>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, Eye } from 'lucide-react';
+import { ArrowLeft, Calendar, Eye, ThumbsUp, Heart, Flame, PartyPopper, Lightbulb } from 'lucide-react';
 import Markdown from '@/components/ui/Markdown';
 import Seo from '@/components/seo/Seo';
 import { PortfolioAPI } from '@/services/api';
@@ -9,7 +9,15 @@ import { useSiteSettings, buildTitle } from '@/hooks/useSiteSettings';
 import { absoluteUrl, truncate, stripMarkdown, resolveImage } from '@/utils/seo';
 
 // Kept in sync with backend `ALLOWED_REACTIONS` (blogEngagement.service.js).
-const REACTION_EMOJIS = ['👍', '❤️', '🔥', '🎉', '💡'];
+// Icon-based instead of emoji so reactions match the rest of the site's
+// glass/gradient visual language instead of relying on native emoji glyphs.
+const REACTIONS = [
+  { id: 'like', label: 'Like', Icon: ThumbsUp },
+  { id: 'love', label: 'Love', Icon: Heart },
+  { id: 'fire', label: 'Fire', Icon: Flame },
+  { id: 'celebrate', label: 'Celebrate', Icon: PartyPopper },
+  { id: 'idea', label: 'Insightful', Icon: Lightbulb },
+];
 
 function formatDate(date) {
   if (!date) return '';
@@ -32,12 +40,12 @@ function ReactionBar({ slug }) {
     return () => { mounted = false; };
   }, [slug]);
 
-  async function handleClick(emoji) {
+  async function handleClick(reactionId) {
     if (busy) return;
     setBusy(true);
-    const { data } = mine === emoji
+    const { data } = mine === reactionId
       ? await PortfolioAPI.removeReaction(slug)
-      : await PortfolioAPI.setReaction(slug, emoji);
+      : await PortfolioAPI.setReaction(slug, reactionId);
     if (data) {
       setCounts(data.counts || {});
       setMine(data.mine ?? null);
@@ -47,20 +55,22 @@ function ReactionBar({ slug }) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-white/10">
-      {REACTION_EMOJIS.map((emoji) => (
+      {REACTIONS.map(({ id, label, Icon }) => (
         <button
-          key={emoji}
+          key={id}
           type="button"
-          onClick={() => handleClick(emoji)}
+          onClick={() => handleClick(id)}
           disabled={busy}
+          aria-label={label}
+          aria-pressed={mine === id}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors disabled:opacity-50 ${
-            mine === emoji
+            mine === id
               ? 'bg-accent/20 border-accent/50 text-white'
               : 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10'
           }`}
         >
-          <span>{emoji}</span>
-          <span className="text-xs">{counts[emoji] ?? 0}</span>
+          <Icon size={15} />
+          <span className="text-xs">{counts[id] ?? 0}</span>
         </button>
       ))}
     </div>
@@ -117,7 +127,7 @@ export default function BlogDetailPage() {
           <ArrowLeft size={16} /> Back to Blog
         </Link>
 
-        <div className="flex items-center gap-4 text-xs text-white/40 mb-4">
+        <div className="flex items-center gap-4 text-xs text-white/50 mb-4">
           <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(post.published_at)}</span>
           <span className="flex items-center gap-1"><Eye size={12} /> {post.views ?? 0} views</span>
         </div>

@@ -18,7 +18,7 @@ export default function NotFoundPage() {
           Back to Home
         </Button>
         <p className="mt-6 text-sm">
-          <Link to="/" className="text-white/40 hover:text-white">Return to homepage</Link>
+          <Link to="/" className="text-white/50 hover:text-white">Return to homepage</Link>
         </p>
       </div>
     </div>

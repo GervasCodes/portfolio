@@ -16,7 +16,16 @@ function readVar(name, fallback = undefined) {
 const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: Number(process.env.PORT) || 5000,
+  // Kept for backwards compatibility with existing deployments/config —
+  // CLIENT_URLS (plural, comma-separated) is the preferred variable now,
+  // since a single fixed origin means staging/preview domains can't be
+  // added without a code change. Both work: CLIENT_URLS takes priority
+  // when set.
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3000',
+  CLIENT_URLS: (process.env.CLIENT_URLS || process.env.CLIENT_URL || 'http://localhost:3000')
+    .split(',')
+    .map((url) => url.trim())
+    .filter(Boolean),
 
   // Aiven MySQL
   DB_HOST: readVar('DB_HOST', 'localhost'),

@@ -46,8 +46,18 @@ export function stripMarkdown(markdown) {
     .trim();
 }
 
+/**
+ * Default social-preview image, used whenever a page doesn't have its
+ * own cover image (a blog post/project without one, or a profile with
+ * no avatar yet). Put the actual file at frontend/public/og-default.jpg
+ * — see the image checklist for specs (1200x630, name + title + a
+ * strong visual). Until that file exists, this still resolves to a
+ * valid absolute URL; it just won't be a real image until uploaded.
+ */
+export const DEFAULT_OG_IMAGE = '/og-default.jpg';
+
 /** Falls back through a list of candidate image URLs, resolving to absolute. */
 export function resolveImage(...candidates) {
   const found = candidates.find((c) => typeof c === 'string' && c.trim());
-  return found ? absoluteUrl(found) : undefined;
+  return absoluteUrl(found || DEFAULT_OG_IMAGE);
 }

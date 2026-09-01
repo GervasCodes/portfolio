@@ -62,7 +62,7 @@ export default function AdminProfilePage() {
             {profile.avatar_url ? (
               <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-white/30 text-xs">No photo</span>
+              <span className="text-white/60 text-xs">No photo</span>
             )}
           </div>
           <label className="glass glass-hover rounded-xl px-4 py-2 text-sm cursor-pointer flex items-center gap-2">

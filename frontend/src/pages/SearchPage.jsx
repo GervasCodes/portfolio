@@ -27,7 +27,7 @@ function ResultCard({ item }) {
 
   return (
     <Link to={href} className="glass glass-hover rounded-2xl p-6 flex flex-col h-full">
-      <div className="flex items-center gap-3 text-xs text-white/40 mb-3">
+      <div className="flex items-center gap-3 text-xs text-white/50 mb-3">
         <span className="uppercase tracking-widest text-accent-light">{isProject ? 'Project' : 'Blog'}</span>
         {!isProject && item.published_at && (
           <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(item.published_at)}</span>
@@ -141,7 +141,7 @@ export default function SearchPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 justify-center mb-6">
           <div className="relative w-full sm:w-96">
-            <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
+            <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
             <input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}

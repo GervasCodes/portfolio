@@ -1,9 +1,12 @@
 const db = require('../config/database');
 const { AppError } = require('../utills/responce');
 
-// Fixed emoji set — deliberately small and pre-defined so the frontend can
+// Fixed reaction set — deliberately small and pre-defined so the frontend can
 // render stable buttons and the backend can validate without a lookup table.
-const ALLOWED_REACTIONS = ['👍', '❤️', '🔥', '🎉', '💡'];
+// Identifiers, not emoji: the frontend maps each id to its own icon so the
+// visual style stays consistent with the rest of the UI instead of relying
+// on native emoji glyphs.
+const ALLOWED_REACTIONS = ['like', 'love', 'fire', 'celebrate', 'idea'];
 
 // A view only counts once per (post, visitor) inside this window, so
 // reloading/re-reading a post repeatedly doesn't inflate the counter.
@@ -63,33 +66,33 @@ class BlogEngagementService {
   /** Reaction counts for a post, plus which one (if any) `viewerKey` picked. */
   async getReactions(blogId, viewerKey) {
     const rows = await db.query(
-      `SELECT emoji, COUNT(*) AS count FROM blog_reactions WHERE blog_id = ? GROUP BY emoji`,
+      `SELECT reaction, COUNT(*) AS count FROM blog_reactions WHERE blog_id = ? GROUP BY reaction`,
       [blogId]
     );
-    const counts = ALLOWED_REACTIONS.reduce((acc, emoji) => ({ ...acc, [emoji]: 0 }), {});
-    rows.forEach((r) => { counts[r.emoji] = Number(r.count); });
+    const counts = ALLOWED_REACTIONS.reduce((acc, reaction) => ({ ...acc, [reaction]: 0 }), {});
+    rows.forEach((r) => { counts[r.reaction] = Number(r.count); });
 
     let mine = null;
     if (viewerKey) {
       const mineRows = await db.query(
-        `SELECT emoji FROM blog_reactions WHERE blog_id = ? AND viewer_key = ? LIMIT 1`,
+        `SELECT reaction FROM blog_reactions WHERE blog_id = ? AND viewer_key = ? LIMIT 1`,
         [blogId, viewerKey]
       );
-      mine = mineRows[0]?.emoji ?? null;
+      mine = mineRows[0]?.reaction ?? null;
     }
 
     return { counts, total: Object.values(counts).reduce((a, b) => a + b, 0), mine };
   }
 
-  /** Sets (or swaps) `viewerKey`'s reaction on a post to `emoji`. */
-  async setReaction(blogId, viewerKey, emoji) {
-    if (!ALLOWED_REACTIONS.includes(emoji)) {
-      throw AppError.badRequest(`emoji must be one of: ${ALLOWED_REACTIONS.join(' ')}`);
+  /** Sets (or swaps) `viewerKey`'s reaction on a post to `reaction`. */
+  async setReaction(blogId, viewerKey, reaction) {
+    if (!ALLOWED_REACTIONS.includes(reaction)) {
+      throw AppError.badRequest(`reaction must be one of: ${ALLOWED_REACTIONS.join(' ')}`);
     }
     await db.query(
-      `INSERT INTO blog_reactions (blog_id, viewer_key, emoji) VALUES (?, ?, ?)
-       ON DUPLICATE KEY UPDATE emoji = VALUES(emoji), created_at = CURRENT_TIMESTAMP`,
-      [blogId, viewerKey, emoji]
+      `INSERT INTO blog_reactions (blog_id, viewer_key, reaction) VALUES (?, ?, ?)
+       ON DUPLICATE KEY UPDATE reaction = VALUES(reaction), created_at = CURRENT_TIMESTAMP`,
+      [blogId, viewerKey, reaction]
     );
     return this.getReactions(blogId, viewerKey);
   }

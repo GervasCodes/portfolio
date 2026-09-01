@@ -71,7 +71,7 @@ export default function AdminAchievementsPage() {
           <div key={item.id} className="glass rounded-2xl p-5 flex items-start justify-between gap-4">
             <div>
               <h3 className="font-semibold">{item.title}</h3>
-              {item.date && <p className="text-xs text-white/40 mt-0.5">{new Date(item.date).toLocaleDateString()}</p>}
+              {item.date && <p className="text-xs text-white/50 mt-0.5">{new Date(item.date).toLocaleDateString()}</p>}
               {item.description && <p className="text-sm text-white/55 mt-2">{item.description}</p>}
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -84,7 +84,7 @@ export default function AdminAchievementsPage() {
             </div>
           </div>
         ))}
-        {!items.length && <p className="text-sm text-white/40">No achievements yet.</p>}
+        {!items.length && <p className="text-sm text-white/50">No achievements yet.</p>}
       </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Edit Achievement' : 'New Achievement'}>

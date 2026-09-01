@@ -1,12 +1,6 @@
 @tailwind base;
-
-
 @tailwind components;
-
 @tailwind utilities;
-
-
-
 
 :root {
   --font-inter: 'Inter', sans-serif;
@@ -28,21 +22,35 @@ body {
   font-feature-settings: 'ss01' 1, 'cv01' 1;
 }
 
-
-
 ::selection {
   background: rgba(122, 153, 116, 0.45);
   color: #fff;
 }
-
-
-
 
 /* Consistent, visible focus state for keyboard users across every interactive element */
 :focus-visible {
   outline: 2px solid rgba(163, 189, 152, 0.8);
   outline-offset: 3px;
   border-radius: 4px;
+}
+
+/* Off-screen until keyboard-focused (see components/layout/SkipToContent.jsx) */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: #0c0f0d;
+  color: #ece9e2;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  transition: top 0.15s ease;
+}
+
+.skip-to-content:focus {
+  top: 1rem;
 }
 
 /* Glassmorphism surface used across cards, navbar, modals */
@@ -52,7 +60,6 @@ body {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
-
 
 .glass-hover {
   transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
@@ -74,14 +81,21 @@ body {
   -webkit-backdrop-filter: blur(16px);
   overflow: hidden;
 }
-
-
 .card-premium::before {
   content: '';
   position: absolute;
   inset: 0 0 auto 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+}
+
+/* Active/hovered state for the Skills radar<->category-card linkage (see
+   components/sections/Skills.jsx) — a plain Tailwind border-color utility
+   would be silently overridden here since .card-premium's own `border`
+   shorthand compiles later than Tailwind's utility layer and wins on
+   equal specificity, so this needs its own rule instead. */
+.card-premium.is-active {
+  border-color: rgba(201, 162, 103, 0.4);
 }
 
 .text-gradient {
@@ -91,14 +105,11 @@ body {
   color: transparent;
 }
 
-
 /* Faint film-grain texture to keep large dark sections from looking flat */
 .bg-noise {
   position: relative;
   isolation: isolate;
 }
-
-
 .bg-noise::after {
   content: '';
   position: absolute;
@@ -109,13 +120,9 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: #0c0f0d; }
-/* Lighter than before — the old #2b2f2a thumb barely showed up against the
-   #0c0f0d track, so a working scrollbar still looked like there was nothing
-   to scroll. */
-::-webkit-scrollbar-thumb { background: #4a5245; border-radius: 999px; }
+::-webkit-scrollbar-thumb { background: #2b2f2a; border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: #6f8f6b; }
 
 .container-page {
@@ -153,14 +160,12 @@ body {
 }
 .input-field:invalid:not(:placeholder-shown) { border-color: rgba(248, 113, 113, 0.4); }
 
-
 /* Skeleton loading placeholder (for future async/loading states) */
 .skeleton {
   position: relative;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.06);
 }
-
 .skeleton::after {
   content: '';
   position: absolute;
@@ -169,35 +174,73 @@ body {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
   animation: shimmer 1.6s infinite;
 }
-
-
 @keyframes shimmer {
   100% { transform: translateX(100%); }
 }
-
-
 
 @keyframes float-slow {
   0%, 100% { transform: translate(0, 0); }
   50% { transform: translate(20px, -30px); }
 }
-
-
 @keyframes float-slower {
   0%, 100% { transform: translate(0, 0); }
   50% { transform: translate(-30px, 20px); }
 }
-
-
 .animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
 .animate-float-slower { animation: float-slower 12s ease-in-out infinite; }
 
 @keyframes shine {
   100% { transform: translateX(220%); }
 }
-
 .animate-shine { animation: shine 3.5s ease-in-out infinite; animation-delay: 1s; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* ---- Print ---- */
+/* Site chrome (fixed header, footer, skip link, decorative glow blobs)
+   means nothing on a printed page and often looks broken once the fixed
+   positioning and dark background are stripped by the print engine, so
+   hide it outright. Most useful on the Resume page, but harmless — and
+   still correct — on any other page someone prints. */
+@media print {
+  header,
+  footer,
+  .skip-to-content {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  /* The dark glass/gradient design system (blurred glow blobs, translucent
+     "glass" panels, gradient text) doesn't survive translation to a
+     printed page — flatten it to plain black-on-white inside the
+     printable area instead of printing illegible low-contrast panels. */
+  .resume-print-area {
+    padding-top: 0 !important;
+    color: #111 !important;
+  }
+
+  .resume-print-area .glass,
+  .resume-print-area .card-premium {
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .resume-print-area .text-gradient {
+    -webkit-text-fill-color: #111 !important;
+    background: none !important;
+    color: #111 !important;
+  }
+
+  .resume-print-area * {
+    color: #111 !important;
+    text-shadow: none !important;
+  }
 }

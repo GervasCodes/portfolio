@@ -1,11 +1,35 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Code2, Layers, Gauge } from 'lucide-react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';
 
+function CategoryTick({ x, y, textAnchor, payload, activeCategory, onHover }) {
+  const active = payload.value === activeCategory;
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor={textAnchor}
+      onMouseEnter={() => onHover(payload.value)}
+      onMouseLeave={() => onHover(null)}
+      style={{ cursor: 'pointer', transition: 'fill 0.15s ease, font-weight 0.15s ease' }}
+      fill={active ? '#c9a267' : 'rgba(255,255,255,0.55)'}
+      fontSize={active ? 12 : 11}
+      fontWeight={active ? 600 : 400}
+    >
+      {payload.value}
+    </text>
+  );
+}
+
 export default function Skills({ grouped = {} }) {
   const categories = Object.keys(grouped);
   const allSkills = useMemo(() => categories.flatMap((c) => grouped[c]), [grouped, categories]);
+  // Links the radar chart and the category cards below it — hovering
+  // either highlights the other, so the two visualizations read as one
+  // connected piece instead of two unrelated widgets stacked on the
+  // page. No new dependency: just shared React state driving both.
+  const [activeCategory, setActiveCategory] = useState(null);
 
   const stats = useMemo(() => {
     const total = allSkills.length;
@@ -56,7 +80,10 @@ export default function Skills({ grouped = {} }) {
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData} outerRadius="70%">
                   <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                  <PolarAngleAxis dataKey="category" tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 11 }} />
+                  <PolarAngleAxis
+                    dataKey="category"
+                    tick={<CategoryTick activeCategory={activeCategory} onHover={setActiveCategory} />}
+                  />
                   <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 9 }} />
                   <Radar dataKey="avg" stroke="#c9a267" fill="#6f8f6b" fillOpacity={0.45} />
                   <Tooltip
@@ -76,7 +103,11 @@ export default function Skills({ grouped = {} }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="card-premium glass-hover p-6"
+              onMouseEnter={() => setActiveCategory(category)}
+              onMouseLeave={() => setActiveCategory(null)}
+              className={`card-premium glass-hover p-6 transition-shadow duration-200 ${
+                activeCategory === category ? 'is-active shadow-glow' : ''
+              }`}
             >
               <h3 className="font-display font-semibold mb-5 flex items-center gap-2">
                 <span className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
@@ -89,7 +120,7 @@ export default function Skills({ grouped = {} }) {
                   <div key={skill.id || skill.name}>
                     <div className="flex justify-between text-sm mb-1.5">
                       <span className="text-white/80">{skill.name}</span>
-                      <span className="text-white/40">{skill.proficiency ?? 80}%</span>
+                      <span className="text-white/50">{skill.proficiency ?? 80}%</span>
                     </div>
                     <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
                       <motion.div

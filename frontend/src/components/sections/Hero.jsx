@@ -3,7 +3,7 @@ import { ArrowRight, Download, ChevronDown } from 'lucide-react';
 import Button from '@/components/ui/Buttons';
 
 export default function Hero({ profile }) {
-  const name = profile?.full_name || 'GERVAS Gervas';
+  const name = profile?.full_name || 'Gervas Aristaric';
   const title = profile?.title || 'Full-Stack Software Developer';
   const tagline = profile?.tagline || 'I design and build production-grade web applications.';
 
@@ -65,7 +65,7 @@ export default function Hero({ profile }) {
             {profile?.available_for_work ? (
               <>
                 Available for new opportunities
-                <span className="hidden sm:inline text-white/40 font-normal">— freelance &amp; full-time</span>
+                <span className="hidden sm:inline text-white/50 font-normal">— freelance &amp; full-time</span>
               </>
             ) : (
               'Software Developer'
@@ -113,7 +113,7 @@ export default function Hero({ profile }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 8, 0] }}
         transition={{ opacity: { delay: 1, duration: 0.6 }, y: { delay: 1.2, duration: 1.8, repeat: Infinity } }}
-        className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-1 text-white/30 z-10"
+        className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-1 text-white/60 z-10"
       >
         <span className="text-[11px] uppercase tracking-widest">Scroll</span>
         <ChevronDown size={16} />

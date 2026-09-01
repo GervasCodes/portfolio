@@ -105,7 +105,7 @@ export default function AdminCertificatesPage() {
             </div>
           </div>
         ))}
-        {!items.length && <p className="text-sm text-white/40 col-span-2">No certificates yet.</p>}
+        {!items.length && <p className="text-sm text-white/50 col-span-2">No certificates yet.</p>}
       </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Edit Certificate' : 'New Certificate'}>
@@ -124,7 +124,7 @@ export default function AdminCertificatesPage() {
               <Upload size={14} /> Upload
               <input type="file" accept="image/*" className="hidden" onChange={handleBadgeUpload} />
             </label>
-            {form.badge_image_url && <span className="ml-3 text-xs text-white/40">Image attached</span>}
+            {form.badge_image_url && <span className="ml-3 text-xs text-white/50">Image attached</span>}
           </div>
 
           <div className="flex justify-end gap-3 pt-2">

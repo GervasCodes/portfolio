@@ -1,8 +1,37 @@
 import { Link } from 'react-router-dom';
 import { Github, Linkedin, Instagram, MessageCircle, Mail, ArrowUp } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
+
+// Real values used only as a fallback for the brief window before the
+// profile finishes loading (or if a field hasn't been set in Admin →
+// Profile yet) — the source of truth is always the CMS from here on.
+//
+// TODO: github_url and linkedin_url below are still generic placeholders —
+// replace with the real profile URLs (or, better, just fill them in via
+// Admin -> Profile so this fallback is never actually hit in production).
+const FALLBACK = {
+  github_url: 'https://github.com/', // TODO: replace with real GitHub profile URL
+  linkedin_url: 'https://linkedin.com/', // TODO: replace with real LinkedIn profile URL
+  instagram_url: 'https://www.instagram.com/tc_gerry/',
+  whatsapp_number: '255622387905',
+  email: 'amgerryofficial@gmail.com',
+};
+
+/** Turns a stored phone number into a wa.me link, tolerating spaces/dashes/+. */
+function toWhatsAppUrl(number) {
+  const digits = String(number || '').replace(/[^\d]/g, '');
+  return digits ? `https://wa.me/${digits}` : null;
+}
 
 export default function Footer() {
+  const profile = useProfile();
   const year = new Date().getFullYear();
+
+  const github = profile?.github_url || FALLBACK.github_url;
+  const linkedin = profile?.linkedin_url || FALLBACK.linkedin_url;
+  const instagram = profile?.instagram_url || FALLBACK.instagram_url;
+  const whatsapp = toWhatsAppUrl(profile?.whatsapp_number) || toWhatsAppUrl(FALLBACK.whatsapp_number);
+  const email = profile?.email || FALLBACK.email;
 
   const scrollTop = () => {
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -14,17 +43,17 @@ export default function Footer() {
         <div className="text-center md:text-left">
           <p className="font-display text-lg">
             <span className="text-gradient">GERRY&apos;S</span>
-            <span className="text-white/40">Portfolio</span>
+            <span className="text-white/50">Portfolio</span>
           </p>
-          <p className="text-sm text-white/40 mt-1">© {year} All rights reserved.</p>
+          <p className="text-sm text-white/50 mt-1">© {year} All rights reserved.</p>
         </div>
 
         <div className="flex items-center gap-3">
-          <SocialLink href="https://github.com/" icon={<Github size={18} />} label="GitHub" />
-          <SocialLink href="https://linkedin.com" icon={<Linkedin size={18} />} label="LinkedIn" />
-          <SocialLink href="https://www.instagram.com/tc_gerry/#" icon={<Instagram size={18} />} label="Instagram" />
-          <SocialLink href="https://wa.me/+255622387905" icon={<MessageCircle size={18} />} label="WhatsApp" />
-          <SocialLink href="mailto:amgerryofficial@gmail.com" icon={<Mail size={18} />} label="Email" />
+          <SocialLink href={github} icon={<Github size={18} />} label="GitHub" />
+          <SocialLink href={linkedin} icon={<Linkedin size={18} />} label="LinkedIn" />
+          <SocialLink href={instagram} icon={<Instagram size={18} />} label="Instagram" />
+          {whatsapp && <SocialLink href={whatsapp} icon={<MessageCircle size={18} />} label="WhatsApp" />}
+          <SocialLink href={`mailto:${email}`} icon={<Mail size={18} />} label="Email" />
         </div>
 
         <div className="flex items-center gap-6 text-sm text-white/50">

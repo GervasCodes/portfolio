@@ -4,7 +4,8 @@ import About from '@/components/sections/About';
 import Skills from '@/components/sections/Skills';
 import Projects from '@/components/sections/Projects';
 import Contacts from '@/components/sections/Contacts';
-import PageLoader from '@/components/layout/PageLoader';
+import CertificatesAchievements from '@/components/sections/CertificatesAchievements';
+import { HeroSkeleton, SkillsSkeleton, ProjectsSkeleton } from '@/components/sections/HomeSkeletons';
 import Seo from '@/components/seo/Seo';
 import { PortfolioAPI } from '@/services/api';
 import { sampleProfile, sampleSkills, sampleProjects } from '@/utils/sampleData';
@@ -19,6 +20,14 @@ export default function HomePage() {
   const [profile, setProfile] = useState(null);
   const [skills, setSkills] = useState(null);
   const [projects, setProjects] = useState(null);
+  // Certificates/achievements double as the homepage's social-proof
+  // section — credibility signals a first-time visitor sees before
+  // reaching Projects, not just on the About page. No sample-data
+  // fallback here (unlike profile/skills/projects): an empty result is a
+  // legitimate "nothing added yet" state, and CertificatesAchievements
+  // already renders nothing when both arrays are empty.
+  const [certs, setCerts] = useState([]);
+  const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // The homepage tab title is the site's "identity" title: prefer the
@@ -35,22 +44,24 @@ export default function HomePage() {
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const [profileRes, skillsRes, projectsRes] = await Promise.all([
+      const [profileRes, skillsRes, projectsRes, certsRes, achievementsRes] = await Promise.all([
         PortfolioAPI.getProfile(),
         PortfolioAPI.getSkills(),
         PortfolioAPI.getFeaturedProjects(6),
+        PortfolioAPI.getCertificates(),
+        PortfolioAPI.getAchievements(),
       ]);
       if (!mounted) return;
 
       setProfile(profileRes.data || sampleProfile);
       setSkills(skillsRes.data || sampleSkills);
       setProjects((projectsRes.data?.length ? projectsRes.data : sampleProjects).slice(0, 6));
+      setCerts(certsRes.data || []);
+      setAchievements(achievementsRes.data || []);
       setLoading(false);
     })();
     return () => { mounted = false; };
   }, []);
-
-  if (loading) return <PageLoader />;
 
   return (
     <>
@@ -61,11 +72,16 @@ export default function HomePage() {
         image={resolveImage(profile?.avatar_url)}
         siteName={settings?.site_title || profile?.full_name}
       />
-      <Hero profile={profile} />
-      <About profile={profile} />
-      <Skills grouped={skills} />
-      <Projects projects={projects} />
-      <Contacts profile={profile} />
+      {/* Render the page shell immediately with skeleton placeholders per
+          section instead of blocking the whole page behind a spinner —
+          gives visitors something to look at right away and avoids the
+          "blank, then everything pops in at once" feeling. */}
+      {loading ? <HeroSkeleton /> : <Hero profile={profile} />}
+      {!loading && <About profile={profile} />}
+      {loading ? <SkillsSkeleton /> : <Skills grouped={skills} />}
+      {!loading && <CertificatesAchievements certificates={certs} achievements={achievements} />}
+      {loading ? <ProjectsSkeleton /> : <Projects projects={projects} />}
+      {!loading && <Contacts profile={profile} />}
     </>
   );
 }

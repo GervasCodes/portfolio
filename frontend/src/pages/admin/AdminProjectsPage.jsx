@@ -12,7 +12,7 @@ const EMPTY_FORM = {
   title: '', summary: '', description: '', category: '', repo_url: '', live_url: '',
   tech_stack: '', featured: false, status: 'draft', cover_image_url: '',
   case_study_enabled: false, case_study_problem: '', case_study_approach: '',
-  case_study_architecture: '', case_study_results: '',
+  case_study_architecture: '', case_study_results: '', case_study_lessons: '',
 };
 
 export default function AdminProjectsPage() {
@@ -53,6 +53,7 @@ export default function AdminProjectsPage() {
       case_study_approach: project.case_study_approach || '',
       case_study_architecture: project.case_study_architecture || '',
       case_study_results: project.case_study_results || '',
+      case_study_lessons: project.case_study_lessons || '',
     });
     setModalOpen(true);
   };
@@ -115,7 +116,7 @@ export default function AdminProjectsPage() {
 
       <div className="glass rounded-2xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="text-left text-white/40 border-b border-white/10">
+          <thead className="text-left text-white/50 border-b border-white/10">
             <tr>
               <th className="px-5 py-3 font-medium">Title</th>
               <th className="px-5 py-3 font-medium hidden sm:table-cell">Category</th>
@@ -147,7 +148,7 @@ export default function AdminProjectsPage() {
               </tr>
             ))}
             {!projects.length && (
-              <tr><td colSpan={4} className="px-5 py-8 text-center text-white/40">No projects yet.</td></tr>
+              <tr><td colSpan={4} className="px-5 py-8 text-center text-white/50">No projects yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -171,7 +172,7 @@ export default function AdminProjectsPage() {
               <Upload size={14} /> Upload
               <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
             </label>
-            {form.cover_image_url && <span className="ml-3 text-xs text-white/40">Image attached</span>}
+            {form.cover_image_url && <span className="ml-3 text-xs text-white/50">Image attached</span>}
           </div>
 
           <div className="flex items-center gap-6">
@@ -200,8 +201,8 @@ export default function AdminProjectsPage() {
                 />
                 Use case-study layout on the project page
               </label>
-              <p className="text-xs text-white/40 mb-3">
-                Replaces the plain description with four structured sections.
+              <p className="text-xs text-white/50 mb-3">
+                Replaces the plain description with five structured sections.
                 Markdown is supported in each. Leave a section blank to omit it.
               </p>
 
@@ -211,6 +212,7 @@ export default function AdminProjectsPage() {
                   <TextArea label="Approach" name="case_study_approach" value={form.case_study_approach} onChange={handleChange} placeholder="How did you approach it?" />
                   <TextArea label="Architecture" name="case_study_architecture" value={form.case_study_architecture} onChange={handleChange} placeholder="Key technical/architectural decisions" />
                   <TextArea label="Results" name="case_study_results" value={form.case_study_results} onChange={handleChange} placeholder="Outcome, metrics, or impact" />
+                  <TextArea label="Lessons Learned" name="case_study_lessons" value={form.case_study_lessons} onChange={handleChange} placeholder="What would you do differently, or what did you take away from it?" />
                 </div>
               )}
             </div>

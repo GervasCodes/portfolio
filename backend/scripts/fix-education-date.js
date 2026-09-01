@@ -22,7 +22,7 @@ async function run() {
 
   const [result] = await connection.query(
     `UPDATE experiences
-     SET start_date = '2023-10-24', end_date = '2026-07-29', is_current = FALSE
+     SET start_date = '2023-09-01', end_date = '2026-06-01', is_current = FALSE
      WHERE type = 'education' AND start_date = '2019-09-01'`
   );
 

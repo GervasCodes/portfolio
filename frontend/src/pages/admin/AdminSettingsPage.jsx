@@ -59,7 +59,7 @@ export default function AdminSettingsPage() {
               <Stat label="Unique Visitors" value={analytics.uniqueVisitors} />
             </div>
           ) : (
-            <p className="text-sm text-white/40">No analytics data yet.</p>
+            <p className="text-sm text-white/50">No analytics data yet.</p>
           )}
         </div>
       </div>
@@ -93,19 +93,19 @@ export default function AdminSettingsPage() {
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-sm text-white/40">No signups in this window yet.</p>
+                <p className="text-sm text-white/50">No signups in this window yet.</p>
               )}
             </div>
           </div>
         ) : (
-          <p className="text-sm text-white/40">No newsletter data yet.</p>
+          <p className="text-sm text-white/50">No newsletter data yet.</p>
         )}
       </div>
 
       <div className="glass rounded-2xl p-6 mt-6">
         <h2 className="font-semibold mb-4 flex items-center gap-2"><ShieldCheck size={16} /> Two-Factor Authentication</h2>
         {totpEnabled === null ? (
-          <p className="text-sm text-white/40">Checking status...</p>
+          <p className="text-sm text-white/50">Checking status...</p>
         ) : (
           <TwoFactorCard enabled={totpEnabled} onChange={setTotpEnabled} />
         )}
@@ -118,13 +118,13 @@ export default function AdminSettingsPage() {
             <div key={c.id} className="border border-white/10 rounded-xl p-4">
               <div className="flex justify-between text-sm">
                 <span className="font-medium">{c.name}</span>
-                <span className="text-white/40">{c.email}</span>
+                <span className="text-white/50">{c.email}</span>
               </div>
               {c.subject && <p className="text-xs text-accent-light mt-1">{c.subject}</p>}
               <p className="text-sm text-white/60 mt-2">{c.message}</p>
             </div>
           ))}
-          {!contacts.length && <p className="text-sm text-white/40">No messages yet.</p>}
+          {!contacts.length && <p className="text-sm text-white/50">No messages yet.</p>}
         </div>
       </div>
     </AdminShell>
@@ -223,7 +223,7 @@ function TwoFactorCard({ enabled, onChange }) {
   if (!setup) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-white/60">Two-factor authentication is currently <span className="text-white/40">disabled</span>. Require an authenticator app code at login.</p>
+        <p className="text-sm text-white/60">Two-factor authentication is currently <span className="text-white/50">disabled</span>. Require an authenticator app code at login.</p>
         {status === 'error' && <p className="text-sm text-red-400">{errorMsg}</p>}
         <Button onClick={startSetup} size="sm" disabled={status === 'loading'} icon={<ShieldCheck size={14} />}>
           {status === 'loading' ? 'Starting...' : 'Set Up 2FA'}
@@ -238,7 +238,7 @@ function TwoFactorCard({ enabled, onChange }) {
       {setup.qrCodeDataUrl && (
         <img src={setup.qrCodeDataUrl} alt="2FA QR code" className="rounded-xl border border-white/10 bg-white p-2 w-40 h-40" />
       )}
-      <details className="text-xs text-white/40">
+      <details className="text-xs text-white/50">
         <summary className="cursor-pointer">Can&apos;t scan? Enter manually</summary>
         <code className="block mt-1 break-all">{setup.secret}</code>
       </details>

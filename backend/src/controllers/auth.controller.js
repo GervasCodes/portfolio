@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const env = require('../config/env');
 const adminModel = require('../models/Admin');
 const totpService = require('../services/totp.service');
@@ -86,9 +87,28 @@ function setRefreshCookie(res, rawToken, ttlMs) {
 function clearSessionCookies(res) {
   res.clearCookie('token');
   res.clearCookie('refresh_token', { path: '/api/auth' });
+  res.clearCookie('csrf_token');
 }
 
-/** Issues a full admin session: sets the access + refresh cookies and returns the access token. */
+/**
+ * Issues a fresh CSRF token, sets it as a cookie the frontend can read
+ * (deliberately NOT httpOnly — same-origin JS needs to read it back and
+ * echo it in the X-CSRF-Token header; see verifyCsrf in
+ * middleware/auth.middleware.js for why this is safe), and returns the
+ * raw value so the caller can also include it directly in the JSON
+ * response body.
+ */
+function setCsrfCookie(res) {
+  const csrfToken = crypto.randomBytes(32).toString('hex');
+  res.cookie('csrf_token', csrfToken, {
+    httpOnly: false,
+    ...crossSiteCookieOptions(),
+    maxAge: parseDurationMs(env.JWT_EXPIRES_IN, 15 * 60 * 1000),
+  });
+  return csrfToken;
+}
+
+/** Issues a full admin session: sets the access + refresh + CSRF cookies and returns the access token + CSRF token. */
 async function issueSession(req, res, admin) {
   const token = signAccessToken({ email: admin.email, role: admin.role });
   setAccessCookie(res, token);
@@ -99,7 +119,9 @@ async function issueSession(req, res, admin) {
   });
   setRefreshCookie(res, raw, ttlMs);
 
-  return token;
+  const csrfToken = setCsrfCookie(res);
+
+  return { token, csrfToken };
 }
 
 const login = asyncHandler(async (req, res) => {
@@ -127,10 +149,10 @@ const login = asyncHandler(async (req, res) => {
     });
   }
 
-  const token = await issueSession(req, res, admin);
+  const { token, csrfToken } = await issueSession(req, res, admin);
   return ApiResponse.success(res, {
     message: 'Login successful',
-    data: { token, user: { email: admin.email, role: admin.role } },
+    data: { token, csrfToken, user: { email: admin.email, role: admin.role } },
   });
 });
 
@@ -159,10 +181,10 @@ const verifyMfa = asyncHandler(async (req, res) => {
     throw AppError.unauthorized('Invalid authentication code');
   }
 
-  const token = await issueSession(req, res, admin);
+  const { token, csrfToken } = await issueSession(req, res, admin);
   return ApiResponse.success(res, {
     message: 'Login successful',
-    data: { token, user: { email: admin.email, role: admin.role } },
+    data: { token, csrfToken, user: { email: admin.email, role: admin.role } },
   });
 });
 
@@ -197,10 +219,11 @@ const refresh = asyncHandler(async (req, res) => {
   const token = signAccessToken({ email: admin.email, role: admin.role });
   setAccessCookie(res, token);
   setRefreshCookie(res, rotated.raw, rotated.ttlMs);
+  const csrfToken = setCsrfCookie(res);
 
   return ApiResponse.success(res, {
     message: 'Session refreshed',
-    data: { token, user: { email: admin.email, role: admin.role } },
+    data: { token, csrfToken, user: { email: admin.email, role: admin.role } },
   });
 });
 

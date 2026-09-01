@@ -135,7 +135,7 @@ export default function AdminSkillsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-white/80 truncate">{skill.name}</span>
-                      <span className="text-white/40">{skill.proficiency ?? 0}%</span>
+                      <span className="text-white/50">{skill.proficiency ?? 0}%</span>
                     </div>
                     <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
                       <div
@@ -155,7 +155,7 @@ export default function AdminSkillsPage() {
             </div>
           </div>
         ))}
-        {!categories.length && <p className="text-sm text-white/40">No skills yet. Add your first one.</p>}
+        {!categories.length && <p className="text-sm text-white/50">No skills yet. Add your first one.</p>}
       </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Edit Skill' : 'New Skill'}>

@@ -121,7 +121,7 @@ async function migrate() {
         await connection.query(stmt);
       } catch (err) {
         if (IGNORABLE.has(err.code)) {
-          console.log(`     ⚠  Ignored (${err.code}): ${stmt.substring(0, 80).replace(/\n/g, ' ')}…`);
+          console.log(`     [WARN] Ignored (${err.code}): ${stmt.substring(0, 80).replace(/\n/g, ' ')}…`);
         } else {
           await connection.end();
           console.error(`\nMigration failed in ${file}:\n`, err.message);
@@ -132,7 +132,7 @@ async function migrate() {
 
     // Record as applied only after all statements succeed (or are safely ignored)
     await connection.query('INSERT INTO _migrations (filename) VALUES (?)', [file]);
-    console.log(`     ✔  Done: ${file}`);
+    console.log(`     [OK] Done: ${file}`);
     ran++;
   }
 

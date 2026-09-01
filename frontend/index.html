@@ -5,6 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0c0f0d" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Full-stack developer portfolio and personal CMS." />
     <!--
@@ -14,6 +16,19 @@
       once the app loads — see src/hooks/useSiteSettings.js.
     -->
     <title>Portfolio</title>
+
+    <!--
+      Static fallback for crawlers that don't execute JS (some social-card
+      bots) — see the caveat documented in components/seo/Seo.jsx. Once
+      the app mounts, Seo.jsx overrides these with the real per-page
+      title/description/image via react-helmet-async.
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Portfolio" />
+    <meta property="og:description" content="Full-stack developer portfolio and personal CMS." />
+    <meta property="og:image" content="/og-default.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/og-default.jpg" />
 
     <!-- Replaces next/font/google (Inter + Space Grotesk) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
