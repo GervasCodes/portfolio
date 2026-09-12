@@ -116,7 +116,7 @@ export default function AdminProjectsPage() {
 
       <div className="glass rounded-2xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="text-left text-white/50 border-b border-white/10">
+          <thead className="text-left text-ink/50 border-b border-ink/10">
             <tr>
               <th className="px-5 py-3 font-medium">Title</th>
               <th className="px-5 py-3 font-medium hidden sm:table-cell">Category</th>
@@ -126,29 +126,29 @@ export default function AdminProjectsPage() {
           </thead>
           <tbody>
             {projects.map((project) => (
-              <tr key={project.id} className="border-b border-white/5 last:border-0">
+              <tr key={project.id} className="border-b border-ink/5 last:border-0">
                 <td className="px-5 py-3">{project.title}</td>
-                <td className="px-5 py-3 hidden sm:table-cell text-white/50">{project.category}</td>
+                <td className="px-5 py-3 hidden sm:table-cell text-ink/50">{project.category}</td>
                 <td className="px-5 py-3">
-                  <span className={`text-xs px-2.5 py-1 rounded-full ${project.status === 'published' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-white/5 text-white/50'}`}>
+                  <span className={`text-xs px-2.5 py-1 rounded-full ${project.status === 'published' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-ink/5 text-ink/50'}`}>
                     {project.status}
                   </span>
                 </td>
                 <td className="px-5 py-3 text-right">
-                  <button onClick={() => setMediaProject(project)} className="p-2 text-white/50 hover:text-white" aria-label="Manage media">
+                  <button onClick={() => setMediaProject(project)} className="p-2 text-ink/50 hover:text-ink" aria-label="Manage media">
                     <Images size={14} />
                   </button>
-                  <button onClick={() => openEdit(project)} className="p-2 text-white/50 hover:text-white" aria-label="Edit">
+                  <button onClick={() => openEdit(project)} className="p-2 text-ink/50 hover:text-ink" aria-label="Edit">
                     <Pencil size={14} />
                   </button>
-                  <button onClick={() => handleDelete(project.id)} className="p-2 text-white/50 hover:text-red-400" aria-label="Delete">
+                  <button onClick={() => handleDelete(project.id)} className="p-2 text-ink/50 hover:text-red-400" aria-label="Delete">
                     <Trash2 size={14} />
                   </button>
                 </td>
               </tr>
             ))}
             {!projects.length && (
-              <tr><td colSpan={4} className="px-5 py-8 text-center text-white/50">No projects yet.</td></tr>
+              <tr><td colSpan={4} className="px-5 py-8 text-center text-ink/50">No projects yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -167,22 +167,22 @@ export default function AdminProjectsPage() {
           </div>
 
           <div>
-            <label className="block text-xs text-white/50 mb-1.5">Cover Image</label>
+            <label className="block text-xs text-ink/50 mb-1.5">Cover Image</label>
             <label className="glass glass-hover rounded-xl px-4 py-2 text-sm cursor-pointer inline-flex items-center gap-2">
               <Upload size={14} /> Upload
               <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
             </label>
-            {form.cover_image_url && <span className="ml-3 text-xs text-white/50">Image attached</span>}
+            {form.cover_image_url && <span className="ml-3 text-xs text-ink/50">Image attached</span>}
           </div>
 
           <div className="flex items-center gap-6">
-            <label className="flex items-center gap-2 text-sm text-white/70">
+            <label className="flex items-center gap-2 text-sm text-ink/70">
               <input type="checkbox" name="featured" checked={form.featured} onChange={handleChange} className="accent-accent" />
               Featured
             </label>
-            <label className="flex items-center gap-2 text-sm text-white/70">
+            <label className="flex items-center gap-2 text-sm text-ink/70">
               <span>Status</span>
-              <select name="status" value={form.status} onChange={handleChange} className="bg-white/5 border border-white/10 rounded-lg px-2 py-1">
+              <select name="status" value={form.status} onChange={handleChange} className="bg-ink/5 border border-ink/10 rounded-lg px-2 py-1">
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
               </select>
@@ -190,8 +190,8 @@ export default function AdminProjectsPage() {
           </div>
 
           {form.featured && (
-            <div className="border-t border-white/10 pt-4">
-              <label className="flex items-center gap-2 text-sm text-white/70 mb-1">
+            <div className="border-t border-ink/10 pt-4">
+              <label className="flex items-center gap-2 text-sm text-ink/70 mb-1">
                 <input
                   type="checkbox"
                   name="case_study_enabled"
@@ -201,7 +201,7 @@ export default function AdminProjectsPage() {
                 />
                 Use case-study layout on the project page
               </label>
-              <p className="text-xs text-white/50 mb-3">
+              <p className="text-xs text-ink/50 mb-3">
                 Replaces the plain description with five structured sections.
                 Markdown is supported in each. Leave a section blank to omit it.
               </p>
@@ -238,7 +238,7 @@ export default function AdminProjectsPage() {
 function Input({ label, ...props }) {
   return (
     <div>
-      <label className="block text-xs text-white/50 mb-1.5">{label}</label>
+      <label className="block text-xs text-ink/50 mb-1.5">{label}</label>
       <input {...props} className="w-full input-field px-4 py-2.5 text-sm" />
     </div>
   );
@@ -247,8 +247,8 @@ function Input({ label, ...props }) {
 function TextArea({ label, ...props }) {
   return (
     <div>
-      <label className="block text-xs text-white/50 mb-1.5">{label}</label>
-      <textarea {...props} rows={4} className="w-full input-field px-4 py-2.5 text-sm resize-none" />
+      <label className="block text-xs text-ink/50 mb-1.5">{label}</label>
+      <textarea {...props} rows={4} className="w-full input-field px-4 py-2.5 text-sm resize-y form-scroll max-h-64" />
     </div>
   );
 }

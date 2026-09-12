@@ -1,12 +1,56 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, Eye, ThumbsUp, Heart, Flame, PartyPopper, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Calendar, Eye, ThumbsUp, Heart, Flame, PartyPopper, Lightbulb, ExternalLink } from 'lucide-react';
 import Markdown from '@/components/ui/Markdown';
 import Seo from '@/components/seo/Seo';
 import { PortfolioAPI } from '@/services/api';
 import { sampleBlogPosts } from '@/utils/sampleData';
 import { useSiteSettings, buildTitle } from '@/hooks/useSiteSettings';
 import { absoluteUrl, truncate, stripMarkdown, resolveImage } from '@/utils/seo';
+
+// Recognizes YouTube/Vimeo links and returns an embeddable iframe URL;
+// returns null for anything else (a directly-uploaded video file, which
+// renders with a plain <video> tag instead — see VideoEmbed below).
+function toEmbedUrl(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('youtube.com')) {
+      const id = u.searchParams.get('v');
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (u.hostname === 'youtu.be') {
+      const id = u.pathname.slice(1);
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (u.hostname.includes('vimeo.com')) {
+      const id = u.pathname.split('/').filter(Boolean).pop();
+      return id ? `https://player.vimeo.com/video/${id}` : null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function VideoEmbed({ url }) {
+  const embedUrl = toEmbedUrl(url);
+  return (
+    <div className="rounded-2xl overflow-hidden mb-8 aspect-video bg-ink/5">
+      {embedUrl ? (
+        <iframe
+          src={embedUrl}
+          title="Post video"
+          className="w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      ) : (
+        <video src={url} controls className="w-full h-full object-contain bg-black" />
+      )}
+    </div>
+  );
+}
 
 // Kept in sync with backend `ALLOWED_REACTIONS` (blogEngagement.service.js).
 // Icon-based instead of emoji so reactions match the rest of the site's
@@ -54,7 +98,7 @@ function ReactionBar({ slug }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-white/10">
+    <div className="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-ink/10">
       {REACTIONS.map(({ id, label, Icon }) => (
         <button
           key={id}
@@ -65,8 +109,8 @@ function ReactionBar({ slug }) {
           aria-pressed={mine === id}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors disabled:opacity-50 ${
             mine === id
-              ? 'bg-accent/20 border-accent/50 text-white'
-              : 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10'
+              ? 'bg-accent/20 border-accent/50 text-accent-dark'
+              : 'bg-ink/5 border-ink/10 text-ink/60 hover:text-ink hover:bg-ink/10'
           }`}
         >
           <Icon size={15} />
@@ -123,23 +167,42 @@ export default function BlogDetailPage() {
         structuredData={structuredData}
       />
       <div className="container-page max-w-3xl">
-        <Link to="/blog" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white mb-8">
+        <Link to="/blog" className="inline-flex items-center gap-2 text-sm text-ink/60 hover:text-ink mb-8">
           <ArrowLeft size={16} /> Back to Blog
         </Link>
 
-        <div className="flex items-center gap-4 text-xs text-white/50 mb-4">
+        <div className="flex items-center gap-4 text-xs text-ink/50 mb-4">
           <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(post.published_at)}</span>
           <span className="flex items-center gap-1"><Eye size={12} /> {post.views ?? 0} views</span>
         </div>
 
         <h1 className="font-display text-3xl md:text-4xl font-bold mb-8">{post.title}</h1>
 
+        {post.cover_image_url && (
+          <div className="rounded-2xl overflow-hidden mb-8">
+            <img src={post.cover_image_url} alt="" className="w-full max-h-[420px] object-cover" />
+          </div>
+        )}
+
+        {post.video_url && <VideoEmbed url={post.video_url} />}
+
         <Markdown>{post.content}</Markdown>
 
+        {post.link_url && (
+          <a
+            href={post.link_url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 mt-8 glass glass-hover rounded-xl px-4 py-2.5 text-sm text-accent-dark"
+          >
+            <ExternalLink size={16} /> Visit related link
+          </a>
+        )}
+
         {Array.isArray(post.tags) && post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-10 pt-8 border-t border-white/10">
+          <div className="flex flex-wrap gap-2 mt-10 pt-8 border-t border-ink/10">
             {post.tags.map((tag) => (
-              <span key={tag} className="text-xs px-3 py-1.5 rounded-full bg-white/5 text-white/60 border border-white/10">
+              <span key={tag} className="text-xs px-3 py-1.5 rounded-full bg-ink/5 text-ink/60 border border-ink/10">
                 {tag}
               </span>
             ))}

@@ -36,7 +36,7 @@ export default class ErrorBoundary extends Component {
             <AlertTriangle size={20} className="text-white" />
           </div>
           <h1 className="font-display text-xl font-bold mb-2">Something went wrong</h1>
-          <p className="text-sm text-white/60 mb-6">
+          <p className="text-sm text-ink/60 mb-6">
             This part of the page hit an unexpected error. Reloading usually fixes it.
           </p>
           <button

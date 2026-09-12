@@ -5,7 +5,7 @@ class BlogModel extends BaseModel {
   constructor() {
     super('blogs', [
       'title', 'slug', 'excerpt', 'content', 'cover_image_url',
-      'tags', 'status', 'published_at', 'views',
+      'video_url', 'link_url', 'tags', 'status', 'published_at', 'views',
     ]);
   }
 

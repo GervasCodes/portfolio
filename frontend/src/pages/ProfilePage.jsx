@@ -48,7 +48,7 @@ export default function ProfilePage() {
         >
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
             <div className="relative w-28 h-28 shrink-0 rounded-full p-[3px] bg-gradient-to-br from-accent to-cyan-accent shadow-glow">
-              <div className="w-full h-full rounded-full overflow-hidden border-4 border-background bg-white/5 flex items-center justify-center">
+              <div className="w-full h-full rounded-full overflow-hidden border-4 border-background bg-ink/5 flex items-center justify-center">
                 {profile?.avatar_url ? (
                   <img
                     src={profile.avatar_url}
@@ -56,7 +56,7 @@ export default function ProfilePage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="font-display text-2xl text-white/60">
+                  <span className="font-display text-2xl text-ink/60">
                     {(profile?.full_name || 'Your Name')
                       .split(' ')
                       .filter(Boolean)
@@ -74,9 +74,9 @@ export default function ProfilePage() {
               <h1 className="font-display text-3xl md:text-4xl font-bold">
                 {profile?.full_name || 'Your Name'}
               </h1>
-              <p className="text-white/60 mt-1">{profile?.title}</p>
+              <p className="text-ink/60 mt-1">{profile?.title}</p>
               {profile?.available_for_work && (
-                <span className="inline-flex items-center gap-2 mt-3 px-3 py-1 rounded-full text-xs glass text-white/70">
+                <span className="inline-flex items-center gap-2 mt-3 px-3 py-1 rounded-full text-xs glass text-ink/70">
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
@@ -88,28 +88,28 @@ export default function ProfilePage() {
           </div>
 
           {profile?.bio && (
-            <p className="text-white/60 leading-relaxed mt-8">{profile.bio}</p>
+            <p className="text-ink/60 leading-relaxed mt-8">{profile.bio}</p>
           )}
 
           <div className="grid sm:grid-cols-2 gap-3 mt-8 text-sm">
             {profile?.location && (
-              <div className="flex items-center gap-3 text-white/70">
-                <MapPin size={16} className="text-accent-light shrink-0" /> {profile.location}
+              <div className="flex items-center gap-3 text-ink/70">
+                <MapPin size={16} className="text-accent-dark shrink-0" /> {profile.location}
               </div>
             )}
             {profile?.title && (
-              <div className="flex items-center gap-3 text-white/70">
-                <Briefcase size={16} className="text-accent-light shrink-0" /> {profile.title}
+              <div className="flex items-center gap-3 text-ink/70">
+                <Briefcase size={16} className="text-accent-dark shrink-0" /> {profile.title}
               </div>
             )}
             {profile?.email && (
-              <div className="flex items-center gap-3 text-white/70">
-                <Mail size={16} className="text-accent-light shrink-0" /> {profile.email}
+              <div className="flex items-center gap-3 text-ink/70">
+                <Mail size={16} className="text-accent-dark shrink-0" /> {profile.email}
               </div>
             )}
             {profile?.phone && (
-              <div className="flex items-center gap-3 text-white/70">
-                <Phone size={16} className="text-accent-light shrink-0" /> {profile.phone}
+              <div className="flex items-center gap-3 text-ink/70">
+                <Phone size={16} className="text-accent-dark shrink-0" /> {profile.phone}
               </div>
             )}
           </div>
@@ -121,7 +121,7 @@ export default function ProfilePage() {
                 href={profile[key]}
                 target="_blank"
                 rel="noreferrer"
-                className="glass glass-hover rounded-xl px-4 py-2 text-sm inline-flex items-center gap-2 text-white/70 hover:text-white"
+                className="glass glass-hover rounded-xl px-4 py-2 text-sm inline-flex items-center gap-2 text-ink/70 hover:text-ink"
               >
                 <Icon size={14} /> {label}
               </a>
@@ -131,7 +131,7 @@ export default function ProfilePage() {
                 href={whatsappHref}
                 target="_blank"
                 rel="noreferrer"
-                className="glass glass-hover rounded-xl px-4 py-2 text-sm inline-flex items-center gap-2 text-white/70 hover:text-white"
+                className="glass glass-hover rounded-xl px-4 py-2 text-sm inline-flex items-center gap-2 text-ink/70 hover:text-ink"
               >
                 <MessageCircle size={14} /> WhatsApp
               </a>

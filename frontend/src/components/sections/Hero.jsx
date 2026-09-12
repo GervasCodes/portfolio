@@ -22,9 +22,9 @@ export default function Hero({ profile }) {
       </div>
 
       {/* Ambient glow — layered + slowly drifting for a less static hero */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent/30 rounded-full blur-[140px] pointer-events-none animate-float-slow" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-cyan-accent/20 rounded-full blur-[120px] pointer-events-none animate-float-slower" />
-      <div className="absolute top-10 right-1/4 w-[220px] h-[220px] bg-accent-light/10 rounded-full blur-[100px] pointer-events-none animate-float-slow" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent/12 rounded-full blur-[140px] pointer-events-none animate-float-slow" />
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-cyan-accent/10 rounded-full blur-[120px] pointer-events-none animate-float-slower" />
+      <div className="absolute top-10 right-1/4 w-[220px] h-[220px] bg-accent-light/8 rounded-full blur-[100px] pointer-events-none animate-float-slow" />
 
       <div
         className="container-page relative z-10 pb-20"
@@ -38,7 +38,7 @@ export default function Hero({ profile }) {
             className="mb-8"
           >
             <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-full p-[3px] bg-gradient-to-br from-accent to-cyan-accent shadow-glow">
-              <div className="w-full h-full rounded-full overflow-hidden border-4 border-background bg-white/5">
+              <div className="w-full h-full rounded-full overflow-hidden border-4 border-background bg-ink/5">
                 <img
                   src={profile.avatar_url}
                   alt={name}
@@ -61,11 +61,11 @@ export default function Hero({ profile }) {
             <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
           </span>
-          <span className="relative flex items-center gap-1.5 text-white/80 font-medium">
+          <span className="relative flex items-center gap-1.5 text-ink/80 font-medium">
             {profile?.available_for_work ? (
               <>
                 Available for new opportunities
-                <span className="hidden sm:inline text-white/50 font-normal">— freelance &amp; full-time</span>
+                <span className="hidden sm:inline text-ink/50 font-normal">— freelance &amp; full-time</span>
               </>
             ) : (
               'Software Developer'
@@ -88,7 +88,7 @@ export default function Hero({ profile }) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="mt-6 text-lg text-white/60 max-w-xl leading-relaxed"
+          className="mt-6 text-lg text-ink/60 max-w-xl leading-relaxed"
         >
           {tagline}
         </motion.p>
@@ -113,7 +113,7 @@ export default function Hero({ profile }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 8, 0] }}
         transition={{ opacity: { delay: 1, duration: 0.6 }, y: { delay: 1.2, duration: 1.8, repeat: Infinity } }}
-        className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-1 text-white/60 z-10"
+        className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-1 text-ink/60 z-10"
       >
         <span className="text-[11px] uppercase tracking-widest">Scroll</span>
         <ChevronDown size={16} />

@@ -37,19 +37,19 @@ export default function Contacts({ profile }) {
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
             Let&apos;s build something <span className="text-gradient">great together</span>
           </h2>
-          <p className="text-white/60 mb-8">
+          <p className="text-ink/60 mb-8">
             Have a project in mind or just want to say hi? My inbox is always open.
           </p>
 
           <div className="space-y-4 text-sm">
             {profile?.email && (
-              <div className="flex items-center gap-3 text-white/70">
-                <Mail size={16} className="text-accent-light" /> {profile.email}
+              <div className="flex items-center gap-3 text-ink/70">
+                <Mail size={16} className="text-accent-dark" /> {profile.email}
               </div>
             )}
             {profile?.location && (
-              <div className="flex items-center gap-3 text-white/70">
-                <MapPin size={16} className="text-accent-light" /> {profile.location}
+              <div className="flex items-center gap-3 text-ink/70">
+                <MapPin size={16} className="text-accent-dark" /> {profile.location}
               </div>
             )}
           </div>
@@ -110,7 +110,7 @@ export default function Contacts({ profile }) {
               onChange={handleChange}
               placeholder="Your message"
               rows={5}
-              className="w-full input-field px-4 py-3 text-sm resize-none"
+              className="w-full input-field px-4 py-3 text-sm resize-y form-scroll max-h-64"
             />
           </div>
 

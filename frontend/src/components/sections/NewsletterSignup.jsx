@@ -32,7 +32,7 @@ export default function NewsletterSignup({ className = '' }) {
     return (
       <div role="status" aria-live="polite" className={`glass rounded-2xl p-6 flex items-center gap-3 ${className}`}>
         <CheckCircle2 className="text-emerald-400 shrink-0" size={22} />
-        <p className="text-sm text-white/70">{message}</p>
+        <p className="text-sm text-ink/70">{message}</p>
       </div>
     );
   }
@@ -40,9 +40,9 @@ export default function NewsletterSignup({ className = '' }) {
   return (
     <div className={`glass rounded-2xl p-6 ${className}`}>
       <h3 className="font-display font-semibold flex items-center gap-2 mb-1">
-        <Mail size={16} className="text-accent-light" /> Get notified on new posts
+        <Mail size={16} className="text-accent-dark" /> Get notified on new posts
       </h3>
-      <p className="text-sm text-white/50 mb-4">No spam — just an email when something new goes up.</p>
+      <p className="text-sm text-ink/50 mb-4">No spam — just an email when something new goes up.</p>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
         <label htmlFor="newsletter-email" className="sr-only">Your email</label>
         <input

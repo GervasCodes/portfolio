@@ -51,7 +51,7 @@ export default function ProjectsPage() {
           <h1 className="font-display text-3xl md:text-4xl font-bold">
             All <span className="text-gradient">Projects</span>
           </h1>
-          <p className="text-white/55 mt-4">
+          <p className="text-ink/55 mt-4">
             A collection of things I&apos;ve designed, built, and shipped.
           </p>
         </div>
@@ -78,7 +78,7 @@ export default function ProjectsPage() {
             />
           </>
         ) : (
-          <p className="text-center text-white/50">No projects found.</p>
+          <p className="text-center text-ink/50">No projects found.</p>
         )}
       </div>
     </div>

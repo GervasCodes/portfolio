@@ -38,14 +38,14 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative mt-32 border-t border-white/10">
+    <footer className="relative mt-32 border-t border-ink/10">
       <div className="container-page py-12 flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="text-center md:text-left">
           <p className="font-display text-lg">
             <span className="text-gradient">GERRY&apos;S</span>
-            <span className="text-white/50">Portfolio</span>
+            <span className="text-ink/50">Portfolio</span>
           </p>
-          <p className="text-sm text-white/50 mt-1">© {year} All rights reserved.</p>
+          <p className="text-sm text-ink/50 mt-1">© {year} All rights reserved.</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -56,13 +56,13 @@ export default function Footer() {
           <SocialLink href={`mailto:${email}`} icon={<Mail size={18} />} label="Email" />
         </div>
 
-        <div className="flex items-center gap-6 text-sm text-white/50">
-          <Link to="/contacts" className="hover:text-white transition-colors">Contact</Link>
-          <Link to="/admin/login" className="hover:text-white transition-colors">Admin</Link>
+        <div className="flex items-center gap-6 text-sm text-ink/50">
+          <Link to="/contacts" className="hover:text-ink transition-colors">Contact</Link>
+          <Link to="/admin/login" className="hover:text-ink transition-colors">Admin</Link>
           <button
             onClick={scrollTop}
             aria-label="Back to top"
-            className="glass glass-hover w-9 h-9 rounded-full flex items-center justify-center text-white/60 hover:text-white"
+            className="glass glass-hover w-9 h-9 rounded-full flex items-center justify-center text-ink/60 hover:text-ink"
           >
             <ArrowUp size={15} />
           </button>
@@ -79,7 +79,7 @@ function SocialLink({ href, icon, label }) {
       target="_blank"
       rel="noreferrer"
       aria-label={label}
-      className="glass glass-hover w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:text-white"
+      className="glass glass-hover w-10 h-10 rounded-full flex items-center justify-center text-ink/70 hover:text-ink"
     >
       {icon}
     </a>

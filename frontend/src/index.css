@@ -16,15 +16,15 @@
 html { -webkit-tap-highlight-color: transparent; }
 
 body {
-  background-color: #0c0f0d;
-  color: #ece9e2;
+  background-color: #ffffff;
+  color: #14171a;
   font-family: var(--font-inter);
   font-feature-settings: 'ss01' 1, 'cv01' 1;
 }
 
 ::selection {
-  background: rgba(122, 153, 116, 0.45);
-  color: #fff;
+  background: rgba(111, 143, 107, 0.28);
+  color: #14171a;
 }
 
 /* Consistent, visible focus state for keyboard users across every interactive element */
@@ -41,11 +41,12 @@ body {
   left: 1rem;
   z-index: 100;
   padding: 0.75rem 1.25rem;
-  background: #0c0f0d;
-  color: #ece9e2;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #ffffff;
+  color: #14171a;
+  border: 1px solid rgba(15, 23, 20, 0.14);
   border-radius: 0.75rem;
   font-size: 0.875rem;
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 20, 0.25);
   transition: top 0.15s ease;
 }
 
@@ -53,10 +54,13 @@ body {
   top: 1rem;
 }
 
-/* Glassmorphism surface used across cards, navbar, modals */
+/* Glassmorphism surface used across cards, navbar, modals — on the white
+   canvas this reads as a soft elevated white panel with a faint ink-tinted
+   border/shadow rather than a translucent light-on-dark sheen. */
 .glass {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(15, 23, 20, 0.08);
+  box-shadow: 0 4px 24px -8px rgba(15, 23, 20, 0.08);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -65,18 +69,19 @@ body {
   transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 .glass-hover:hover {
-  border-color: rgba(134, 166, 127, 0.5);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(111, 143, 107, 0.45);
+  background: rgba(255, 255, 255, 0.95);
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px -20px rgba(90, 122, 84, 0.35);
+  box-shadow: 0 20px 40px -20px rgba(90, 122, 84, 0.3);
 }
 
 /* Premium card: glass + subtle top hairline highlight, used for elevated content blocks */
 .card-premium {
   position: relative;
-  background: rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 20, 0.08);
   border-radius: 1rem;
+  box-shadow: 0 4px 24px -10px rgba(15, 23, 20, 0.1);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   overflow: hidden;
@@ -86,7 +91,7 @@ body {
   position: absolute;
   inset: 0 0 auto 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  background: linear-gradient(90deg, transparent, rgba(15,23,20,0.12), transparent);
 }
 
 /* Active/hovered state for the Skills radar<->category-card linkage (see
@@ -99,7 +104,7 @@ body {
 }
 
 .text-gradient {
-  background: linear-gradient(90deg, #9fbd97, #c9a267);
+  background: linear-gradient(90deg, #4a6647, #a9773f);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -121,9 +126,10 @@ body {
 }
 
 ::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: #0c0f0d; }
-::-webkit-scrollbar-thumb { background: #2b2f2a; border-radius: 999px; }
+::-webkit-scrollbar-track { background: #ffffff; }
+::-webkit-scrollbar-thumb { background: rgba(15, 23, 20, 0.18); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: #6f8f6b; }
+* { scrollbar-color: rgba(15, 23, 20, 0.22) transparent; }
 
 .container-page {
   max-width: 1200px;
@@ -136,7 +142,7 @@ body {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: #9fbd97;
+  color: #4a6647;
   margin-bottom: 0.75rem;
   font-weight: 600;
 }
@@ -144,34 +150,47 @@ body {
 /* Shared form-field styling so every input/textarea across the public site
    and admin dashboard looks and behaves identically. */
 .input-field {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 20, 0.14);
   border-radius: 0.75rem;
-  color: #e6e6ef;
+  color: #14171a;
   outline: none;
   transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
-.input-field::placeholder { color: rgba(255, 255, 255, 0.35); }
-.input-field:hover { border-color: rgba(255, 255, 255, 0.18); }
+.input-field::placeholder { color: rgba(15, 23, 20, 0.4); }
+.input-field:hover { border-color: rgba(15, 23, 20, 0.24); }
 .input-field:focus {
-  border-color: rgba(163, 189, 152, 0.6);
-  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(111, 143, 107, 0.6);
+  background: #ffffff;
   box-shadow: 0 0 0 4px rgba(111, 143, 107, 0.15);
 }
-.input-field:invalid:not(:placeholder-shown) { border-color: rgba(248, 113, 113, 0.4); }
+.input-field:invalid:not(:placeholder-shown) { border-color: rgba(220, 38, 38, 0.45); }
+
+/* Any textarea/select/scrollable list inside a form that can grow long
+   (post content, markdown preview, option lists) gets a visibly-scrollable
+   box instead of silently clipping text the user can't see. */
+.form-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(111, 143, 107, 0.5) rgba(15, 23, 20, 0.06);
+}
+.form-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.form-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 20, 0.05); border-radius: 999px; }
+.form-scroll::-webkit-scrollbar-thumb { background: rgba(111, 143, 107, 0.5); border-radius: 999px; }
+.form-scroll::-webkit-scrollbar-thumb:hover { background: #6f8f6b; }
 
 /* Skeleton loading placeholder (for future async/loading states) */
 .skeleton {
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(15, 23, 20, 0.06);
 }
 .skeleton::after {
   content: '';
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  background: linear-gradient(90deg, transparent, rgba(15,23,20,0.08), transparent);
   animation: shimmer 1.6s infinite;
 }
 @keyframes shimmer {

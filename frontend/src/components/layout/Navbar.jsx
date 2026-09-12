@@ -91,12 +91,12 @@ export default function Navbar() {
         <nav
           aria-label="Primary"
           className={`glass rounded-2xl flex items-center justify-between px-5 py-3 transition-shadow duration-300 ${
-            scrolled ? 'shadow-glow border-white/10' : ''
+            scrolled ? 'shadow-glow border-ink/10' : ''
           }`}
         >
           <Link to="/" className="font-display text-lg font-semibold tracking-tight">
             <span className="text-gradient">GERRY&apos;S</span>
-            <span className="text-white/50">Portfolio</span>
+            <span className="text-ink/50">Portfolio</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-1">
@@ -108,13 +108,13 @@ export default function Navbar() {
                   to={link.href}
                   aria-current={active ? 'page' : undefined}
                   className={`relative px-3 py-2 text-sm rounded-lg transition-colors ${
-                    active ? 'text-white' : 'text-white/60 hover:text-white'
+                    active ? 'text-accent-dark font-medium' : 'text-ink/60 hover:text-ink'
                   }`}
                 >
                   {active && (
                     <motion.span
                       layoutId="nav-pill"
-                      className="absolute inset-0 bg-white/10 rounded-lg"
+                      className="absolute inset-0 bg-accent/15 rounded-lg"
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -152,7 +152,7 @@ export default function Navbar() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={() => setSearchOpen(true)}
-                    className="p-2 rounded-lg text-white/60 hover:text-white transition-colors"
+                    className="p-2 rounded-lg text-ink/60 hover:text-ink transition-colors"
                     aria-label="Open search"
                   >
                     <SearchIcon size={16} />
@@ -205,7 +205,7 @@ export default function Navbar() {
                       to={link.href}
                       aria-current={pathname === link.href ? 'page' : undefined}
                       className={`block px-4 py-3 rounded-xl text-sm transition-colors ${
-                        pathname === link.href ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5'
+                        pathname === link.href ? 'bg-accent/15 text-accent-dark font-medium' : 'text-ink/70 hover:bg-ink/5'
                       }`}
                     >
                       {link.label}

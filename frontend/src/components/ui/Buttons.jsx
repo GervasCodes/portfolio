@@ -6,8 +6,8 @@ const BASE = 'relative inline-flex items-center justify-center gap-2 rounded-xl 
 
 const VARIANTS = {
   primary: 'bg-gradient-to-r from-accent to-cyan-accent text-white shadow-glow hover:shadow-[0_0_50px_-8px_rgba(111,143,107,0.7)]',
-  secondary: 'glass glass-hover text-white',
-  ghost: 'text-white/70 hover:text-white hover:bg-white/5',
+  secondary: 'glass glass-hover text-ink',
+  ghost: 'text-ink/70 hover:text-ink hover:bg-ink/5',
   danger: 'bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20',
 };
 
@@ -73,7 +73,7 @@ export function IconButton({ icon, onClick, label, className = '' }) {
     <button
       onClick={onClick}
       aria-label={label}
-      className={`glass glass-hover w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:text-white active:scale-95 transition-transform ${className}`}
+      className={`glass glass-hover w-10 h-10 rounded-full flex items-center justify-center text-ink/70 hover:text-ink active:scale-95 transition-transform ${className}`}
     >
       {icon}
     </button>

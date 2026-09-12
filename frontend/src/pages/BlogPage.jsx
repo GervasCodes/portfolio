@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Calendar, Eye } from 'lucide-react';
+import { Calendar, Eye, Film, Link2 } from 'lucide-react';
 import Pagination from '@/components/ui/Pagination';
 import NewsletterSignup from '@/components/sections/NewsletterSignup';
 import { PortfolioAPI } from '@/services/api';
@@ -60,7 +60,7 @@ export default function BlogPage() {
 
         {page === 1 && mostViewed.length > 0 && (
           <div className="max-w-4xl mx-auto mb-10">
-            <p className="text-xs uppercase tracking-wider text-white/50 mb-3">Most Viewed</p>
+            <p className="text-xs uppercase tracking-wider text-ink/50 mb-3">Most Viewed</p>
             <div className="flex flex-wrap gap-3">
               {mostViewed.map((post) => (
                 <Link
@@ -68,8 +68,8 @@ export default function BlogPage() {
                   to={`/blog/${post.slug}`}
                   className="glass glass-hover rounded-full px-4 py-2 flex items-center gap-2 text-sm"
                 >
-                  <span className="text-white/80">{post.title}</span>
-                  <span className="flex items-center gap-1 text-xs text-white/50">
+                  <span className="text-ink/80">{post.title}</span>
+                  <span className="flex items-center gap-1 text-xs text-ink/50">
                     <Eye size={12} /> {post.views ?? 0}
                   </span>
                 </Link>
@@ -89,29 +89,43 @@ export default function BlogPage() {
             <Link
               key={post.id || post.slug}
               to={`/blog/${post.slug}`}
-              className="glass glass-hover rounded-2xl p-6 flex flex-col"
+              className="glass glass-hover rounded-2xl overflow-hidden flex flex-col"
             >
-              <div className="flex items-center gap-4 text-xs text-white/50 mb-3">
-                <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(post.published_at)}</span>
-                <span className="flex items-center gap-1"><Eye size={12} /> {post.views ?? 0}</span>
-              </div>
-              <h2 className="font-display font-semibold text-lg mb-2">{post.title}</h2>
-              <p className="text-sm text-white/55 flex-1">{post.excerpt}</p>
-              {Array.isArray(post.tags) && post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {post.tags.map((t) => (
-                    <span key={t} className="text-[11px] px-2.5 py-1 rounded-full bg-white/5 text-white/60 border border-white/10">
-                      {t}
-                    </span>
-                  ))}
+              {post.cover_image_url && (
+                <div className="h-40 w-full overflow-hidden">
+                  <img
+                    src={post.cover_image_url}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
                 </div>
               )}
+              <div className="p-6 flex flex-col flex-1">
+                <div className="flex items-center gap-4 text-xs text-ink/50 mb-3">
+                  <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(post.published_at)}</span>
+                  <span className="flex items-center gap-1"><Eye size={12} /> {post.views ?? 0}</span>
+                  {post.video_url && <span className="flex items-center gap-1"><Film size={12} /> Video</span>}
+                  {post.link_url && <span className="flex items-center gap-1"><Link2 size={12} /> Link</span>}
+                </div>
+                <h2 className="font-display font-semibold text-lg mb-2">{post.title}</h2>
+                <p className="text-sm text-ink/55 flex-1">{post.excerpt}</p>
+                {Array.isArray(post.tags) && post.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {post.tags.map((t) => (
+                      <span key={t} className="text-[11px] px-2.5 py-1 rounded-full bg-ink/5 text-ink/60 border border-ink/10">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </Link>
           ))}
         </div>
 
         {posts.length === 0 && (
-          <p className="text-center text-white/50">No posts found.</p>
+          <p className="text-center text-ink/50">No posts found.</p>
         )}
 
         <Pagination

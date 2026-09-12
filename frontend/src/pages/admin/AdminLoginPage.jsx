@@ -72,12 +72,12 @@ export default function AdminLoginPage() {
                 <Lock size={20} className="text-white" />
               </div>
               <h1 className="font-display text-2xl font-bold">Admin Login</h1>
-              <p className="text-sm text-white/50 mt-2">Sign in to manage your portfolio content.</p>
+              <p className="text-sm text-ink/50 mt-2">Sign in to manage your portfolio content.</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="relative">
-                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60" />
+                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/60" />
                 <label htmlFor="admin-email" className="sr-only">Email address</label>
                 <input
                   id="admin-email"
@@ -91,7 +91,7 @@ export default function AdminLoginPage() {
                 />
               </div>
               <div className="relative">
-                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60" />
+                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/60" />
                 <label htmlFor="admin-password" className="sr-only">Password</label>
                 <input
                   id="admin-password"
@@ -119,7 +119,7 @@ export default function AdminLoginPage() {
                 <ShieldCheck size={20} className="text-white" />
               </div>
               <h1 className="font-display text-2xl font-bold">Two-Factor Authentication</h1>
-              <p className="text-sm text-white/50 mt-2">Enter the 6-digit code from your authenticator app.</p>
+              <p className="text-sm text-ink/50 mt-2">Enter the 6-digit code from your authenticator app.</p>
             </div>
 
             <form onSubmit={handleVerifyCode} className="space-y-4">
@@ -146,7 +146,7 @@ export default function AdminLoginPage() {
               <button
                 type="button"
                 onClick={() => { setMfaToken(null); setCode(''); setStatus('idle'); setErrorMsg(''); }}
-                className="w-full flex items-center justify-center gap-1.5 text-xs text-white/50 hover:text-white/70 transition-colors"
+                className="w-full flex items-center justify-center gap-1.5 text-xs text-ink/50 hover:text-ink/70 transition-colors"
               >
                 <ArrowLeft size={12} /> Back to password
               </button>

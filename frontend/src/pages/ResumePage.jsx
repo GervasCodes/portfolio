@@ -56,7 +56,7 @@ export default function ResumePage() {
           <div>
             <p className="section-label">Resume</p>
             <h1 className="font-display text-3xl md:text-4xl font-bold">{profile.full_name}</h1>
-            <p className="text-white/55 mt-2">{profile.title}</p>
+            <p className="text-ink/55 mt-2">{profile.title}</p>
           </div>
           {profile.resume_url && (
             <div className="print:hidden">
@@ -76,7 +76,7 @@ export default function ResumePage() {
               <h3 className="font-semibold mb-3">{category}</h3>
               <div className="flex flex-wrap gap-2">
                 {items.map((skill) => (
-                  <span key={skill.id || skill.name} className="text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70">
+                  <span key={skill.id || skill.name} className="text-xs px-3 py-1.5 rounded-full bg-ink/5 border border-ink/10 text-ink/70">
                     {skill.name}
                   </span>
                 ))}

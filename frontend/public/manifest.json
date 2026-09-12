@@ -4,8 +4,8 @@
   "description": "Full-stack developer portfolio and personal CMS.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0c0f0d",
-  "theme_color": "#0c0f0d",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "/favicon.svg",

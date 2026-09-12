@@ -96,16 +96,16 @@ export default function AdminSkillsPage() {
 
       {chartData.length > 0 && (
         <div className="glass rounded-2xl p-5 mb-6">
-          <h3 className="font-display font-semibold text-sm mb-4 text-white/70">Average Proficiency by Category</h3>
+          <h3 className="font-display font-semibold text-sm mb-4 text-ink/70">Average Proficiency by Category</h3>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-                <XAxis dataKey="category" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis domain={[0, 100]} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,20,0.1)" vertical={false} />
+                <XAxis dataKey="category" tick={{ fill: 'rgba(15,23,20,0.55)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis domain={[0, 100]} tick={{ fill: 'rgba(15,23,20,0.55)', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip
-                  contentStyle={{ background: 'rgba(15,15,20,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }}
-                  cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+                  contentStyle={{ background: 'rgba(255,255,255,0.97)', border: '1px solid rgba(15,23,20,0.12)', borderRadius: 12, fontSize: 12, color: '#14171a' }}
+                  cursor={{ fill: 'rgba(15,23,20,0.05)' }}
                 />
                 <Bar dataKey="avg" radius={[6, 6, 0, 0]} fill="url(#skillGradient)" />
                 <defs>
@@ -131,23 +131,23 @@ export default function AdminSkillsPage() {
             <div className="space-y-3">
               {grouped[category].map((skill) => (
                 <div key={skill.id} className="flex items-center gap-3">
-                  <GripVertical size={14} className="text-white/20 shrink-0" />
+                  <GripVertical size={14} className="text-ink/20 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-white/80 truncate">{skill.name}</span>
-                      <span className="text-white/50">{skill.proficiency ?? 0}%</span>
+                      <span className="text-ink/80 truncate">{skill.name}</span>
+                      <span className="text-ink/50">{skill.proficiency ?? 0}%</span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                    <div className="h-1.5 rounded-full bg-ink/5 overflow-hidden">
                       <div
                         className="h-full rounded-full bg-gradient-to-r from-accent to-cyan-accent"
                         style={{ width: `${skill.proficiency ?? 0}%` }}
                       />
                     </div>
                   </div>
-                  <button onClick={() => openEdit(skill)} className="text-xs text-white/50 hover:text-white flex items-center gap-1 shrink-0">
+                  <button onClick={() => openEdit(skill)} className="text-xs text-ink/50 hover:text-ink flex items-center gap-1 shrink-0">
                     <Pencil size={12} />
                   </button>
-                  <button onClick={() => handleDelete(skill.id)} className="text-xs text-white/50 hover:text-red-400 flex items-center gap-1 shrink-0">
+                  <button onClick={() => handleDelete(skill.id)} className="text-xs text-ink/50 hover:text-red-400 flex items-center gap-1 shrink-0">
                     <Trash2 size={12} />
                   </button>
                 </div>
@@ -155,7 +155,7 @@ export default function AdminSkillsPage() {
             </div>
           </div>
         ))}
-        {!categories.length && <p className="text-sm text-white/50">No skills yet. Add your first one.</p>}
+        {!categories.length && <p className="text-sm text-ink/50">No skills yet. Add your first one.</p>}
       </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Edit Skill' : 'New Skill'}>
@@ -164,7 +164,7 @@ export default function AdminSkillsPage() {
           <Input label="Category" name="category" value={form.category} onChange={handleChange} required placeholder="e.g. Frontend" />
 
           <div>
-            <label className="block text-xs text-white/50 mb-1.5">
+            <label className="block text-xs text-ink/50 mb-1.5">
               Proficiency — {form.proficiency ?? 0}%
             </label>
             <input
@@ -194,7 +194,7 @@ export default function AdminSkillsPage() {
 function StatCard({ label, value }) {
   return (
     <div className="glass rounded-2xl p-5">
-      <p className="text-xs text-white/50 mb-1.5">{label}</p>
+      <p className="text-xs text-ink/50 mb-1.5">{label}</p>
       <p className="font-display text-2xl font-bold">{value}</p>
     </div>
   );
@@ -203,7 +203,7 @@ function StatCard({ label, value }) {
 function Input({ label, ...props }) {
   return (
     <div>
-      <label className="block text-xs text-white/50 mb-1.5">{label}</label>
+      <label className="block text-xs text-ink/50 mb-1.5">{label}</label>
       <input {...props} className="w-full input-field px-4 py-2.5 text-sm" />
     </div>
   );

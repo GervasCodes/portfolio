@@ -129,46 +129,7 @@ The system should be designed so that new modules and integrations can be introd
 
 ---
 
-# Development Roadmap
-
-## Phase 1 — Foundation
-
-Project architecture, environment setup, Aiven MySQL, Supabase Storage, Render deployment, coding standards, and documentation.
-
-## Phase 2 — Backend
-
-Database models, authentication, middleware, API architecture, validation, service layer, repository pattern, and OOP implementation.
-
-## Phase 3 — Frontend
-
-Application layout, reusable components, responsive design, navigation, animations, and UI framework.
-
-## Phase 4 — Public Portfolio
-
-Home, About, Skills, Experience, Education, Projects, Gallery, Resume, Contact, and Social Media.
-
-## Phase 5 — Dynamic Project System
-
-Project CMS, case studies, media galleries, technology tags, filtering, featured projects, and search.
-
-## Phase 6 — Admin Dashboard
-
-Profile management, project management, media uploads, blog management, skills, experience, certifications, SEO, analytics, and settings.
-
-## Phase 7 — Premium Experience
-
-Advanced animations, interactive timelines, project showcases, optimized loading, accessibility improvements, and refined user experience.
-
-## Phase 8 — Production
-
-Security hardening, performance optimization, testing, monitoring, deployment, backups, and production launch.
-
-## Phase 9 — Continuous Growth
-
-Expand the platform by adding new projects, technologies, articles, certifications, achievements, and future integrations entirely through the admin dashboard without changing the application's source code.
-
----
 
 # Goal
 
-The final product should serve as both a professional portfolio and a demonstration of advanced software engineering practices. It should showcase not only completed projects but also the developer's ability to design scalable architectures, apply object-oriented principles such as **polymorphism**, build maintainable systems, and deliver production-ready applications with a premium user experience.
+The final product should be a modernised personal portifolio intended to showcase personal information and the ability and experience of a personal user 

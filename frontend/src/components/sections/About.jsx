@@ -21,24 +21,24 @@ export default function About({ profile }) {
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
             Turning ideas into <span className="text-gradient">reliable software</span>
           </h2>
-          <p className="text-white/60 leading-relaxed mb-6">
+          <p className="text-ink/60 leading-relaxed mb-6">
             {profile?.bio ||
               'Full-Stack Software Engineer passionate about building scalable, high-performance web applications with modern technologies, clean architecture, and intuitive user experiences. Dedicated to creating secure, maintainable, and impactful digital solutions that solve real-world problems.'}
           </p>
 
-          <div className="flex flex-col gap-3 text-sm text-white/70">
+          <div className="flex flex-col gap-3 text-sm text-ink/70">
             {profile?.location && (
               <div className="flex items-center gap-3">
-                <MapPin size={16} className="text-accent-light" /> {profile.location}
+                <MapPin size={16} className="text-accent-dark" /> {profile.location}
               </div>
             )}
             <div className="flex items-center gap-3">
-              <Briefcase size={16} className="text-accent-light" />
+              <Briefcase size={16} className="text-accent-dark" />
               {profile?.title || 'Full-Stack Software Engineer'}
             </div>
             {profile?.email && (
               <div className="flex items-center gap-3">
-                <Mail size={16} className="text-accent-light" /> {profile.email}
+                <Mail size={16} className="text-accent-dark" /> {profile.email}
               </div>
             )}
           </div>
@@ -50,7 +50,7 @@ export default function About({ profile }) {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="relative rounded-2xl overflow-hidden border border-white/10 mb-4 aspect-[16/10]">
+          <div className="relative rounded-2xl overflow-hidden border border-ink/10 mb-4 aspect-[16/10]">
             <img
               src="https://images.pexels.com/photos/34803978/pexels-photo-34803978.jpeg?auto=compress&cs=tinysrgb&w=1200"
               alt="Developer workspace with a laptop showing code, a plant, and a cup of coffee"
@@ -71,7 +71,7 @@ export default function About({ profile }) {
                 className="card-premium glass-hover p-6 text-center"
               >
                 <p className="font-display text-3xl font-bold text-gradient">{stat.value}</p>
-                <p className="text-xs text-white/50 mt-2 tracking-wide">{stat.label}</p>
+                <p className="text-xs text-ink/50 mt-2 tracking-wide">{stat.label}</p>
               </motion.div>
             ))}
           </div>

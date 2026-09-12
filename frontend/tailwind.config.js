@@ -7,15 +7,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Natural, premium palette: deep charcoal-green canvas, warm ivory
-        // text, sage-green primary accent, muted gold/bronze secondary accent.
-        background: '#0c0f0d',
-        surface: 'rgba(255,255,255,0.04)',
-        border: 'rgba(255,255,255,0.08)',
+        // Natural, premium palette: clean white canvas, deep-ink text,
+        // sage-green primary accent, muted gold/bronze secondary accent.
+        // Accent stays reserved for selected/active states (nav pills,
+        // tabs, selected buttons) per the light-theme redesign.
+        background: '#ffffff',
+        surface: 'rgba(15,23,20,0.035)',
+        border: 'rgba(15,23,20,0.09)',
+        ink: '#14171a',
         accent: {
           DEFAULT: '#6f8f6b',
           light: '#9fbd97',
           glow: '#86a67f',
+          dark: '#4a6647',
         },
         cyan: { accent: '#c9a267' },
       },

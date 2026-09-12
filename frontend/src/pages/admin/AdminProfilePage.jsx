@@ -58,11 +58,11 @@ export default function AdminProfilePage() {
     <AdminShell title="Profile" description="This information powers your public homepage, about, and resume pages.">
       <div className="glass rounded-2xl p-6 space-y-6 max-w-3xl">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-ink/5 border border-ink/10 overflow-hidden flex items-center justify-center">
             {profile.avatar_url ? (
               <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-white/60 text-xs">No photo</span>
+              <span className="text-ink/60 text-xs">No photo</span>
             )}
           </div>
           <label className="glass glass-hover rounded-xl px-4 py-2 text-sm cursor-pointer flex items-center gap-2">
@@ -78,7 +78,7 @@ export default function AdminProfilePage() {
         <div className="grid sm:grid-cols-2 gap-4">
           {FIELDS.map((field) => (
             <div key={field.name} className={field.name === 'tagline' ? 'sm:col-span-2' : ''}>
-              <label className="block text-xs text-white/50 mb-1.5">{field.label}</label>
+              <label className="block text-xs text-ink/50 mb-1.5">{field.label}</label>
               <input
                 type={field.type || 'text'}
                 name={field.name}
@@ -91,17 +91,17 @@ export default function AdminProfilePage() {
         </div>
 
         <div>
-          <label className="block text-xs text-white/50 mb-1.5">Bio</label>
+          <label className="block text-xs text-ink/50 mb-1.5">Bio</label>
           <textarea
             name="bio"
             rows={5}
             value={profile.bio ?? ''}
             onChange={handleChange}
-            className="w-full input-field px-4 py-2.5 text-sm resize-none"
+            className="w-full input-field px-4 py-2.5 text-sm resize-y form-scroll max-h-64"
           />
         </div>
 
-        <label className="flex items-center gap-2 text-sm text-white/70">
+        <label className="flex items-center gap-2 text-sm text-ink/70">
           <input
             type="checkbox"
             checked={Boolean(profile.available_for_work)}

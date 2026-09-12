@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Award, Trophy, ExternalLink } from 'lucide-react';
+import ProjectGallery from '@/components/projects/ProjectGallery';
 
 export default function CertificatesAchievements({ certificates = [], achievements = [] }) {
   if (!certificates.length && !achievements.length) return null;
@@ -10,7 +11,7 @@ export default function CertificatesAchievements({ certificates = [], achievemen
         {certificates.length > 0 && (
           <div>
             <h2 className="font-display text-xl font-semibold mb-6 flex items-center gap-2">
-              <Award size={18} className="text-accent-light" /> Certifications
+              <Award size={18} className="text-accent-dark" /> Certifications
             </h2>
             <div className="space-y-3">
               {certificates.map((c, i) => (
@@ -24,10 +25,10 @@ export default function CertificatesAchievements({ certificates = [], achievemen
                 >
                   <div>
                     <p className="font-medium text-sm">{c.title}</p>
-                    <p className="text-xs text-white/45">{c.issuer}</p>
+                    <p className="text-xs text-ink/45">{c.issuer}</p>
                   </div>
                   {c.credential_url && (
-                    <a href={c.credential_url} target="_blank" rel="noreferrer" className="text-white/50 hover:text-white">
+                    <a href={c.credential_url} target="_blank" rel="noreferrer" className="text-ink/50 hover:text-ink">
                       <ExternalLink size={14} />
                     </a>
                   )}
@@ -40,7 +41,7 @@ export default function CertificatesAchievements({ certificates = [], achievemen
         {achievements.length > 0 && (
           <div>
             <h2 className="font-display text-xl font-semibold mb-6 flex items-center gap-2">
-              <Trophy size={18} className="text-accent-light" /> Achievements
+              <Trophy size={18} className="text-accent-dark" /> Achievements
             </h2>
             <div className="space-y-3">
               {achievements.map((a, i) => (
@@ -53,7 +54,12 @@ export default function CertificatesAchievements({ certificates = [], achievemen
                   className="card-premium glass-hover p-4"
                 >
                   <p className="font-medium text-sm">{a.title}</p>
-                  {a.description && <p className="text-xs text-white/45 mt-1">{a.description}</p>}
+                  {a.description && <p className="text-xs text-ink/45 mt-1">{a.description}</p>}
+                  {Array.isArray(a.gallery) && a.gallery.length > 0 && (
+                    <div className="mt-3">
+                      <ProjectGallery images={a.gallery} />
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>

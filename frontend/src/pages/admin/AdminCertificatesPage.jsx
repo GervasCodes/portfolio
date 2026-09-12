@@ -79,33 +79,33 @@ export default function AdminCertificatesPage() {
       <div className="grid sm:grid-cols-2 gap-4">
         {items.map((item) => (
           <div key={item.id} className="glass rounded-2xl p-5 flex gap-4">
-            <div className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
+            <div className="w-14 h-14 rounded-xl bg-ink/5 border border-ink/10 overflow-hidden flex items-center justify-center shrink-0">
               {item.badge_image_url ? (
                 <img src={item.badge_image_url} alt="" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-white/20 text-xs">No badge</span>
+                <span className="text-ink/20 text-xs">No badge</span>
               )}
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold truncate">{item.title}</h3>
-              <p className="text-sm text-white/50">{item.issuer}</p>
+              <p className="text-sm text-ink/50">{item.issuer}</p>
               <div className="flex items-center gap-3 mt-2">
                 {item.credential_url && (
-                  <a href={item.credential_url} target="_blank" rel="noreferrer" className="text-xs text-accent-light flex items-center gap-1">
+                  <a href={item.credential_url} target="_blank" rel="noreferrer" className="text-xs text-accent-dark flex items-center gap-1">
                     <ExternalLink size={12} /> Credential
                   </a>
                 )}
-                <button onClick={() => openEdit(item)} className="text-xs text-white/50 hover:text-white flex items-center gap-1">
+                <button onClick={() => openEdit(item)} className="text-xs text-ink/50 hover:text-ink flex items-center gap-1">
                   <Pencil size={12} /> Edit
                 </button>
-                <button onClick={() => handleDelete(item.id)} className="text-xs text-white/50 hover:text-red-400 flex items-center gap-1">
+                <button onClick={() => handleDelete(item.id)} className="text-xs text-ink/50 hover:text-red-400 flex items-center gap-1">
                   <Trash2 size={12} /> Delete
                 </button>
               </div>
             </div>
           </div>
         ))}
-        {!items.length && <p className="text-sm text-white/50 col-span-2">No certificates yet.</p>}
+        {!items.length && <p className="text-sm text-ink/50 col-span-2">No certificates yet.</p>}
       </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Edit Certificate' : 'New Certificate'}>
@@ -119,12 +119,12 @@ export default function AdminCertificatesPage() {
           <Input label="Credential URL" name="credential_url" value={form.credential_url} onChange={handleChange} />
 
           <div>
-            <label className="block text-xs text-white/50 mb-1.5">Badge Image</label>
+            <label className="block text-xs text-ink/50 mb-1.5">Badge Image</label>
             <label className="glass glass-hover rounded-xl px-4 py-2 text-sm cursor-pointer inline-flex items-center gap-2">
               <Upload size={14} /> Upload
               <input type="file" accept="image/*" className="hidden" onChange={handleBadgeUpload} />
             </label>
-            {form.badge_image_url && <span className="ml-3 text-xs text-white/50">Image attached</span>}
+            {form.badge_image_url && <span className="ml-3 text-xs text-ink/50">Image attached</span>}
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
@@ -140,7 +140,7 @@ export default function AdminCertificatesPage() {
 function Input({ label, ...props }) {
   return (
     <div>
-      <label className="block text-xs text-white/50 mb-1.5">{label}</label>
+      <label className="block text-xs text-ink/50 mb-1.5">{label}</label>
       <input {...props} className="w-full input-field px-4 py-2.5 text-sm" />
     </div>
   );

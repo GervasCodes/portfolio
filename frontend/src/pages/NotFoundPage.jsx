@@ -13,12 +13,12 @@ export default function NotFoundPage() {
       <div>
         <p className="font-display text-7xl font-bold text-gradient mb-4">404</p>
         <h1 className="font-display text-2xl font-bold mb-2">Page not found</h1>
-        <p className="text-white/55 mb-8">The page you&apos;re looking for doesn&apos;t exist or has moved.</p>
+        <p className="text-ink/55 mb-8">The page you&apos;re looking for doesn&apos;t exist or has moved.</p>
         <Button href="/" icon={<Home size={16} />}>
           Back to Home
         </Button>
         <p className="mt-6 text-sm">
-          <Link to="/" className="text-white/50 hover:text-white">Return to homepage</Link>
+          <Link to="/" className="text-ink/50 hover:text-ink">Return to homepage</Link>
         </p>
       </div>
     </div>

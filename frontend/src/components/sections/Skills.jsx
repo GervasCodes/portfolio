@@ -13,7 +13,7 @@ function CategoryTick({ x, y, textAnchor, payload, activeCategory, onHover }) {
       onMouseEnter={() => onHover(payload.value)}
       onMouseLeave={() => onHover(null)}
       style={{ cursor: 'pointer', transition: 'fill 0.15s ease, font-weight 0.15s ease' }}
-      fill={active ? '#c9a267' : 'rgba(255,255,255,0.55)'}
+      fill={active ? '#8a6a35' : 'rgba(15,23,20,0.55)'}
       fontSize={active ? 12 : 11}
       fontWeight={active ? 600 : 400}
     >
@@ -75,19 +75,19 @@ export default function Skills({ grouped = {} }) {
             transition={{ duration: 0.5 }}
             className="card-premium glass-hover p-6 mb-10 max-w-2xl mx-auto"
           >
-            <h3 className="font-display font-semibold mb-2 text-center text-sm text-white/70">Category Strength Overview</h3>
+            <h3 className="font-display font-semibold mb-2 text-center text-sm text-ink/70">Category Strength Overview</h3>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData} outerRadius="70%">
-                  <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                  <PolarGrid stroke="rgba(15,23,20,0.12)" />
                   <PolarAngleAxis
                     dataKey="category"
                     tick={<CategoryTick activeCategory={activeCategory} onHover={setActiveCategory} />}
                   />
-                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 9 }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: 'rgba(15,23,20,0.4)', fontSize: 9 }} />
                   <Radar dataKey="avg" stroke="#c9a267" fill="#6f8f6b" fillOpacity={0.45} />
                   <Tooltip
-                    contentStyle={{ background: 'rgba(15,15,20,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }}
+                    contentStyle={{ background: 'rgba(255,255,255,0.97)', border: '1px solid rgba(15,23,20,0.12)', borderRadius: 12, fontSize: 12, color: '#14171a' }}
                   />
                 </RadarChart>
               </ResponsiveContainer>
@@ -110,8 +110,8 @@ export default function Skills({ grouped = {} }) {
               }`}
             >
               <h3 className="font-display font-semibold mb-5 flex items-center gap-2">
-                <span className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                  <Code2 size={14} className="text-accent-light" />
+                <span className="w-8 h-8 rounded-lg bg-ink/5 border border-ink/10 flex items-center justify-center shrink-0">
+                  <Code2 size={14} className="text-accent-dark" />
                 </span>
                 {category}
               </h3>
@@ -119,10 +119,10 @@ export default function Skills({ grouped = {} }) {
                 {grouped[category].map((skill) => (
                   <div key={skill.id || skill.name}>
                     <div className="flex justify-between text-sm mb-1.5">
-                      <span className="text-white/80">{skill.name}</span>
-                      <span className="text-white/50">{skill.proficiency ?? 80}%</span>
+                      <span className="text-ink/80">{skill.name}</span>
+                      <span className="text-ink/50">{skill.proficiency ?? 80}%</span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                    <div className="h-1.5 rounded-full bg-ink/5 overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         whileInView={{ width: `${skill.proficiency ?? 80}%` }}
@@ -145,12 +145,12 @@ export default function Skills({ grouped = {} }) {
 function StatCard({ icon, label, value }) {
   return (
     <div className="glass rounded-2xl p-4 flex items-center gap-3">
-      <span className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-accent-light">
+      <span className="w-9 h-9 rounded-lg bg-ink/5 border border-ink/10 flex items-center justify-center shrink-0 text-accent-dark">
         {icon}
       </span>
       <div className="min-w-0">
         <p className="text-lg font-display font-bold leading-tight">{value}</p>
-        <p className="text-xs text-white/50 truncate">{label}</p>
+        <p className="text-xs text-ink/50 truncate">{label}</p>
       </div>
     </div>
   );

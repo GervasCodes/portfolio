@@ -51,7 +51,7 @@ export default function AdminSettingsPage() {
 
         <div className="glass rounded-2xl p-6">
           <h2 className="font-semibold mb-4 flex items-center gap-2">
-            <Activity size={16} className="text-accent-light" /> Traffic (30 days)
+            <Activity size={16} className="text-accent-dark" /> Traffic (30 days)
           </h2>
           {analytics ? (
             <div className="space-y-3 text-sm">
@@ -59,7 +59,7 @@ export default function AdminSettingsPage() {
               <Stat label="Unique Visitors" value={analytics.uniqueVisitors} />
             </div>
           ) : (
-            <p className="text-sm text-white/50">No analytics data yet.</p>
+            <p className="text-sm text-ink/50">No analytics data yet.</p>
           )}
         </div>
       </div>
@@ -76,12 +76,12 @@ export default function AdminSettingsPage() {
               {newsletterStats.dailyTrend?.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={newsletterStats.dailyTrend} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-                    <XAxis dataKey="date" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis allowDecimals={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,20,0.1)" vertical={false} />
+                    <XAxis dataKey="date" tick={{ fill: 'rgba(15,23,20,0.55)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <YAxis allowDecimals={false} tick={{ fill: 'rgba(15,23,20,0.55)', fontSize: 11 }} axisLine={false} tickLine={false} />
                     <Tooltip
-                      contentStyle={{ background: 'rgba(15,15,20,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }}
-                      cursor={{ stroke: 'rgba(255,255,255,0.1)' }}
+                      contentStyle={{ background: 'rgba(255,255,255,0.97)', border: '1px solid rgba(15,23,20,0.12)', borderRadius: 12, fontSize: 12, color: '#14171a' }}
+                      cursor={{ stroke: 'rgba(15,23,20,0.12)' }}
                     />
                     <Area type="monotone" dataKey="signups" stroke="#c9a267" fill="url(#newsletterGradient)" strokeWidth={2} />
                     <defs>
@@ -93,19 +93,19 @@ export default function AdminSettingsPage() {
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-sm text-white/50">No signups in this window yet.</p>
+                <p className="text-sm text-ink/50">No signups in this window yet.</p>
               )}
             </div>
           </div>
         ) : (
-          <p className="text-sm text-white/50">No newsletter data yet.</p>
+          <p className="text-sm text-ink/50">No newsletter data yet.</p>
         )}
       </div>
 
       <div className="glass rounded-2xl p-6 mt-6">
         <h2 className="font-semibold mb-4 flex items-center gap-2"><ShieldCheck size={16} /> Two-Factor Authentication</h2>
         {totpEnabled === null ? (
-          <p className="text-sm text-white/50">Checking status...</p>
+          <p className="text-sm text-ink/50">Checking status...</p>
         ) : (
           <TwoFactorCard enabled={totpEnabled} onChange={setTotpEnabled} />
         )}
@@ -115,16 +115,16 @@ export default function AdminSettingsPage() {
         <h2 className="font-semibold mb-4 flex items-center gap-2"><Mail size={16} /> Contact Messages</h2>
         <div className="space-y-3">
           {contacts.map((c) => (
-            <div key={c.id} className="border border-white/10 rounded-xl p-4">
+            <div key={c.id} className="border border-ink/10 rounded-xl p-4">
               <div className="flex justify-between text-sm">
                 <span className="font-medium">{c.name}</span>
-                <span className="text-white/50">{c.email}</span>
+                <span className="text-ink/50">{c.email}</span>
               </div>
-              {c.subject && <p className="text-xs text-accent-light mt-1">{c.subject}</p>}
-              <p className="text-sm text-white/60 mt-2">{c.message}</p>
+              {c.subject && <p className="text-xs text-accent-dark mt-1">{c.subject}</p>}
+              <p className="text-sm text-ink/60 mt-2">{c.message}</p>
             </div>
           ))}
-          {!contacts.length && <p className="text-sm text-white/50">No messages yet.</p>}
+          {!contacts.length && <p className="text-sm text-ink/50">No messages yet.</p>}
         </div>
       </div>
     </AdminShell>
@@ -134,7 +134,7 @@ export default function AdminSettingsPage() {
 function Field({ label, name, value, onChange, type = 'text' }) {
   return (
     <div>
-      <label className="block text-xs text-white/50 mb-1.5">{label}</label>
+      <label className="block text-xs text-ink/50 mb-1.5">{label}</label>
       <input
         type={type}
         name={name}
@@ -149,7 +149,7 @@ function Field({ label, name, value, onChange, type = 'text' }) {
 function Stat({ label, value }) {
   return (
     <div className="flex justify-between">
-      <span className="text-white/50">{label}</span>
+      <span className="text-ink/50">{label}</span>
       <span className="font-semibold text-gradient">{value}</span>
     </div>
   );
@@ -210,7 +210,7 @@ function TwoFactorCard({ enabled, onChange }) {
   if (enabled) {
     return (
       <form onSubmit={disable} className="space-y-3 max-w-sm">
-        <p className="text-sm text-white/60">Two-factor authentication is currently <span className="text-emerald-400">enabled</span>.</p>
+        <p className="text-sm text-ink/60">Two-factor authentication is currently <span className="text-emerald-400">enabled</span>.</p>
         <Field label="Current password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} type="password" />
         {status === 'error' && <p className="text-sm text-red-400">{errorMsg}</p>}
         <Button type="submit" variant="danger" size="sm" disabled={status === 'loading' || !password} icon={<ShieldOff size={14} />}>
@@ -223,7 +223,7 @@ function TwoFactorCard({ enabled, onChange }) {
   if (!setup) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-white/60">Two-factor authentication is currently <span className="text-white/50">disabled</span>. Require an authenticator app code at login.</p>
+        <p className="text-sm text-ink/60">Two-factor authentication is currently <span className="text-ink/50">disabled</span>. Require an authenticator app code at login.</p>
         {status === 'error' && <p className="text-sm text-red-400">{errorMsg}</p>}
         <Button onClick={startSetup} size="sm" disabled={status === 'loading'} icon={<ShieldCheck size={14} />}>
           {status === 'loading' ? 'Starting...' : 'Set Up 2FA'}
@@ -234,11 +234,11 @@ function TwoFactorCard({ enabled, onChange }) {
 
   return (
     <form onSubmit={confirmSetup} className="space-y-4 max-w-sm">
-      <p className="text-sm text-white/60">Scan this QR code with an authenticator app (Google Authenticator, Authy, 1Password, ...), then enter the 6-digit code it shows.</p>
+      <p className="text-sm text-ink/60">Scan this QR code with an authenticator app (Google Authenticator, Authy, 1Password, ...), then enter the 6-digit code it shows.</p>
       {setup.qrCodeDataUrl && (
-        <img src={setup.qrCodeDataUrl} alt="2FA QR code" className="rounded-xl border border-white/10 bg-white p-2 w-40 h-40" />
+        <img src={setup.qrCodeDataUrl} alt="2FA QR code" className="rounded-xl border border-ink/10 bg-white p-2 w-40 h-40" />
       )}
-      <details className="text-xs text-white/50">
+      <details className="text-xs text-ink/50">
         <summary className="cursor-pointer">Can&apos;t scan? Enter manually</summary>
         <code className="block mt-1 break-all">{setup.secret}</code>
       </details>

@@ -59,7 +59,7 @@ export default function ProjectGallery({ media, images = [] }) {
             )}
             {item.media_type === 'video' && (
               <span className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                <PlayCircle size={32} className="text-white/90" />
+                <PlayCircle size={32} className="text-ink/90" />
               </span>
             )}
           </button>
@@ -77,7 +77,7 @@ export default function ProjectGallery({ media, images = [] }) {
           >
             <button
               onClick={close}
-              className="absolute top-6 right-6 text-white/70 hover:text-white"
+              className="absolute top-6 right-6 text-ink/70 hover:text-ink"
               aria-label="Close gallery"
             >
               <X size={24} />
@@ -86,7 +86,7 @@ export default function ProjectGallery({ media, images = [] }) {
             {items.length > 1 && (
               <button
                 onClick={(e) => { e.stopPropagation(); prev(); }}
-                className="absolute left-4 md:left-10 text-white/60 hover:text-white"
+                className="absolute left-4 md:left-10 text-ink/60 hover:text-ink"
                 aria-label="Previous item"
               >
                 <ChevronLeft size={32} />
@@ -110,14 +110,14 @@ export default function ProjectGallery({ media, images = [] }) {
                 />
               )}
               {active.caption && (
-                <p className="absolute -bottom-8 inset-x-0 text-center text-sm text-white/60">{active.caption}</p>
+                <p className="absolute -bottom-8 inset-x-0 text-center text-sm text-ink/60">{active.caption}</p>
               )}
             </motion.div>
 
             {items.length > 1 && (
               <button
                 onClick={(e) => { e.stopPropagation(); next(); }}
-                className="absolute right-4 md:right-10 text-white/60 hover:text-white"
+                className="absolute right-4 md:right-10 text-ink/60 hover:text-ink"
                 aria-label="Next item"
               >
                 <ChevronRight size={32} />

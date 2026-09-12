@@ -57,15 +57,15 @@ export default function ProjectDetailPage() {
         structuredData={structuredData}
       />
       <div className="container-page max-w-4xl">
-        <Link to="/projects" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white mb-8">
+        <Link to="/projects" className="inline-flex items-center gap-2 text-sm text-ink/60 hover:text-ink mb-8">
           <ArrowLeft size={16} /> Back to Projects
         </Link>
 
         {project.category && (
-          <span className="text-xs uppercase tracking-widest text-accent-light">{project.category}</span>
+          <span className="text-xs uppercase tracking-widest text-accent-dark">{project.category}</span>
         )}
         <h1 className="font-display text-3xl md:text-4xl font-bold mt-3 mb-4">{project.title}</h1>
-        <p className="text-white/60 text-lg mb-8">{project.summary}</p>
+        <p className="text-ink/60 text-lg mb-8">{project.summary}</p>
 
         <div className="flex flex-wrap gap-3 mb-10">
           {project.live_url && project.live_url !== '#' && (
@@ -86,15 +86,15 @@ export default function ProjectDetailPage() {
         {project.case_study_enabled ? (
           <CaseStudy project={project} />
         ) : (
-          <div className="prose prose-invert max-w-none text-white/70 leading-relaxed whitespace-pre-line">
+          <div className="prose max-w-none text-ink/70 leading-relaxed whitespace-pre-line">
             {project.description}
           </div>
         )}
 
         {Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-10 pt-8 border-t border-white/10">
+          <div className="flex flex-wrap gap-2 mt-10 pt-8 border-t border-ink/10">
             {project.tech_stack.map((tech) => (
-              <span key={tech} className="text-xs px-3 py-1.5 rounded-full bg-white/5 text-white/60 border border-white/10">
+              <span key={tech} className="text-xs px-3 py-1.5 rounded-full bg-ink/5 text-ink/60 border border-ink/10">
                 {tech}
               </span>
             ))}

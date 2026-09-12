@@ -6,10 +6,11 @@ const { asyncHandler } = require('../middleware/error.middleware');
 const uploadMedia = asyncHandler(async (req, res) => {
   if (!req.file) throw AppError.badRequest('No file uploaded');
 
-  const kind = req.body.kind || 'image'; // image | resume | document
+  const kind = req.body.kind || 'image'; // image | video | resume | document
   let result;
   if (kind === 'resume') result = await mediaService.uploadResume(req.file);
   else if (kind === 'document') result = await mediaService.uploadDocument(req.file);
+  else if (kind === 'video') result = await mediaService.uploadVideo(req.file);
   else result = await mediaService.uploadImage(req.file);
 
   const record = await mediaModel.create({

@@ -27,8 +27,8 @@ function ResultCard({ item }) {
 
   return (
     <Link to={href} className="glass glass-hover rounded-2xl p-6 flex flex-col h-full">
-      <div className="flex items-center gap-3 text-xs text-white/50 mb-3">
-        <span className="uppercase tracking-widest text-accent-light">{isProject ? 'Project' : 'Blog'}</span>
+      <div className="flex items-center gap-3 text-xs text-ink/50 mb-3">
+        <span className="uppercase tracking-widest text-accent-dark">{isProject ? 'Project' : 'Blog'}</span>
         {!isProject && item.published_at && (
           <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(item.published_at)}</span>
         )}
@@ -37,11 +37,11 @@ function ResultCard({ item }) {
         )}
       </div>
       <h2 className="font-display font-semibold text-lg mb-2">{item.title}</h2>
-      {summary && <p className="text-sm text-white/55 flex-1 line-clamp-3">{summary}</p>}
+      {summary && <p className="text-sm text-ink/55 flex-1 line-clamp-3">{summary}</p>}
       {Array.isArray(tags) && tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-4">
           {tags.slice(0, 6).map((t) => (
-            <span key={t} className="text-[11px] px-2.5 py-1 rounded-full bg-white/5 text-white/60 border border-white/10">
+            <span key={t} className="text-[11px] px-2.5 py-1 rounded-full bg-ink/5 text-ink/60 border border-ink/10">
               {t}
             </span>
           ))}
@@ -141,7 +141,7 @@ export default function SearchPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 justify-center mb-6">
           <div className="relative w-full sm:w-96">
-            <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+            <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/50" />
             <input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -160,7 +160,7 @@ export default function SearchPage() {
               type="button"
               onClick={() => handleTypeChange(t.value)}
               className={`px-4 py-2 rounded-xl text-sm transition-colors ${
-                type === t.value ? 'bg-gradient-to-r from-accent to-cyan-accent text-white' : 'glass glass-hover text-white/60'
+                type === t.value ? 'bg-gradient-to-r from-accent to-cyan-accent text-white' : 'glass glass-hover text-ink/60'
               }`}
             >
               {t.label}
@@ -169,15 +169,15 @@ export default function SearchPage() {
         </div>
 
         {!activeQuery && (
-          <p className="text-center text-white/50">Start typing to search projects and blog posts.</p>
+          <p className="text-center text-ink/50">Start typing to search projects and blog posts.</p>
         )}
 
         {activeQuery && loading && (
-          <p className="text-center text-white/50">Searching…</p>
+          <p className="text-center text-ink/50">Searching…</p>
         )}
 
         {activeQuery && !loading && hasSearched && results.length === 0 && (
-          <p className="text-center text-white/50">No results for &quot;{activeQuery}&quot;.</p>
+          <p className="text-center text-ink/50">No results for &quot;{activeQuery}&quot;.</p>
         )}
 
         {activeQuery && !loading && results.length > 0 && (

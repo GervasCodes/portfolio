@@ -28,11 +28,11 @@ function NavLinks({ pathname, onNavigate }) {
             aria-current={active ? 'page' : undefined}
             className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm whitespace-nowrap transition-colors ${
               active
-                ? 'bg-gradient-to-r from-accent/25 to-cyan-accent/10 text-white border border-accent/30'
-                : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'
+                ? 'bg-gradient-to-r from-accent/25 to-cyan-accent/10 text-accent-dark font-medium border border-accent/30'
+                : 'text-ink/60 hover:text-ink hover:bg-ink/5 border border-transparent'
             }`}
           >
-            <Icon size={16} className={active ? 'text-accent-light' : ''} />
+            <Icon size={16} className={active ? 'text-accent-dark' : ''} />
             {label}
           </Link>
         );
@@ -76,14 +76,14 @@ export default function Sidebar() {
               aria-label="Toggle admin menu"
               aria-expanded={open}
               aria-controls="admin-mobile-nav"
-              className="flex items-center justify-center p-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-colors shrink-0"
+              className="flex items-center justify-center p-2.5 rounded-xl text-ink/60 hover:text-ink hover:bg-ink/5 transition-colors shrink-0"
             >
               {open ? <X size={16} /> : <Menu size={16} />}
             </button>
             <button
               onClick={handleLogout}
               aria-label="Logout"
-              className="flex items-center justify-center p-2.5 rounded-xl text-white/60 hover:text-red-400 hover:bg-red-500/5 transition-colors shrink-0"
+              className="flex items-center justify-center p-2.5 rounded-xl text-ink/60 hover:text-red-400 hover:bg-red-500/5 transition-colors shrink-0"
             >
               <LogOut size={16} />
             </button>
@@ -102,7 +102,7 @@ export default function Sidebar() {
               transition={{ duration: 0.2, ease: 'easeOut' }}
               className="md:hidden overflow-hidden mt-2"
             >
-              <div className="flex flex-col gap-1 pt-2 border-t border-white/10">
+              <div className="flex flex-col gap-1 pt-2 border-t border-ink/10">
                 <NavLinks pathname={pathname} onNavigate={() => setOpen(false)} />
               </div>
             </motion.nav>
@@ -116,7 +116,7 @@ export default function Sidebar() {
 
         <button
           onClick={handleLogout}
-          className="hidden md:flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/60 hover:text-red-400 hover:bg-red-500/5 transition-colors shrink-0 mt-4"
+          className="hidden md:flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ink/60 hover:text-red-400 hover:bg-red-500/5 transition-colors shrink-0 mt-4"
         >
           <LogOut size={16} />
           Logout

@@ -9,7 +9,7 @@ export default function Timeline({ title, items = [] }) {
   return (
     <div>
       <h2 className="font-display text-xl font-semibold mb-8">{title}</h2>
-      <div className="relative pl-6 border-l border-white/10 space-y-8">
+      <div className="relative pl-6 border-l border-ink/10 space-y-8">
         {items.map((item, i) => (
           <motion.div
             key={item.id || i}
@@ -26,12 +26,12 @@ export default function Timeline({ title, items = [] }) {
               <span className="relative inline-flex w-3 h-3 rounded-full bg-gradient-to-r from-accent to-cyan-accent" />
             </span>
             <div className="card-premium glass-hover p-5">
-              <p className="text-xs text-white/50 mb-1">
+              <p className="text-xs text-ink/50 mb-1">
                 {formatDate(item.start_date)} — {item.is_current ? 'Present' : formatDate(item.end_date)}
               </p>
               <h3 className="font-semibold">{item.title}</h3>
-              <p className="text-sm text-accent-light mb-2">{item.organization}</p>
-              {item.description && <p className="text-sm text-white/55">{item.description}</p>}
+              <p className="text-sm text-accent-dark mb-2">{item.organization}</p>
+              {item.description && <p className="text-sm text-ink/55">{item.description}</p>}
             </div>
           </motion.div>
         ))}

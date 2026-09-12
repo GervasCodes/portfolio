@@ -45,13 +45,13 @@ export default function Pagination({ basePath, page, limit, total, extraParams =
             to={buildHref(p)}
             aria-current={p === page ? 'page' : undefined}
             className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm transition-colors ${
-              p === page ? 'bg-gradient-to-r from-accent to-cyan-accent text-white' : 'glass glass-hover text-white/60'
+              p === page ? 'bg-gradient-to-r from-accent to-cyan-accent text-white' : 'glass glass-hover text-ink/60'
             }`}
           >
             {p}
           </Link>
         ) : (
-          <span key={p} className="w-10 h-10 flex items-center justify-center text-white/60 text-sm select-none">
+          <span key={p} className="w-10 h-10 flex items-center justify-center text-ink/60 text-sm select-none">
             …
           </span>
         )
