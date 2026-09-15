@@ -154,7 +154,10 @@ export const PortfolioAPI = {
   subscribeNewsletter: (email) => request(api.post('/newsletter/subscribe', { email })),
   confirmNewsletter: (token) => request(api.post('/newsletter/confirm', { token })),
   unsubscribeNewsletter: (token) => request(api.post('/newsletter/unsubscribe', { token })),
-  getNewsletterSubscribers: (limit) => request(api.get('/newsletter/subscribers', { params: { limit } })),
+  // Admin console: paginated/filterable subscriber list. Returns
+  // { data: { items, counts }, meta: { total, page, limit, pages } }.
+  getNewsletterSubscribers: (params) => request(api.get('/newsletter/subscribers', { params })),
+  deleteNewsletterSubscriber: (id) => request(api.delete(`/newsletter/subscribers/${id}`)),
   getNewsletterStats: (days) => request(api.get('/newsletter/stats', { params: { days } })),
 
   // Certificates

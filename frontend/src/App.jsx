@@ -39,6 +39,7 @@ const AdminProjectsPage = lazyWithRetry(() => import('@/pages/admin/AdminProject
 const AdminBlogPage = lazyWithRetry(() => import('@/pages/admin/AdminBlogPage'));
 const AdminCertificatesPage = lazyWithRetry(() => import('@/pages/admin/AdminCertificatesPage'));
 const AdminAchievementsPage = lazyWithRetry(() => import('@/pages/admin/AdminAchievementsPage'));
+const AdminSubscribersPage = lazyWithRetry(() => import('@/pages/admin/AdminSubscribersPage'));
 const AdminSettingsPage = lazyWithRetry(() => import('@/pages/admin/AdminSettingsPage'));
 
 export default function App() {
@@ -85,6 +86,7 @@ export default function App() {
               <Route path="/admin/blog" element={<AdminBlogPage />} />
               <Route path="/admin/certificates" element={<AdminCertificatesPage />} />
               <Route path="/admin/achievements" element={<AdminAchievementsPage />} />
+              <Route path="/admin/subscribers" element={<AdminSubscribersPage />} />
               <Route path="/admin/setting" element={<AdminSettingsPage />} />
 
               <Route path="*" element={<NotFoundPage />} />

@@ -55,7 +55,8 @@ export default function About({ profile }) {
               src="https://images.pexels.com/photos/34803978/pexels-photo-34803978.jpeg?auto=compress&cs=tinysrgb&w=1200"
               alt="Developer workspace with a laptop showing code, a plant, and a cup of coffee"
               loading="lazy"
-              className="w-full h-full object-cover"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/0 to-background/0" />
           </div>

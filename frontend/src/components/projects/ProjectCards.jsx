@@ -4,7 +4,7 @@ import { ArrowUpRight, Github } from 'lucide-react';
 
 export default function ProjectCards({ projects = [] }) {
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
       {projects.map((project, i) => (
         <ProjectCard key={project.id || project.slug} project={project} index={i} />
       ))}
@@ -19,18 +19,20 @@ export function ProjectCard({ project, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.06 }}
-      className="card-premium glass-hover overflow-hidden group flex flex-col"
+      className="card-premium glass-hover overflow-hidden group flex flex-col h-full"
     >
       <Link to={`/projects/${project.slug}`} className="block">
-        <div className="relative h-48 bg-gradient-to-br from-accent/30 to-cyan-accent/20 overflow-hidden">
+        <div className="relative w-full aspect-[16/10] bg-gradient-to-br from-accent/30 to-cyan-accent/20 overflow-hidden">
           {project.cover_image_url ? (
             <img
               src={project.cover_image_url}
               alt={project.title}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center font-display text-2xl text-ink/20">
+            <div className="absolute inset-0 flex items-center justify-center font-display text-2xl text-ink/20">
               {project.title?.slice(0, 2).toUpperCase()}
             </div>
           )}
@@ -49,11 +51,11 @@ export function ProjectCard({ project, index = 0 }) {
           <span className="text-xs uppercase tracking-wide text-accent-dark mb-2">{project.category}</span>
         )}
         <Link to={`/projects/${project.slug}`}>
-          <h3 className="font-display font-semibold text-lg mb-2 group-hover:text-gradient transition-colors">
+          <h3 className="font-display font-semibold text-lg mb-2 line-clamp-2 group-hover:text-gradient transition-colors">
             {project.title}
           </h3>
         </Link>
-        <p className="text-sm text-ink/55 mb-4 flex-1">{project.summary}</p>
+        <p className="text-sm text-ink/55 mb-4 flex-1 line-clamp-3">{project.summary}</p>
 
         {Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">

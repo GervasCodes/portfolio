@@ -16,7 +16,8 @@ export default function Hero({ profile }) {
           alt=""
           aria-hidden="true"
           loading="eager"
-          className="w-full h-full object-cover opacity-[0.08]"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover object-center opacity-[0.08]"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
       </div>
@@ -42,7 +43,8 @@ export default function Hero({ profile }) {
                 <img
                   src={profile.avatar_url}
                   alt={name}
-                  className="w-full h-full object-cover"
+                  decoding="async"
+                  className="w-full h-full object-cover object-center"
                 />
               </div>
             </div>

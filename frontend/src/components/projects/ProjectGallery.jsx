@@ -45,7 +45,7 @@ export default function ProjectGallery({ media, images = [] }) {
             {item.media_type === 'video' ? (
               <video
                 src={item.url}
-                className="w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover"
                 muted
                 playsInline
                 preload="metadata"
@@ -54,7 +54,9 @@ export default function ProjectGallery({ media, images = [] }) {
               <img
                 src={item.url}
                 alt={item.caption || `Screenshot ${i + 1}`}
-                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover object-center"
               />
             )}
             {item.media_type === 'video' && (
@@ -77,7 +79,7 @@ export default function ProjectGallery({ media, images = [] }) {
           >
             <button
               onClick={close}
-              className="absolute top-6 right-6 text-ink/70 hover:text-ink"
+              className="absolute top-5 right-5 z-10 p-2 rounded-full text-ink/70 hover:text-ink hover:bg-white/10 transition-colors"
               aria-label="Close gallery"
             >
               <X size={24} />
@@ -86,7 +88,7 @@ export default function ProjectGallery({ media, images = [] }) {
             {items.length > 1 && (
               <button
                 onClick={(e) => { e.stopPropagation(); prev(); }}
-                className="absolute left-4 md:left-10 text-ink/60 hover:text-ink"
+                className="absolute left-3 md:left-8 top-1/2 -translate-y-1/2 p-2 rounded-full text-ink/60 hover:text-ink hover:bg-white/10 transition-colors"
                 aria-label="Previous item"
               >
                 <ChevronLeft size={32} />
@@ -97,27 +99,33 @@ export default function ProjectGallery({ media, images = [] }) {
               key={active.id}
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative w-full max-w-4xl aspect-video"
+              className="relative w-full max-w-4xl flex flex-col items-center gap-4 px-10 md:px-16"
               onClick={(e) => e.stopPropagation()}
             >
               {active.media_type === 'video' ? (
-                <video src={active.url} className="w-full h-full object-contain" controls autoPlay />
+                <video
+                  src={active.url}
+                  className="max-w-full max-h-[78vh] rounded-lg"
+                  controls
+                  autoPlay
+                />
               ) : (
                 <img
                   src={active.url}
                   alt={active.caption || ''}
-                  className="absolute inset-0 w-full h-full object-contain"
+                  decoding="async"
+                  className="max-w-full max-h-[78vh] w-auto h-auto object-contain rounded-lg"
                 />
               )}
               {active.caption && (
-                <p className="absolute -bottom-8 inset-x-0 text-center text-sm text-ink/60">{active.caption}</p>
+                <p className="text-center text-sm text-ink/60 max-w-2xl">{active.caption}</p>
               )}
             </motion.div>
 
             {items.length > 1 && (
               <button
                 onClick={(e) => { e.stopPropagation(); next(); }}
-                className="absolute right-4 md:right-10 text-ink/60 hover:text-ink"
+                className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 p-2 rounded-full text-ink/60 hover:text-ink hover:bg-white/10 transition-colors"
                 aria-label="Next item"
               >
                 <ChevronRight size={32} />

@@ -180,7 +180,15 @@ export default function BlogDetailPage() {
 
         {post.cover_image_url && (
           <div className="rounded-2xl overflow-hidden mb-8">
-            <img src={post.cover_image_url} alt="" className="w-full max-h-[420px] object-cover" />
+            <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-ink/5">
+              <img
+                src={post.cover_image_url}
+                alt=""
+                loading="eager"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover object-center"
+              />
+            </div>
           </div>
         )}
 

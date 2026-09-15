@@ -53,7 +53,8 @@ export default function ProfilePage() {
                   <img
                     src={profile.avatar_url}
                     alt={profile?.full_name || 'Profile photo'}
-                    className="w-full h-full object-cover"
+                    decoding="async"
+                    className="w-full h-full object-cover object-center"
                   />
                 ) : (
                   <span className="font-display text-2xl text-ink/60">

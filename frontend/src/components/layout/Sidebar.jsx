@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutDashboard, FolderKanban, Newspaper, Settings, LogOut, User, Award, Trophy, BarChart3, Briefcase, Menu, X } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Newspaper, Settings, LogOut, User, Award, Trophy, BarChart3, Briefcase, Mail, Menu, X } from 'lucide-react';
 import { PortfolioAPI } from '@/services/api';
 
 const NAV = [
@@ -12,6 +12,7 @@ const NAV = [
   { href: '/admin/blog', label: 'Blog', icon: Newspaper },
   { href: '/admin/certificates', label: 'Certificates', icon: Award },
   { href: '/admin/achievements', label: 'Achievements', icon: Trophy },
+  { href: '/admin/subscribers', label: 'Subscribers', icon: Mail },
   { href: '/admin/setting', label: 'Settings', icon: Settings },
 ];
 

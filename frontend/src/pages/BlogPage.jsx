@@ -84,23 +84,33 @@ export default function BlogPage() {
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto items-stretch">
           {posts.map((post) => (
             <Link
               key={post.id || post.slug}
               to={`/blog/${post.slug}`}
-              className="glass glass-hover rounded-2xl overflow-hidden flex flex-col"
+              className="glass glass-hover rounded-2xl overflow-hidden flex flex-col group h-full"
             >
-              {post.cover_image_url && (
-                <div className="h-40 w-full overflow-hidden">
+              {/* Every card gets the same fixed-ratio media block, whether or
+                  not the post has a cover. Previously posts without one had
+                  no block at all, so their titles sat 160px higher than their
+                  neighbours' and the grid rows never lined up. */}
+              <div className="relative w-full aspect-[16/9] overflow-hidden bg-gradient-to-br from-accent/25 to-cyan-accent/15">
+                {post.cover_image_url ? (
                   <img
                     src={post.cover_image_url}
                     alt=""
-                    className="w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
+                    decoding="async"
                   />
-                </div>
-              )}
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center font-display text-3xl text-ink/20">
+                    {post.title?.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+              </div>
               <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-center gap-4 text-xs text-ink/50 mb-3">
                   <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(post.published_at)}</span>

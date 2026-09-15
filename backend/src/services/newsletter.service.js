@@ -18,20 +18,33 @@ function tokenExpiry() {
   return new Date(Date.now() + CONFIRM_TOKEN_TTL_HOURS * 60 * 60 * 1000);
 }
 
+/**
+ * Strips the opt-in/unsubscribe secret before a subscriber row ever leaves
+ * the server. The admin console only ever needs email/status/dates, and a
+ * leaked confirm_token would let anyone confirm or unsubscribe that address.
+ */
+function toPublicSubscriber(row) {
+  if (!row) return row;
+  const { confirm_token, confirm_token_expires_at, ...safe } = row;
+  return safe;
+}
+
 class NewsletterService {
   /**
    * Double opt-in step 1. Idempotent by email:
    * - already confirmed -> no-op, tell the caller so the UI can say "you're already subscribed"
-   * - pending or previously unsubscribed -> (re)issue a token and resend the confirmation email
+   * - pending -> resend the confirmation email, and flag it as already pending
+   * - previously unsubscribed -> (re)issue a token and resend the confirmation email
    * - new email -> create a pending row and send the confirmation email
    */
   async subscribe(email) {
     const existing = await newsletterModel.findByEmail(email);
 
     if (existing?.status === 'confirmed') {
-      return { alreadyConfirmed: true, subscriber: existing };
+      return { alreadyConfirmed: true, alreadyPending: false, subscriber: toPublicSubscriber(existing) };
     }
 
+    const alreadyPending = existing?.status === 'pending';
     const token = generateToken();
     const confirm_token_expires_at = tokenExpiry();
 
@@ -43,7 +56,7 @@ class NewsletterService {
 
     const confirmUrl = `${env.CLIENT_URL}/newsletter/confirm?token=${token}`;
     await notifyNewsletterConfirm(email, confirmUrl);
-    return { alreadyConfirmed: false, subscriber };
+    return { alreadyConfirmed: false, alreadyPending, subscriber: toPublicSubscriber(subscriber) };
   }
 
   async confirm(token) {
@@ -68,8 +81,58 @@ class NewsletterService {
     });
   }
 
-  async listSubscribers({ limit = 200 } = {}) {
-    return newsletterModel.findAll({ orderBy: 'created_at DESC', limit, offset: 0 });
+  /**
+   * Admin console listing: paginated, optionally filtered by status and by a
+   * substring of the email address. Returns `{ items, total, counts }` so the
+   * page can render the table, the pager and the status tabs from one call.
+   */
+  async listSubscribers({ limit = 50, offset = 0, status = null, search = '' } = {}) {
+    const clauses = [];
+    const params = [];
+
+    if (status && status !== 'all') {
+      clauses.push('status = ?');
+      params.push(status);
+    }
+    if (search) {
+      clauses.push('email LIKE ?');
+      params.push(`%${search}%`);
+    }
+    const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+
+    const items = await db.query(
+      `SELECT id, email, status, created_at, confirmed_at, unsubscribed_at
+       FROM newsletter_subscribers ${where}
+       ORDER BY created_at DESC
+       LIMIT ? OFFSET ?`,
+      [...params, Number(limit), Number(offset)]
+    );
+
+    const totalRows = await db.query(
+      `SELECT COUNT(*) AS total FROM newsletter_subscribers ${where}`,
+      params
+    );
+
+    // Status tallies are deliberately unfiltered — the tabs should keep
+    // showing every bucket's size even while one of them is selected.
+    const countRows = await db.query(
+      `SELECT status, COUNT(*) AS total FROM newsletter_subscribers GROUP BY status`
+    );
+    const counts = { all: 0, pending: 0, confirmed: 0, unsubscribed: 0 };
+    for (const row of countRows) {
+      counts[row.status] = Number(row.total) || 0;
+      counts.all += Number(row.total) || 0;
+    }
+
+    return { items, total: Number(totalRows[0]?.total) || 0, counts };
+  }
+
+  /** Hard-delete a subscriber from the admin console (GDPR "forget me" requests). */
+  async removeSubscriber(id) {
+    const existing = await newsletterModel.findById(id);
+    if (!existing) throw AppError.notFound('Subscriber not found');
+    await newsletterModel.delete(id);
+    return { id: existing.id, email: existing.email };
   }
 
   // Signup-count-over-time data for the admin dashboard widget — same
@@ -79,7 +142,9 @@ class NewsletterService {
   async getSignupSummary({ days = 30 } = {}) {
     const totals = await db.query(
       `SELECT COUNT(*) AS total_subscribers,
-              SUM(status = 'confirmed') AS confirmed_subscribers
+              SUM(status = 'confirmed') AS confirmed_subscribers,
+              SUM(status = 'pending') AS pending_subscribers,
+              SUM(status = 'unsubscribed') AS unsubscribed_subscribers
        FROM newsletter_subscribers`
     );
     const dailyTrend = await db.query(
@@ -90,8 +155,10 @@ class NewsletterService {
     );
 
     return {
-      totalSubscribers: totals[0]?.total_subscribers ?? 0,
+      totalSubscribers: Number(totals[0]?.total_subscribers) || 0,
       confirmedSubscribers: Number(totals[0]?.confirmed_subscribers) || 0,
+      pendingSubscribers: Number(totals[0]?.pending_subscribers) || 0,
+      unsubscribedSubscribers: Number(totals[0]?.unsubscribed_subscribers) || 0,
       dailyTrend,
     };
   }
