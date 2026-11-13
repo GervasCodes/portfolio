@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Award, Trophy, ExternalLink } from 'lucide-react';
 import ProjectGallery from '@/components/projects/ProjectGallery';
 
@@ -11,28 +10,24 @@ export default function CertificatesAchievements({ certificates = [], achievemen
         {certificates.length > 0 && (
           <div>
             <h2 className="font-display text-xl font-semibold mb-6 flex items-center gap-2">
-              <Award size={18} className="text-accent-dark" /> Certifications
+              <Award size={18} className="text-accent" /> Certifications
             </h2>
             <div className="space-y-3">
               {certificates.map((c, i) => (
-                <motion.div
+                <div
                   key={c.id || i}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="card-premium glass-hover p-4 flex items-center justify-between gap-3"
+                  className="card surface-hover p-4 flex items-center justify-between gap-3"
                 >
                   <div>
                     <p className="font-medium text-sm">{c.title}</p>
-                    <p className="text-xs text-ink/45">{c.issuer}</p>
+                    <p className="text-xs text-muted">{c.issuer}</p>
                   </div>
                   {c.credential_url && (
-                    <a href={c.credential_url} target="_blank" rel="noreferrer" className="text-ink/50 hover:text-ink">
+                    <a href={c.credential_url} target="_blank" rel="noreferrer" className="text-muted hover:text-ink">
                       <ExternalLink size={14} />
                     </a>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -41,26 +36,22 @@ export default function CertificatesAchievements({ certificates = [], achievemen
         {achievements.length > 0 && (
           <div>
             <h2 className="font-display text-xl font-semibold mb-6 flex items-center gap-2">
-              <Trophy size={18} className="text-accent-dark" /> Achievements
+              <Trophy size={18} className="text-accent" /> Achievements
             </h2>
             <div className="space-y-3">
               {achievements.map((a, i) => (
-                <motion.div
+                <div
                   key={a.id || i}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="card-premium glass-hover p-4"
+                  className="card surface-hover p-4"
                 >
                   <p className="font-medium text-sm">{a.title}</p>
-                  {a.description && <p className="text-xs text-ink/45 mt-1">{a.description}</p>}
+                  {a.description && <p className="text-xs text-muted mt-1">{a.description}</p>}
                   {Array.isArray(a.gallery) && a.gallery.length > 0 && (
                     <div className="mt-3">
                       <ProjectGallery images={a.gallery} />
                     </div>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>

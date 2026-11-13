@@ -1,157 +1,31 @@
-import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Code2, Layers, Gauge } from 'lucide-react';
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';
+import SectionHeader from '@/components/ui/SectionHeader';
+import Tag from '@/components/ui/Tag';
 
-function CategoryTick({ x, y, textAnchor, payload, activeCategory, onHover }) {
-  const active = payload.value === activeCategory;
-  return (
-    <text
-      x={x}
-      y={y}
-      textAnchor={textAnchor}
-      onMouseEnter={() => onHover(payload.value)}
-      onMouseLeave={() => onHover(null)}
-      style={{ cursor: 'pointer', transition: 'fill 0.15s ease, font-weight 0.15s ease' }}
-      fill={active ? '#8a6a35' : 'rgba(15,23,20,0.55)'}
-      fontSize={active ? 12 : 11}
-      fontWeight={active ? 600 : 400}
-    >
-      {payload.value}
-    </text>
-  );
-}
-
+/**
+ * Skills as grouped lists. No percentages, bars or radar: a self-rated
+ * number says little, so each group simply names the technologies.
+ */
 export default function Skills({ grouped = {} }) {
-  const categories = Object.keys(grouped);
-  const allSkills = useMemo(() => categories.flatMap((c) => grouped[c]), [grouped, categories]);
-  // Links the radar chart and the category cards below it — hovering
-  // either highlights the other, so the two visualizations read as one
-  // connected piece instead of two unrelated widgets stacked on the
-  // page. No new dependency: just shared React state driving both.
-  const [activeCategory, setActiveCategory] = useState(null);
-
-  const stats = useMemo(() => {
-    const total = allSkills.length;
-    const avg = total ? Math.round(allSkills.reduce((s, k) => s + (Number(k.proficiency) || 0), 0) / total) : 0;
-    return { total, avg, categoryCount: categories.length };
-  }, [allSkills, categories]);
-
-  const radarData = useMemo(
-    () =>
-      categories.map((category) => {
-        const items = grouped[category];
-        const avg = items.length
-          ? Math.round(items.reduce((s, k) => s + (Number(k.proficiency) || 0), 0) / items.length)
-          : 0;
-        return { category, avg };
-      }),
-    [grouped, categories]
-  );
+  const categories = Object.keys(grouped).filter((c) => grouped[c]?.length);
+  if (!categories.length) return null;
 
   return (
-    <section id="skills" className="py-24">
+    <section id="skills" className="py-16">
       <div className="container-page">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <p className="section-label">Skills</p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold">
-            Technologies I <span className="text-gradient">work with</span>
-          </h2>
-        </div>
-
-        {allSkills.length > 0 && (
-          <div className="grid sm:grid-cols-3 gap-4 mb-10 max-w-3xl mx-auto">
-            <StatCard icon={<Code2 size={16} />} label="Skills" value={stats.total} />
-            <StatCard icon={<Layers size={16} />} label="Categories" value={stats.categoryCount} />
-            <StatCard icon={<Gauge size={16} />} label="Avg. Proficiency" value={`${stats.avg}%`} />
-          </div>
-        )}
-
-        {radarData.length > 2 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="card-premium glass-hover p-6 mb-10 max-w-2xl mx-auto"
-          >
-            <h3 className="font-display font-semibold mb-2 text-center text-sm text-ink/70">Category Strength Overview</h3>
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={radarData} outerRadius="70%">
-                  <PolarGrid stroke="rgba(15,23,20,0.12)" />
-                  <PolarAngleAxis
-                    dataKey="category"
-                    tick={<CategoryTick activeCategory={activeCategory} onHover={setActiveCategory} />}
-                  />
-                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: 'rgba(15,23,20,0.4)', fontSize: 9 }} />
-                  <Radar dataKey="avg" stroke="#c9a267" fill="#6f8f6b" fillOpacity={0.45} />
-                  <Tooltip
-                    contentStyle={{ background: 'rgba(255,255,255,0.97)', border: '1px solid rgba(15,23,20,0.12)', borderRadius: 12, fontSize: 12, color: '#14171a' }}
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-        )}
-
-        <div className="grid md:grid-cols-2 gap-6">
-          {categories.map((category, i) => (
-            <motion.div
-              key={category}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              onMouseEnter={() => setActiveCategory(category)}
-              onMouseLeave={() => setActiveCategory(null)}
-              className={`card-premium glass-hover p-6 transition-shadow duration-200 ${
-                activeCategory === category ? 'is-active shadow-glow' : ''
-              }`}
-            >
-              <h3 className="font-display font-semibold mb-5 flex items-center gap-2">
-                <span className="w-8 h-8 rounded-lg bg-ink/5 border border-ink/10 flex items-center justify-center shrink-0">
-                  <Code2 size={14} className="text-accent-dark" />
-                </span>
-                {category}
-              </h3>
-              <div className="space-y-4">
+        <SectionHeader eyebrow="Skills" title="Technologies I work with" />
+        <dl className="divide-y divide-line border-y border-line">
+          {categories.map((category) => (
+            <div key={category} className="grid gap-3 py-5 md:grid-cols-[1fr_3fr] md:gap-10">
+              <dt className="font-display text-lg">{category}</dt>
+              <dd className="m-0 flex flex-wrap gap-2">
                 {grouped[category].map((skill) => (
-                  <div key={skill.id || skill.name}>
-                    <div className="flex justify-between text-sm mb-1.5">
-                      <span className="text-ink/80">{skill.name}</span>
-                      <span className="text-ink/50">{skill.proficiency ?? 80}%</span>
-                    </div>
-                    <div className="h-1.5 rounded-full bg-ink/5 overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.proficiency ?? 80}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, ease: 'easeOut' }}
-                        className="h-full rounded-full bg-gradient-to-r from-accent to-cyan-accent"
-                      />
-                    </div>
-                  </div>
+                  <Tag key={skill.id || skill.name}>{skill.name}</Tag>
                 ))}
-              </div>
-            </motion.div>
+              </dd>
+            </div>
           ))}
-        </div>
+        </dl>
       </div>
     </section>
-  );
-}
-
-function StatCard({ icon, label, value }) {
-  return (
-    <div className="glass rounded-2xl p-4 flex items-center gap-3">
-      <span className="w-9 h-9 rounded-lg bg-ink/5 border border-ink/10 flex items-center justify-center shrink-0 text-accent-dark">
-        {icon}
-      </span>
-      <div className="min-w-0">
-        <p className="text-lg font-display font-bold leading-tight">{value}</p>
-        <p className="text-xs text-ink/50 truncate">{label}</p>
-      </div>
-    </div>
   );
 }

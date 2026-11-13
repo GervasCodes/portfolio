@@ -41,16 +41,16 @@ export default function NewsletterSignup({ className = '' }) {
       <div
         role="status"
         aria-live="polite"
-        className={`glass rounded-2xl p-6 flex items-start gap-3 border border-amber-500/25 ${className}`}
+        className={`surface rounded-2xl p-6 flex items-start gap-3 border border-warning/25 ${className}`}
       >
-        <Info className="text-amber-400 shrink-0 mt-0.5" size={20} />
+        <Info className="text-warning shrink-0 mt-0.5" size={20} />
         <div className="min-w-0">
           <p className="text-sm font-medium text-ink/85">You&apos;re already subscribed</p>
           <p className="text-sm text-ink/55 mt-1 break-words">{message}</p>
           <button
             type="button"
             onClick={() => { setStatus('idle'); setEmail(''); setMessage(''); }}
-            className="text-sm text-accent-dark hover:underline mt-2.5"
+            className="text-sm text-accent hover:underline mt-2.5"
           >
             Use a different email
           </button>
@@ -64,20 +64,20 @@ export default function NewsletterSignup({ className = '' }) {
       <div
         role="status"
         aria-live="polite"
-        className={`glass rounded-2xl p-6 flex items-start gap-3 border border-emerald-500/25 ${className}`}
+        className={`surface rounded-2xl p-6 flex items-start gap-3 border border-success/25 ${className}`}
       >
-        <CheckCircle2 className="text-emerald-400 shrink-0 mt-0.5" size={20} />
+        <CheckCircle2 className="text-success shrink-0 mt-0.5" size={20} />
         <p className="text-sm text-ink/70 min-w-0 break-words">{message}</p>
       </div>
     );
   }
 
   return (
-    <div className={`glass rounded-2xl p-6 ${className}`}>
+    <div className={`surface rounded-2xl p-6 ${className}`}>
       <h3 className="font-display font-semibold flex items-center gap-2 mb-1">
-        <Mail size={16} className="text-accent-dark shrink-0" /> Get notified on new posts
+        <Mail size={16} className="text-accent shrink-0" /> Get notified on new posts
       </h3>
-      <p className="text-sm text-ink/50 mb-4">No spam — just an email when something new goes up.</p>
+      <p className="text-sm text-muted mb-4">No spam — just an email when something new goes up.</p>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
         <label htmlFor="newsletter-email" className="sr-only">Your email</label>
         <input
@@ -96,7 +96,7 @@ export default function NewsletterSignup({ className = '' }) {
           {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
         </Button>
       </form>
-      {status === 'error' && <p role="alert" className="text-sm text-red-400 mt-2">{message}</p>}
+      {status === 'error' && <p role="alert" className="text-sm text-danger mt-2">{message}</p>}
     </div>
   );
 }

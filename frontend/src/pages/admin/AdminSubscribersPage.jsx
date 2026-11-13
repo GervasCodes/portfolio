@@ -19,9 +19,9 @@ const TABS = [
 ];
 
 const STATUS_STYLES = {
-  confirmed: { cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30', Icon: MailCheck },
-  pending: { cls: 'bg-amber-500/10 text-amber-400 border-amber-500/30', Icon: MailWarning },
-  unsubscribed: { cls: 'bg-ink/5 text-ink/45 border-ink/15', Icon: MailX },
+  confirmed: { cls: 'bg-success/10 text-success border-success/30', Icon: MailCheck },
+  pending: { cls: 'bg-warning/10 text-warning border-warning/30', Icon: MailWarning },
+  unsubscribed: { cls: 'bg-ink/5 text-muted border-ink/15', Icon: MailX },
 };
 
 function StatusPill({ status }) {
@@ -44,15 +44,15 @@ function formatDate(value) {
 /** Small stat tile — same visual language as the other admin dashboards. */
 function StatTile({ label, value, tone = 'default' }) {
   const toneCls = {
-    default: 'text-gradient',
-    emerald: 'text-emerald-400',
-    amber: 'text-amber-400',
-    muted: 'text-ink/45',
+    default: 'text-accent',
+    emerald: 'text-success',
+    amber: 'text-warning',
+    muted: 'text-muted',
   }[tone];
   return (
-    <div className="card-premium glass-hover p-5 text-center">
+    <div className="card surface-hover p-5 text-center">
       <p className={`font-display text-2xl md:text-3xl font-bold ${toneCls}`}>{value}</p>
-      <p className="text-[11px] uppercase tracking-wide text-ink/45 mt-1.5">{label}</p>
+      <p className="text-[11px] uppercase tracking-wide text-muted mt-1.5">{label}</p>
     </div>
   );
 }
@@ -151,7 +151,7 @@ export default function AdminSubscribersPage() {
       </div>
 
       {/* Filter bar */}
-      <div className="glass rounded-2xl p-4 mb-5 flex flex-col lg:flex-row lg:items-center gap-4">
+      <div className="surface rounded-2xl p-4 mb-5 flex flex-col lg:flex-row lg:items-center gap-4">
         <div className="flex flex-wrap gap-2">
           {TABS.map((tab) => {
             const active = status === tab.key;
@@ -162,12 +162,12 @@ export default function AdminSubscribersPage() {
                 aria-pressed={active}
                 className={`text-sm px-3.5 py-2 rounded-xl border transition-colors whitespace-nowrap ${
                   active
-                    ? 'bg-gradient-to-r from-accent/25 to-cyan-accent/10 text-accent-dark font-medium border-accent/30'
+                    ? 'bg-accent/10 text-accent font-medium border-accent/30'
                     : 'text-ink/60 hover:text-ink hover:bg-ink/5 border-transparent'
                 }`}
               >
                 {tab.label}
-                <span className="ml-2 text-[11px] text-ink/40">{counts[tab.key] ?? 0}</span>
+                <span className="ml-2 text-[11px] text-muted">{counts[tab.key] ?? 0}</span>
               </button>
             );
           })}
@@ -175,7 +175,7 @@ export default function AdminSubscribersPage() {
 
         <div className="lg:ml-auto flex items-center gap-2 w-full lg:w-auto">
           <div className="relative flex-1 lg:w-64">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/35 pointer-events-none" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
             <label htmlFor="subscriber-search" className="sr-only">Search subscribers by email</label>
             <input
               id="subscriber-search"
@@ -202,18 +202,18 @@ export default function AdminSubscribersPage() {
       </div>
 
       {error && (
-        <p role="alert" className="glass rounded-2xl p-4 mb-5 text-sm text-red-400">{error}</p>
+        <p role="alert" className="surface rounded-2xl p-4 mb-5 text-sm text-danger">{error}</p>
       )}
 
-      <div className="glass rounded-2xl overflow-hidden">
+      <div className="surface rounded-2xl overflow-hidden">
         {loading ? (
-          <div className="py-16 flex items-center justify-center gap-2 text-ink/45 text-sm">
+          <div className="py-16 flex items-center justify-center gap-2 text-muted text-sm">
             <Loader2 size={18} className="animate-spin" /> Loading subscribers...
           </div>
         ) : items.length === 0 ? (
           <div className="py-16 text-center">
-            <Users size={28} className="mx-auto text-ink/20 mb-3" />
-            <p className="text-sm text-ink/50">
+            <Users size={28} className="mx-auto text-muted mb-3" />
+            <p className="text-sm text-muted">
               {search || status !== 'all'
                 ? 'No subscribers match this filter.'
                 : 'No one has subscribed yet.'}
@@ -223,7 +223,7 @@ export default function AdminSubscribersPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wide text-ink/40 border-b border-ink/10">
+                <tr className="text-left text-[11px] uppercase tracking-wide text-muted border-b border-ink/10">
                   <th scope="col" className="font-medium px-5 py-3.5">Email</th>
                   <th scope="col" className="font-medium px-5 py-3.5">Status</th>
                   <th scope="col" className="font-medium px-5 py-3.5 whitespace-nowrap">Signed up</th>
@@ -245,7 +245,7 @@ export default function AdminSubscribersPage() {
                         onClick={() => handleDelete(subscriber)}
                         disabled={deletingId === subscriber.id}
                         aria-label={`Remove ${subscriber.email}`}
-                        className="inline-flex items-center justify-center p-2 rounded-lg text-ink/40 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-40"
+                        className="inline-flex items-center justify-center p-2 rounded-lg text-muted hover:text-danger hover:bg-danger/10 transition-colors disabled:opacity-40"
                       >
                         {deletingId === subscriber.id
                           ? <Loader2 size={15} className="animate-spin" />
@@ -262,7 +262,7 @@ export default function AdminSubscribersPage() {
 
       {meta.pages > 1 && (
         <div className="flex items-center justify-between gap-4 mt-5">
-          <p className="text-xs text-ink/45">
+          <p className="text-xs text-muted">
             Page {meta.page} of {meta.pages} · {meta.total} subscriber{meta.total === 1 ? '' : 's'}
           </p>
           <div className="flex items-center gap-2">
@@ -270,7 +270,7 @@ export default function AdminSubscribersPage() {
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
               disabled={meta.page <= 1}
               aria-label="Previous page"
-              className="glass glass-hover w-9 h-9 rounded-xl flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none"
+              className="surface surface-hover w-9 h-9 rounded-xl flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none"
             >
               <ChevronLeft size={15} />
             </button>
@@ -278,7 +278,7 @@ export default function AdminSubscribersPage() {
               onClick={() => setPage((p) => Math.min(p + 1, meta.pages))}
               disabled={meta.page >= meta.pages}
               aria-label="Next page"
-              className="glass glass-hover w-9 h-9 rounded-xl flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none"
+              className="surface surface-hover w-9 h-9 rounded-xl flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none"
             >
               <ChevronRight size={15} />
             </button>

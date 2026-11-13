@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Plus, Pencil, Trash2, GripVertical } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import BarSeries from '@/components/ui/BarSeries';
 import AdminShell from '@/components/layout/AdminShell';
 import Button from '@/components/ui/Buttons';
 import Modal from '@/components/ui/modal';
@@ -95,28 +95,9 @@ export default function AdminSkillsPage() {
       </div>
 
       {chartData.length > 0 && (
-        <div className="glass rounded-2xl p-5 mb-6">
+        <div className="surface rounded-2xl p-5 mb-6">
           <h3 className="font-display font-semibold text-sm mb-4 text-ink/70">Average Proficiency by Category</h3>
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,20,0.1)" vertical={false} />
-                <XAxis dataKey="category" tick={{ fill: 'rgba(15,23,20,0.55)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis domain={[0, 100]} tick={{ fill: 'rgba(15,23,20,0.55)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip
-                  contentStyle={{ background: 'rgba(255,255,255,0.97)', border: '1px solid rgba(15,23,20,0.12)', borderRadius: 12, fontSize: 12, color: '#14171a' }}
-                  cursor={{ fill: 'rgba(15,23,20,0.05)' }}
-                />
-                <Bar dataKey="avg" radius={[6, 6, 0, 0]} fill="url(#skillGradient)" />
-                <defs>
-                  <linearGradient id="skillGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#6f8f6b" />
-                    <stop offset="100%" stopColor="#c9a267" />
-                  </linearGradient>
-                </defs>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <BarSeries data={chartData} labelKey="category" valueKey="avg" max={100} formatValue={(v) => `${v}%`} label="Average proficiency by category" />
         </div>
       )}
 
@@ -126,28 +107,28 @@ export default function AdminSkillsPage() {
 
       <div className="space-y-6">
         {categories.map((category) => (
-          <div key={category} className="glass rounded-2xl p-5">
+          <div key={category} className="surface rounded-2xl p-5">
             <h3 className="font-display font-semibold mb-4">{category}</h3>
             <div className="space-y-3">
               {grouped[category].map((skill) => (
                 <div key={skill.id} className="flex items-center gap-3">
-                  <GripVertical size={14} className="text-ink/20 shrink-0" />
+                  <GripVertical size={14} className="text-muted shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-ink/80 truncate">{skill.name}</span>
-                      <span className="text-ink/50">{skill.proficiency ?? 0}%</span>
+                      <span className="text-muted">{skill.proficiency ?? 0}%</span>
                     </div>
                     <div className="h-1.5 rounded-full bg-ink/5 overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-accent to-cyan-accent"
+                        className="h-full rounded-full bg-accent"
                         style={{ width: `${skill.proficiency ?? 0}%` }}
                       />
                     </div>
                   </div>
-                  <button onClick={() => openEdit(skill)} className="text-xs text-ink/50 hover:text-ink flex items-center gap-1 shrink-0">
+                  <button onClick={() => openEdit(skill)} className="text-xs text-muted hover:text-ink flex items-center gap-1 shrink-0">
                     <Pencil size={12} />
                   </button>
-                  <button onClick={() => handleDelete(skill.id)} className="text-xs text-ink/50 hover:text-red-400 flex items-center gap-1 shrink-0">
+                  <button onClick={() => handleDelete(skill.id)} className="text-xs text-muted hover:text-danger flex items-center gap-1 shrink-0">
                     <Trash2 size={12} />
                   </button>
                 </div>
@@ -155,7 +136,7 @@ export default function AdminSkillsPage() {
             </div>
           </div>
         ))}
-        {!categories.length && <p className="text-sm text-ink/50">No skills yet. Add your first one.</p>}
+        {!categories.length && <p className="text-sm text-muted">No skills yet. Add your first one.</p>}
       </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Edit Skill' : 'New Skill'}>
@@ -164,7 +145,7 @@ export default function AdminSkillsPage() {
           <Input label="Category" name="category" value={form.category} onChange={handleChange} required placeholder="e.g. Frontend" />
 
           <div>
-            <label className="block text-xs text-ink/50 mb-1.5">
+            <label className="block text-xs text-muted mb-1.5">
               Proficiency — {form.proficiency ?? 0}%
             </label>
             <input
@@ -193,8 +174,8 @@ export default function AdminSkillsPage() {
 
 function StatCard({ label, value }) {
   return (
-    <div className="glass rounded-2xl p-5">
-      <p className="text-xs text-ink/50 mb-1.5">{label}</p>
+    <div className="surface rounded-2xl p-5">
+      <p className="text-xs text-muted mb-1.5">{label}</p>
       <p className="font-display text-2xl font-bold">{value}</p>
     </div>
   );
@@ -203,7 +184,7 @@ function StatCard({ label, value }) {
 function Input({ label, ...props }) {
   return (
     <div>
-      <label className="block text-xs text-ink/50 mb-1.5">{label}</label>
+      <label className="block text-xs text-muted mb-1.5">{label}</label>
       <input {...props} className="w-full input-field px-4 py-2.5 text-sm" />
     </div>
   );

@@ -44,7 +44,7 @@ export default function ExperiencePage() {
         <div className="text-center max-w-2xl mx-auto mb-16">
           <p className="section-label">Journey</p>
           <h1 className="font-display text-3xl md:text-4xl font-bold">
-            Experience &amp; <span className="text-gradient">Education</span>
+            Experience &amp; <span className="text-accent">Education</span>
           </h1>
         </div>
 

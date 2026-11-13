@@ -86,26 +86,26 @@ export default function AdminAchievementsPage() {
 
       <div className="space-y-3">
         {items.map((item) => (
-          <div key={item.id} className="glass rounded-2xl p-5 flex items-start justify-between gap-4">
+          <div key={item.id} className="surface rounded-2xl p-5 flex items-start justify-between gap-4">
             <div>
               <h3 className="font-semibold">{item.title}</h3>
-              {item.date && <p className="text-xs text-ink/50 mt-0.5">{new Date(item.date).toLocaleDateString()}</p>}
+              {item.date && <p className="text-xs text-muted mt-0.5">{new Date(item.date).toLocaleDateString()}</p>}
               {item.description && <p className="text-sm text-ink/55 mt-2">{item.description}</p>}
               {Array.isArray(item.gallery) && item.gallery.length > 0 && (
-                <p className="text-[11px] text-accent-dark mt-2">{item.gallery.length} photo{item.gallery.length > 1 ? 's' : ''} attached</p>
+                <p className="text-[11px] text-accent mt-2">{item.gallery.length} photo{item.gallery.length > 1 ? 's' : ''} attached</p>
               )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <button onClick={() => openEdit(item)} className="p-2 text-ink/50 hover:text-ink" aria-label="Edit">
+              <button onClick={() => openEdit(item)} className="p-2 text-muted hover:text-ink" aria-label="Edit">
                 <Pencil size={14} />
               </button>
-              <button onClick={() => handleDelete(item.id)} className="p-2 text-ink/50 hover:text-red-400" aria-label="Delete">
+              <button onClick={() => handleDelete(item.id)} className="p-2 text-muted hover:text-danger" aria-label="Delete">
                 <Trash2 size={14} />
               </button>
             </div>
           </div>
         ))}
-        {!items.length && <p className="text-sm text-ink/50">No achievements yet.</p>}
+        {!items.length && <p className="text-sm text-muted">No achievements yet.</p>}
       </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Edit Achievement' : 'New Achievement'}>
@@ -115,10 +115,10 @@ export default function AdminAchievementsPage() {
           <TextArea label="Description" name="description" value={form.description} onChange={handleChange} />
 
           <div>
-            <label className="block text-xs text-ink/50 mb-1.5">Image Gallery (optional)</label>
+            <label className="block text-xs text-muted mb-1.5">Image Gallery (optional)</label>
             <div className="flex flex-wrap gap-3">
               {(form.gallery || []).map((url) => (
-                <div key={url} className="relative w-16 h-16 rounded-lg overflow-hidden glass group">
+                <div key={url} className="relative w-16 h-16 rounded-lg overflow-hidden surface group">
                   <img src={url} alt="" className="w-full h-full object-cover" />
                   <button
                     type="button"
@@ -130,12 +130,12 @@ export default function AdminAchievementsPage() {
                   </button>
                 </div>
               ))}
-              <label className="w-16 h-16 rounded-lg glass glass-hover flex items-center justify-center cursor-pointer text-ink/50">
+              <label className="w-16 h-16 rounded-lg surface surface-hover flex items-center justify-center cursor-pointer text-muted">
                 <Upload size={16} />
                 <input type="file" accept="image/*" multiple className="hidden" onChange={handleGalleryUpload} />
               </label>
             </div>
-            <p className="text-[11px] text-ink/40 mt-1.5">Optional — add one or more photos for this achievement.</p>
+            <p className="text-[11px] text-muted mt-1.5">Optional — add one or more photos for this achievement.</p>
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
@@ -151,7 +151,7 @@ export default function AdminAchievementsPage() {
 function Input({ label, ...props }) {
   return (
     <div>
-      <label className="block text-xs text-ink/50 mb-1.5">{label}</label>
+      <label className="block text-xs text-muted mb-1.5">{label}</label>
       <input {...props} className="w-full input-field px-4 py-2.5 text-sm" />
     </div>
   );
@@ -160,7 +160,7 @@ function Input({ label, ...props }) {
 function TextArea({ label, ...props }) {
   return (
     <div>
-      <label className="block text-xs text-ink/50 mb-1.5">{label}</label>
+      <label className="block text-xs text-muted mb-1.5">{label}</label>
       <textarea {...props} rows={4} className="w-full input-field px-4 py-2.5 text-sm resize-y form-scroll max-h-64" />
     </div>
   );

@@ -37,7 +37,6 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
 
     for (const file of files) {
       const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
-      // eslint-disable-next-line no-await-in-loop
       const { error: err } = await uploadProjectMedia(projectId, file, { mediaType });
       if (err) setError(err);
     }
@@ -69,7 +68,7 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
   return (
     <Modal open={open} onClose={onClose} title={`Media — ${projectTitle || 'Project'}`} maxWidth="max-w-3xl">
       <div className="space-y-4">
-        <label className="glass glass-hover rounded-xl px-4 py-3 text-sm cursor-pointer inline-flex items-center gap-2">
+        <label className="surface surface-hover rounded-xl px-4 py-3 text-sm cursor-pointer inline-flex items-center gap-2">
           {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
           {uploading ? 'Uploading...' : 'Upload images or videos'}
           <input
@@ -82,18 +81,18 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
           />
         </label>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
 
         {loading ? (
-          <p className="text-sm text-ink/50 py-8 text-center">Loading gallery…</p>
+          <p className="text-sm text-muted py-8 text-center">Loading gallery…</p>
         ) : items.length === 0 ? (
-          <p className="text-sm text-ink/50 py-8 text-center">
+          <p className="text-sm text-muted py-8 text-center">
             No media yet — upload screenshots or a demo video for this project.
           </p>
         ) : (
           <div className="grid sm:grid-cols-2 gap-4">
             {items.map((item, i) => (
-              <div key={item.id} className="card-premium p-3 flex gap-3">
+              <div key={item.id} className="card p-3 flex gap-3">
                 <div className="relative w-24 h-16 rounded-lg overflow-hidden shrink-0 bg-ink/5">
                   {item.media_type === 'video' ? (
                     <>
@@ -112,7 +111,7 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
                 </div>
 
                 <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-                  <span className="text-[10px] uppercase tracking-wide text-ink/50">{item.media_type}</span>
+                  <span className="text-[10px] uppercase tracking-wide text-muted">{item.media_type}</span>
                   <input
                     defaultValue={item.caption || ''}
                     placeholder="Caption (optional)"
@@ -127,7 +126,7 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
                       onClick={() => move(i, -1)}
                       disabled={i === 0}
                       aria-label="Move up"
-                      className="p-1 text-ink/50 hover:text-ink disabled:opacity-20 disabled:pointer-events-none"
+                      className="p-1 text-muted hover:text-ink disabled:opacity-20 disabled:pointer-events-none"
                     >
                       <ArrowUp size={14} />
                     </button>
@@ -135,7 +134,7 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
                       onClick={() => move(i, 1)}
                       disabled={i === items.length - 1}
                       aria-label="Move down"
-                      className="p-1 text-ink/50 hover:text-ink disabled:opacity-20 disabled:pointer-events-none"
+                      className="p-1 text-muted hover:text-ink disabled:opacity-20 disabled:pointer-events-none"
                     >
                       <ArrowDown size={14} />
                     </button>
@@ -143,7 +142,7 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
                   <button
                     onClick={() => handleDelete(item.id)}
                     aria-label="Delete"
-                    className="p-1 text-ink/50 hover:text-red-400"
+                    className="p-1 text-muted hover:text-danger"
                   >
                     <Trash2 size={14} />
                   </button>

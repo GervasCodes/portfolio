@@ -15,8 +15,8 @@
 - [x] **Backend integration tests against a real MySQL 8 database** (`tests/integration.test.js`,
       gated behind `INTEGRATION_TEST_DB=1`) — covers project/blog creation, slug lookup,
       pagination, and view-count tracking
-- [x] GitHub Actions CI (`.github/workflows/ci.yml`) — backend lint + `node --test` and
-      frontend lint + production build, on every push/PR to `main`
+- [x] GitHub Actions CI — `ci.yml` runs backend + frontend lint and the production build; `tests.yml`
+      runs backend `node --test` and the frontend design check, on every push/PR to `main`
 - [x] Automated database backups (`.github/workflows/backup.yml`, daily cron) — dumps
       Aiven MySQL to a gzipped `.sql.gz` file and uploads it to Supabase Storage
       (`backend/scripts/backup.js`), pruning old backups beyond a retention count

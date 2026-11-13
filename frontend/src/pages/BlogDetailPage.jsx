@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, Eye, ThumbsUp, Heart, Flame, PartyPopper, Lightbulb, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ThumbsUp, Heart, Flame, PartyPopper, Lightbulb, ExternalLink } from 'lucide-react';
 import Markdown from '@/components/ui/Markdown';
 import Seo from '@/components/seo/Seo';
 import { PortfolioAPI } from '@/services/api';
-import { sampleBlogPosts } from '@/utils/sampleData';
+import Tag from '@/components/ui/Tag';
+import Skeleton from '@/components/ui/Skeleton';
+import NotFoundPage from '@/pages/NotFoundPage';
 import { useSiteSettings, buildTitle } from '@/hooks/useSiteSettings';
 import { absoluteUrl, truncate, stripMarkdown, resolveImage } from '@/utils/seo';
 
@@ -54,7 +56,7 @@ function VideoEmbed({ url }) {
 
 // Kept in sync with backend `ALLOWED_REACTIONS` (blogEngagement.service.js).
 // Icon-based instead of emoji so reactions match the rest of the site's
-// glass/gradient visual language instead of relying on native emoji glyphs.
+// visual language instead of relying on native emoji glyphs.
 const REACTIONS = [
   { id: 'like', label: 'Like', Icon: ThumbsUp },
   { id: 'love', label: 'Love', Icon: Heart },
@@ -98,7 +100,7 @@ function ReactionBar({ slug }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-ink/10">
+    <div className="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-line">
       {REACTIONS.map(({ id, label, Icon }) => (
         <button
           key={id}
@@ -107,9 +109,9 @@ function ReactionBar({ slug }) {
           disabled={busy}
           aria-label={label}
           aria-pressed={mine === id}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors disabled:opacity-50 ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm border transition-colors disabled:opacity-50 ${
             mine === id
-              ? 'bg-accent/20 border-accent/50 text-accent-dark'
+              ? 'bg-accent/20 border-accent/50 text-accent'
               : 'bg-ink/5 border-ink/10 text-ink/60 hover:text-ink hover:bg-ink/10'
           }`}
         >
@@ -123,23 +125,31 @@ function ReactionBar({ slug }) {
 
 export default function BlogDetailPage() {
   const { slug } = useParams();
-  const fallback = sampleBlogPosts.find((p) => p.slug === slug) || sampleBlogPosts[0];
-  const [post, setPost] = useState(fallback);
+  const [state, setState] = useState({ status: 'loading', post: null });
 
   const settings = useSiteSettings();
-  const pageTitle = buildTitle(post ? post.title : 'Blog Post', settings);
 
   useEffect(() => {
     let mounted = true;
+    setState({ status: 'loading', post: null });
     (async () => {
       const { data } = await PortfolioAPI.getPostBySlug(slug);
       if (!mounted) return;
-      setPost(data || sampleBlogPosts.find((p) => p.slug === slug) || sampleBlogPosts[0]);
+      setState(data ? { status: 'ready', post: data } : { status: 'missing', post: null });
     })();
     return () => { mounted = false; };
   }, [slug]);
 
-  if (!post) return null;
+  if (state.status === 'missing') return <NotFoundPage />;
+  if (state.status === 'loading') {
+    return (
+      <div className="pb-24" style={{ paddingTop: 'calc(var(--navbar-h) + 3rem)' }}>
+        <div className="container-page max-w-3xl space-y-4"><Skeleton className="h-12 w-3/4" /><Skeleton className="h-48 w-full" /></div>
+      </div>
+    );
+  }
+  const { post } = state;
+  const pageTitle = buildTitle(post.title, settings);
 
   const description = truncate(post.excerpt || stripMarkdown(post.content));
   const image = resolveImage(post.cover_image_url);
@@ -156,7 +166,7 @@ export default function BlogDetailPage() {
   };
 
   return (
-    <div className="pt-28 pb-24">
+    <div className="pb-24" style={{ paddingTop: 'calc(var(--navbar-h) + 3rem)' }}>
       <Seo
         title={pageTitle}
         description={description}
@@ -167,19 +177,16 @@ export default function BlogDetailPage() {
         structuredData={structuredData}
       />
       <div className="container-page max-w-3xl">
-        <Link to="/blog" className="inline-flex items-center gap-2 text-sm text-ink/60 hover:text-ink mb-8">
-          <ArrowLeft size={16} /> Back to Blog
+        <Link to="/blog" className="inline-flex items-center gap-2 text-sm text-muted hover:text-ink mb-10">
+          <ArrowLeft size={16} /> All posts
         </Link>
 
-        <div className="flex items-center gap-4 text-xs text-ink/50 mb-4">
-          <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(post.published_at)}</span>
-          <span className="flex items-center gap-1"><Eye size={12} /> {post.views ?? 0} views</span>
-        </div>
+        <p className="text-sm text-muted mb-4">{formatDate(post.published_at)}</p>
 
-        <h1 className="font-display text-3xl md:text-4xl font-bold mb-8">{post.title}</h1>
+        <h1 className="font-display text-4xl md:text-5xl font-normal leading-tight tracking-tight mb-8">{post.title}</h1>
 
         {post.cover_image_url && (
-          <div className="rounded-2xl overflow-hidden mb-8">
+          <div className="rounded-md overflow-hidden border border-line mb-8">
             <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-ink/5">
               <img
                 src={post.cover_image_url}
@@ -201,19 +208,15 @@ export default function BlogDetailPage() {
             href={post.link_url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 mt-8 glass glass-hover rounded-xl px-4 py-2.5 text-sm text-accent-dark"
+            className="inline-flex items-center gap-2 mt-8 text-sm text-accent underline underline-offset-4"
           >
             <ExternalLink size={16} /> Visit related link
           </a>
         )}
 
         {Array.isArray(post.tags) && post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-10 pt-8 border-t border-ink/10">
-            {post.tags.map((tag) => (
-              <span key={tag} className="text-xs px-3 py-1.5 rounded-full bg-ink/5 text-ink/60 border border-ink/10">
-                {tag}
-              </span>
-            ))}
+          <div className="flex flex-wrap gap-2 mt-10 pt-8 border-t border-line">
+            {post.tags.map((tag) => <Tag key={tag}>{tag}</Tag>)}
           </div>
         )}
 

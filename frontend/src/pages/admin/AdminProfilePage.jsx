@@ -56,7 +56,7 @@ export default function AdminProfilePage() {
 
   return (
     <AdminShell title="Profile" description="This information powers your public homepage, about, and resume pages.">
-      <div className="glass rounded-2xl p-6 space-y-6 max-w-3xl">
+      <div className="surface rounded-2xl p-6 space-y-6 max-w-3xl">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-ink/5 border border-ink/10 overflow-hidden flex items-center justify-center">
             {profile.avatar_url ? (
@@ -65,11 +65,11 @@ export default function AdminProfilePage() {
               <span className="text-ink/60 text-xs">No photo</span>
             )}
           </div>
-          <label className="glass glass-hover rounded-xl px-4 py-2 text-sm cursor-pointer flex items-center gap-2">
+          <label className="surface surface-hover rounded-xl px-4 py-2 text-sm cursor-pointer flex items-center gap-2">
             <Upload size={14} /> Upload avatar
             <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
           </label>
-          <label className="glass glass-hover rounded-xl px-4 py-2 text-sm cursor-pointer flex items-center gap-2">
+          <label className="surface surface-hover rounded-xl px-4 py-2 text-sm cursor-pointer flex items-center gap-2">
             <Upload size={14} /> Upload resume (PDF)
             <input type="file" accept="application/pdf" className="hidden" onChange={handleResumeUpload} />
           </label>
@@ -78,7 +78,7 @@ export default function AdminProfilePage() {
         <div className="grid sm:grid-cols-2 gap-4">
           {FIELDS.map((field) => (
             <div key={field.name} className={field.name === 'tagline' ? 'sm:col-span-2' : ''}>
-              <label className="block text-xs text-ink/50 mb-1.5">{field.label}</label>
+              <label className="block text-xs text-muted mb-1.5">{field.label}</label>
               <input
                 type={field.type || 'text'}
                 name={field.name}
@@ -91,7 +91,7 @@ export default function AdminProfilePage() {
         </div>
 
         <div>
-          <label className="block text-xs text-ink/50 mb-1.5">Bio</label>
+          <label className="block text-xs text-muted mb-1.5">Bio</label>
           <textarea
             name="bio"
             rows={5}
@@ -115,8 +115,8 @@ export default function AdminProfilePage() {
           <Button onClick={handleSave} disabled={status === 'loading'} icon={<Save size={16} />}>
             {status === 'loading' ? 'Saving...' : 'Save Changes'}
           </Button>
-          {status === 'success' && <span className="text-sm text-emerald-400">Saved!</span>}
-          {status === 'error' && <span className="text-sm text-red-400">Failed to save.</span>}
+          {status === 'success' && <span className="text-sm text-success">Saved!</span>}
+          {status === 'error' && <span className="text-sm text-danger">Failed to save.</span>}
         </div>
       </div>
     </AdminShell>

@@ -29,11 +29,11 @@ function NavLinks({ pathname, onNavigate }) {
             aria-current={active ? 'page' : undefined}
             className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm whitespace-nowrap transition-colors ${
               active
-                ? 'bg-gradient-to-r from-accent/25 to-cyan-accent/10 text-accent-dark font-medium border border-accent/30'
+                ? 'bg-accent/10 text-accent font-medium border border-accent/30'
                 : 'text-ink/60 hover:text-ink hover:bg-ink/5 border border-transparent'
             }`}
           >
-            <Icon size={16} className={active ? 'text-accent-dark' : ''} />
+            <Icon size={16} className={active ? 'text-accent' : ''} />
             {label}
           </Link>
         );
@@ -58,14 +58,14 @@ export default function Sidebar() {
 
   return (
     <aside className="w-full md:w-64 shrink-0 md:h-[calc(100vh-2rem)] md:sticky md:top-4">
-      <div className="glass rounded-2xl p-4 h-full flex flex-col">
+      <div className="surface rounded-2xl p-4 h-full flex flex-col">
         {/* Mobile: compact top bar (logo + hamburger + logout) that opens a
             proper drawer below it, instead of a horizontally-scrolling nav
             that only ever showed a couple of items at a time. Desktop
             (md+) is unchanged — full stacked sidebar. */}
         <div className="w-full flex items-center justify-between gap-2 md:block">
           <div className="flex items-center gap-2.5 px-2 pb-0 md:pb-6">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-accent to-cyan-accent flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shrink-0">
               <LayoutDashboard size={16} className="text-white" />
             </div>
             <span className="font-display font-semibold">Admin Panel</span>
@@ -84,7 +84,7 @@ export default function Sidebar() {
             <button
               onClick={handleLogout}
               aria-label="Logout"
-              className="flex items-center justify-center p-2.5 rounded-xl text-ink/60 hover:text-red-400 hover:bg-red-500/5 transition-colors shrink-0"
+              className="flex items-center justify-center p-2.5 rounded-xl text-ink/60 hover:text-danger hover:bg-danger/5 transition-colors shrink-0"
             >
               <LogOut size={16} />
             </button>
@@ -117,7 +117,7 @@ export default function Sidebar() {
 
         <button
           onClick={handleLogout}
-          className="hidden md:flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ink/60 hover:text-red-400 hover:bg-red-500/5 transition-colors shrink-0 mt-4"
+          className="hidden md:flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ink/60 hover:text-danger hover:bg-danger/5 transition-colors shrink-0 mt-4"
         >
           <LogOut size={16} />
           Logout

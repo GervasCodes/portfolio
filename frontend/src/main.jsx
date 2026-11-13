@@ -5,6 +5,10 @@ import { HelmetProvider } from 'react-helmet-async';
 import { MotionConfig } from 'framer-motion';
 import App from './App.jsx';
 import ErrorBoundary from './components/layout/ErrorBoundary.jsx';
+import { ToastProvider } from './components/ui/Toast.jsx';
+// Self-hosted fonts (no third-party requests): body + heading faces.
+import '@fontsource-variable/hanken-grotesk';
+import '@fontsource-variable/newsreader';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -18,7 +22,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               opacity fades still play) — one place to handle this instead of
               gating each of the ~14 files that use Framer Motion individually. */}
           <MotionConfig reducedMotion="user">
-            <App />
+            <ToastProvider>
+              <App />
+            </ToastProvider>
           </MotionConfig>
         </BrowserRouter>
       </HelmetProvider>

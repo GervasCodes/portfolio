@@ -1,11 +1,7 @@
 name: CI
 
 # Lint + build only, for both frontend and backend, on every push and PR.
-# Deliberately does NOT run the backend's test suite (backend/tests/*) —
-# per the implementation plan this repo's automation follows, no phase of
-# this rollout runs automated tests, and that includes CI. If test runs
-# are wanted here later, add a separate, explicitly-opted-in workflow
-# rather than folding them into this one.
+# The backend tests and the frontend design check run in tests.yml.
 
 on:
   push:

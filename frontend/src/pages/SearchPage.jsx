@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon, Calendar, Eye } from 'lucide-react';
 import Pagination from '@/components/ui/Pagination';
 import Seo from '@/components/seo/Seo';
@@ -26,9 +26,9 @@ function ResultCard({ item }) {
   const tags = isProject ? item.tech_stack : item.tags;
 
   return (
-    <Link to={href} className="glass glass-hover rounded-2xl p-6 flex flex-col h-full">
-      <div className="flex items-center gap-3 text-xs text-ink/50 mb-3">
-        <span className="uppercase tracking-widest text-accent-dark">{isProject ? 'Project' : 'Blog'}</span>
+    <Link to={href} className="surface surface-hover rounded-2xl p-6 flex flex-col h-full">
+      <div className="flex items-center gap-3 text-xs text-muted mb-3">
+        <span className="uppercase tracking-widest text-accent">{isProject ? 'Project' : 'Blog'}</span>
         {!isProject && item.published_at && (
           <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(item.published_at)}</span>
         )}
@@ -74,7 +74,6 @@ export default function SearchPage() {
   // Keep the input in sync if the URL changes from outside (back/forward nav).
   useEffect(() => {
     setInputValue(urlQ);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlQ]);
 
   // Push debounced input into the URL (resetting to page 1), replacing
@@ -86,6 +85,7 @@ export default function SearchPage() {
     else next.delete('q');
     next.delete('page');
     setSearchParams(next, { replace: true });
+    // Runs only when the debounced input changes; urlQ/searchParams are read fresh each time.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedQ]);
 
@@ -135,13 +135,13 @@ export default function SearchPage() {
         <div className="text-center max-w-2xl mx-auto mb-10">
           <p className="section-label">Search</p>
           <h1 className="font-display text-3xl md:text-4xl font-bold">
-            Find <span className="text-gradient">Projects &amp; Posts</span>
+            Find <span className="text-accent">Projects &amp; Posts</span>
           </h1>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 justify-center mb-6">
           <div className="relative w-full sm:w-96">
-            <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/50" />
+            <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
             <input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -150,7 +150,7 @@ export default function SearchPage() {
               autoFocus
             />
           </div>
-          <button className="glass glass-hover rounded-xl px-5 py-2.5 text-sm">Search</button>
+          <button className="surface surface-hover rounded-xl px-5 py-2.5 text-sm">Search</button>
         </form>
 
         <div className="flex items-center justify-center gap-2 mb-12">
@@ -160,7 +160,7 @@ export default function SearchPage() {
               type="button"
               onClick={() => handleTypeChange(t.value)}
               className={`px-4 py-2 rounded-xl text-sm transition-colors ${
-                type === t.value ? 'bg-gradient-to-r from-accent to-cyan-accent text-white' : 'glass glass-hover text-ink/60'
+                type === t.value ? 'bg-accent text-white' : 'surface surface-hover text-ink/60'
               }`}
             >
               {t.label}
@@ -169,15 +169,15 @@ export default function SearchPage() {
         </div>
 
         {!activeQuery && (
-          <p className="text-center text-ink/50">Start typing to search projects and blog posts.</p>
+          <p className="text-center text-muted">Start typing to search projects and blog posts.</p>
         )}
 
         {activeQuery && loading && (
-          <p className="text-center text-ink/50">Searching…</p>
+          <p className="text-center text-muted">Searching…</p>
         )}
 
         {activeQuery && !loading && hasSearched && results.length === 0 && (
-          <p className="text-center text-ink/50">No results for &quot;{activeQuery}&quot;.</p>
+          <p className="text-center text-muted">No results for &quot;{activeQuery}&quot;.</p>
         )}
 
         {activeQuery && !loading && results.length > 0 && (

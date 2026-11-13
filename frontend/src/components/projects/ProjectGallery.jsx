@@ -40,7 +40,7 @@ export default function ProjectGallery({ media, images = [] }) {
           <button
             key={item.id}
             onClick={() => setActiveIndex(i)}
-            className="relative aspect-video rounded-xl overflow-hidden glass glass-hover group"
+            className="relative aspect-video rounded-xl overflow-hidden surface surface-hover group"
           >
             {item.media_type === 'video' ? (
               <video
@@ -74,7 +74,7 @@ export default function ProjectGallery({ media, images = [] }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-sm p-6"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-6"
             onClick={close}
           >
             <button

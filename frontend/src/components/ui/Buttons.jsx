@@ -1,14 +1,19 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 
-const BASE = 'relative inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none overflow-hidden select-none';
+// Flat buttons: solid fill or 1px outline, colour change on hover, no
+// gradients, glow, shine or scale. Focus ring comes from the global
+// :focus-visible rule.
+const BASE =
+  'inline-flex items-center justify-center gap-2 rounded-md font-medium select-none ' +
+  'transition-colors duration-base ease-standard ' +
+  'disabled:opacity-50 disabled:pointer-events-none aria-disabled:opacity-50 aria-disabled:pointer-events-none';
 
 const VARIANTS = {
-  primary: 'bg-gradient-to-r from-accent to-cyan-accent text-white shadow-glow hover:shadow-[0_0_50px_-8px_rgba(111,143,107,0.7)]',
-  secondary: 'glass glass-hover text-ink',
-  ghost: 'text-ink/70 hover:text-ink hover:bg-ink/5',
-  danger: 'bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20',
+  primary: 'bg-accent text-accent-ink border border-accent hover:bg-ink hover:border-ink',
+  secondary: 'bg-transparent text-ink border border-ink/40 hover:border-ink hover:bg-ink hover:text-bg',
+  ghost: 'text-muted border border-transparent hover:text-ink hover:bg-ink/5',
+  danger: 'bg-transparent text-danger border border-danger hover:bg-danger hover:text-accent-ink',
 };
 
 const SIZES = {
@@ -23,57 +28,55 @@ const isExternalHref = (href) => /^([a-z]+:|#)/i.test(href);
 
 export function Button({
   children, variant = 'primary', size = 'md', href, type = 'button',
-  onClick, disabled, loading = false, className = '', icon,
+  onClick, disabled, loading = false, className = '', icon, ...rest
 }) {
   const isDisabled = disabled || loading;
   const classes = `${BASE} ${VARIANTS[variant]} ${SIZES[size]} ${className}`;
 
   const content = (
-    <motion.span
-      whileHover={{ scale: isDisabled ? 1 : 1.03 }}
-      whileTap={{ scale: isDisabled ? 1 : 0.97 }}
-      className={classes}
-    >
-      {/* Diagonal shine sweep on hover, primary buttons only */}
-      {variant === 'primary' && (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700"
-        />
-      )}
-      {loading ? <Loader2 size={16} className="animate-spin" /> : icon}
-      <span className="relative">{children}</span>
-    </motion.span>
+    <>
+      {loading ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : icon}
+      <span>{children}</span>
+    </>
   );
 
   if (href) {
     if (isExternalHref(href)) {
+      const opensNewTab = !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:');
       return (
-        <a href={href} target="_blank" rel="noreferrer" className="inline-block group" aria-disabled={isDisabled}>
+        <a
+          href={href}
+          {...(opensNewTab ? { target: '_blank', rel: 'noreferrer' } : {})}
+          className={classes}
+          aria-disabled={isDisabled || undefined}
+          {...rest}
+        >
           {content}
         </a>
       );
     }
     return (
-      <Link to={href} className="inline-block group" aria-disabled={isDisabled}>
+      <Link to={href} className={classes} aria-disabled={isDisabled || undefined} {...rest}>
         {content}
       </Link>
     );
   }
 
   return (
-    <button type={type} onClick={onClick} disabled={isDisabled} className="inline-block group">
+    <button type={type} onClick={onClick} disabled={isDisabled} className={classes} {...rest}>
       {content}
     </button>
   );
 }
 
-export function IconButton({ icon, onClick, label, className = '' }) {
+export function IconButton({ icon, onClick, label, className = '', ...rest }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       aria-label={label}
-      className={`glass glass-hover w-10 h-10 rounded-full flex items-center justify-center text-ink/70 hover:text-ink active:scale-95 transition-transform ${className}`}
+      className={`surface surface-hover w-10 h-10 rounded-full flex items-center justify-center text-muted hover:text-ink ${className}`}
+      {...rest}
     >
       {icon}
     </button>

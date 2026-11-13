@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import SiteChrome from '@/components/layout/SiteChrome';
 import ScrollToTop from '@/components/layout/ScrollToTop';
@@ -9,7 +9,7 @@ import { lazyWithRetry } from '@/utils/lazyWithRetry';
 
 // Every route is loaded on demand instead of being bundled into the
 // initial JS payload. This is what actually fixes the "chunk larger
-// than 500kB" warning: recharts, react-markdown, and the entire admin
+// than 500kB" warning: react-markdown, and the entire admin
 // dashboard (which most visitors never open) get their own chunks
 // that only download when that route is visited.
 //
@@ -18,18 +18,21 @@ import { lazyWithRetry } from '@/utils/lazyWithRetry';
 // picked up the previous build's index.html — see utils/lazyWithRetry.js.
 const HomePage = lazyWithRetry(() => import('@/pages/HomePage'));
 const AboutPage = lazyWithRetry(() => import('@/pages/AboutPage'));
-const SkillsPage = lazyWithRetry(() => import('@/pages/SkillsPage'));
-const ExperiencePage = lazyWithRetry(() => import('@/pages/ExperiencePage'));
 const ProjectsPage = lazyWithRetry(() => import('@/pages/ProjectsPage'));
 const ProjectDetailPage = lazyWithRetry(() => import('@/pages/ProjectDetailPage'));
 const BlogPage = lazyWithRetry(() => import('@/pages/BlogPage'));
 const BlogDetailPage = lazyWithRetry(() => import('@/pages/BlogDetailPage'));
 const ResumePage = lazyWithRetry(() => import('@/pages/ResumePage'));
-const ProfilePage = lazyWithRetry(() => import('@/pages/ProfilePage'));
 const ContactsPage = lazyWithRetry(() => import('@/pages/ContactsPage'));
 const SearchPage = lazyWithRetry(() => import('@/pages/SearchPage'));
 const NewsletterStatusPage = lazyWithRetry(() => import('@/pages/NewsletterStatusPage'));
 const NotFoundPage = lazyWithRetry(() => import('@/pages/NotFoundPage'));
+
+// Developer-only component gallery. Vite replaces import.meta.env.DEV with
+// `false` in production builds, so this import (and the page) never ships.
+const StyleguidePage = import.meta.env.DEV
+  ? lazyWithRetry(() => import('@/pages/dev/StyleguidePage'))
+  : null;
 
 const AdminLoginPage = lazyWithRetry(() => import('@/pages/admin/AdminLoginPage'));
 const AdminProfilePage = lazyWithRetry(() => import('@/pages/admin/AdminProfilePage'));
@@ -65,16 +68,19 @@ export default function App() {
             <Routes location={location}>
               <Route path="/" element={<HomePage />} />
               <Route path="/about" element={<AboutPage />} />
-              <Route path="/skills" element={<SkillsPage />} />
-              <Route path="/experience" element={<ExperiencePage />} />
+              <Route path="/skills" element={<Navigate to="/about#skills" replace />} />
+              <Route path="/experience" element={<Navigate to="/about#experience" replace />} />
               <Route path="/projects" element={<ProjectsPage />} />
               <Route path="/projects/:slug" element={<ProjectDetailPage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/blog/:slug" element={<BlogDetailPage />} />
               <Route path="/resume" element={<ResumePage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/contacts" element={<ContactsPage />} />
+              {/* Old URLs keep working: /profile and /contacts moved. */}
+              <Route path="/profile" element={<Navigate to="/about" replace />} />
+              <Route path="/contact" element={<ContactsPage />} />
+              <Route path="/contacts" element={<Navigate to="/contact" replace />} />
               <Route path="/search" element={<SearchPage />} />
+              {StyleguidePage && <Route path="/dev/styleguide" element={<StyleguidePage />} />}
               <Route path="/newsletter/confirm" element={<NewsletterStatusPage />} />
               <Route path="/newsletter/unsubscribe" element={<NewsletterStatusPage />} />
 

@@ -33,7 +33,7 @@ export default function Pagination({ basePath, page, limit, total, extraParams =
       <Link
         to={buildHref(Math.max(page - 1, 1))}
         aria-disabled={page <= 1}
-        className={`glass w-10 h-10 rounded-xl flex items-center justify-center ${page <= 1 ? 'opacity-30 pointer-events-none' : 'glass-hover'}`}
+        className={`surface w-10 h-10 rounded-xl flex items-center justify-center ${page <= 1 ? 'opacity-30 pointer-events-none' : 'surface-hover'}`}
       >
         <ChevronLeft size={16} />
       </Link>
@@ -45,7 +45,7 @@ export default function Pagination({ basePath, page, limit, total, extraParams =
             to={buildHref(p)}
             aria-current={p === page ? 'page' : undefined}
             className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm transition-colors ${
-              p === page ? 'bg-gradient-to-r from-accent to-cyan-accent text-white' : 'glass glass-hover text-ink/60'
+              p === page ? 'bg-accent text-white' : 'surface surface-hover text-ink/60'
             }`}
           >
             {p}
@@ -60,7 +60,7 @@ export default function Pagination({ basePath, page, limit, total, extraParams =
       <Link
         to={buildHref(Math.min(page + 1, totalPages))}
         aria-disabled={page >= totalPages}
-        className={`glass w-10 h-10 rounded-xl flex items-center justify-center ${page >= totalPages ? 'opacity-30 pointer-events-none' : 'glass-hover'}`}
+        className={`surface w-10 h-10 rounded-xl flex items-center justify-center ${page >= totalPages ? 'opacity-30 pointer-events-none' : 'surface-hover'}`}
       >
         <ChevronRight size={16} />
       </Link>

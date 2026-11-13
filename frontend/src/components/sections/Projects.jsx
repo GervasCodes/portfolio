@@ -16,7 +16,7 @@ export default function Projects({ projects = [] }) {
           >
             <p className="section-label">Featured Work</p>
             <h2 className="font-display text-3xl md:text-4xl font-bold">
-              Selected <span className="text-gradient">Projects</span>
+              Selected <span className="text-accent">Projects</span>
             </h2>
           </motion.div>
           <Button href="/projects" variant="secondary" icon={<ArrowRight size={16} />}>

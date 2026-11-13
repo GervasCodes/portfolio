@@ -1,125 +1,57 @@
-import { motion } from 'framer-motion';
-import { ArrowRight, Download, ChevronDown } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Button from '@/components/ui/Buttons';
 
+/**
+ * Home hero: who, what, one proof line, two actions. Everything comes from
+ * Admin → Profile; nothing is invented here. The availability line shows
+ * only when the profile says so, and uses the profile's own location.
+ */
 export default function Hero({ profile }) {
-  const name = profile?.full_name || 'Gervas Aristaric';
-  const title = profile?.title || 'Full-Stack Software Developer';
-  const tagline = profile?.tagline || 'I design and build production-grade web applications.';
+  const name = profile?.full_name;
+  const title = profile?.title;
+  const tagline = profile?.tagline;
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-noise">
-      {/* Subtle real photo for texture/depth — heavily darkened so text stays fully legible */}
-      <div className="absolute inset-0 pointer-events-none">
-        <img
-          src="https://images.pexels.com/photos/34804003/pexels-photo-34804003.jpeg?auto=compress&cs=tinysrgb&w=1920"
-          alt=""
-          aria-hidden="true"
-          loading="eager"
-          decoding="async"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-[0.08]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
-      </div>
-
-      {/* Ambient glow — layered + slowly drifting for a less static hero */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent/12 rounded-full blur-[140px] pointer-events-none animate-float-slow" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-cyan-accent/10 rounded-full blur-[120px] pointer-events-none animate-float-slower" />
-      <div className="absolute top-10 right-1/4 w-[220px] h-[220px] bg-accent-light/8 rounded-full blur-[100px] pointer-events-none animate-float-slow" />
-
+    <section>
       <div
-        className="container-page relative z-10 pb-20"
-        style={{ paddingTop: 'calc(var(--navbar-h) + 2rem)' }}
+        className="container-page pb-20"
+        style={{ paddingTop: 'calc(var(--navbar-h) + 4rem)' }}
       >
         {profile?.avatar_url && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8"
-          >
-            <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-full p-[3px] bg-gradient-to-br from-accent to-cyan-accent shadow-glow">
-              <div className="w-full h-full rounded-full overflow-hidden border-4 border-background bg-ink/5">
-                <img
-                  src={profile.avatar_url}
-                  alt={name}
-                  decoding="async"
-                  className="w-full h-full object-cover object-center"
-                />
-              </div>
-            </div>
-          </motion.div>
+          <img
+            src={profile.avatar_url}
+            alt=""
+            decoding="async"
+            className="w-20 h-20 rounded-full object-cover border border-line mb-8"
+          />
         )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative inline-flex items-center gap-2.5 pl-3 pr-4 py-2 rounded-full text-xs mb-8 overflow-hidden bg-gradient-to-r from-accent/15 via-white/5 to-cyan-accent/15 border border-accent/25 backdrop-blur-sm"
-        >
-          {/* Slow-moving shine sweep for a bit of life without being busy */}
-          <span className="absolute inset-0 -translate-x-full animate-shine bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-          <span className="relative flex h-2 w-2 shrink-0">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-          </span>
-          <span className="relative flex items-center gap-1.5 text-ink/80 font-medium">
-            {profile?.available_for_work ? (
-              <>
-                Available for new opportunities
-                <span className="hidden sm:inline text-ink/50 font-normal">— freelance &amp; full-time</span>
-              </>
-            ) : (
-              'Software Developer'
-            )}
-          </span>
-        </motion.div>
+        {title && <p className="section-label">{title}</p>}
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="font-display text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight max-w-4xl"
-        >
-          Hi, I&apos;m <span className="text-gradient">{name}</span>
-          <br />
-          {title}
-        </motion.h1>
+        <h1 className="font-display text-5xl md:text-6xl font-normal leading-[1.05] tracking-tight max-w-4xl">
+          {name || 'Portfolio'}
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="mt-6 text-lg text-ink/60 max-w-xl leading-relaxed"
-        >
-          {tagline}
-        </motion.p>
+        {tagline && (
+          <p className="mt-6 text-xl text-ink max-w-xl leading-relaxed font-display">{tagline}</p>
+        )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="mt-10 flex flex-wrap gap-4"
-        >
+        {(profile?.location || profile?.available_for_work) && (
+          <p className="mt-6 text-sm text-muted">
+            {profile.location && <>Based in {profile.location}. </>}
+            {profile.available_for_work && <>Open to new work.</>}
+          </p>
+        )}
+
+        <div className="mt-10 flex flex-wrap gap-4">
           <Button href="/projects" size="lg" icon={<ArrowRight size={18} />}>
-            View My Work
+            See the work
           </Button>
-          <Button href="/resume" variant="secondary" size="lg" icon={<Download size={18} />}>
-            Download Resume
+          <Button href="/contact" variant="secondary" size="lg">
+            Get in touch
           </Button>
-        </motion.div>
+        </div>
       </div>
-
-      {/* Scroll cue */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: [0, 8, 0] }}
-        transition={{ opacity: { delay: 1, duration: 0.6 }, y: { delay: 1.2, duration: 1.8, repeat: Infinity } }}
-        className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-1 text-ink/60 z-10"
-      >
-        <span className="text-[11px] uppercase tracking-widest">Scroll</span>
-        <ChevronDown size={16} />
-      </motion.div>
     </section>
   );
 }

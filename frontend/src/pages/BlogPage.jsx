@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Calendar, Eye, Film, Link2 } from 'lucide-react';
 import Pagination from '@/components/ui/Pagination';
+import SectionHeader from '@/components/ui/SectionHeader';
+import Tag from '@/components/ui/Tag';
+import Skeleton from '@/components/ui/Skeleton';
+import ErrorState from '@/components/ui/ErrorState';
+import EmptyState from '@/components/ui/EmptyState';
 import NewsletterSignup from '@/components/sections/NewsletterSignup';
 import { PortfolioAPI } from '@/services/api';
-import { sampleBlogPosts } from '@/utils/sampleData';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { useSiteSettings, buildTitle } from '@/hooks/useSiteSettings';
 
-const LIMIT = 6;
+const LIMIT = 10;
 
 function formatDate(date) {
   if (!date) return '';
@@ -17,134 +20,72 @@ function formatDate(date) {
 
 export default function BlogPage() {
   const settings = useSiteSettings();
-  useDocumentTitle(buildTitle('Blog', settings));
+  useDocumentTitle(buildTitle('Writing', settings));
 
   const [searchParams] = useSearchParams();
   const tag = searchParams.get('tag') || undefined;
   const page = Math.max(parseInt(searchParams.get('page'), 10) || 1, 1);
 
-  const [posts, setPosts] = useState(page === 1 ? sampleBlogPosts : []);
-  const [total, setTotal] = useState(sampleBlogPosts.length);
-  const [mostViewed, setMostViewed] = useState([]);
+  const [state, setState] = useState({ status: 'loading', posts: [], total: 0 });
 
   useEffect(() => {
     let mounted = true;
+    setState((s) => ({ ...s, status: 'loading' }));
     (async () => {
-      const { data, meta } = await PortfolioAPI.getPosts({ page, limit: LIMIT, tag });
+      const { data, meta, error } = await PortfolioAPI.getPosts({ page, limit: LIMIT, tag });
       if (!mounted) return;
-      const resolvedPosts = data?.length ? data : (page === 1 ? sampleBlogPosts : []);
-      setPosts(resolvedPosts);
-      setTotal(meta?.total ?? resolvedPosts.length);
+      if (error) setState({ status: 'error', posts: [], total: 0 });
+      else setState({ status: 'ready', posts: data || [], total: meta?.total ?? (data || []).length });
     })();
     return () => { mounted = false; };
   }, [page, tag]);
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      const { data } = await PortfolioAPI.getMostViewedPosts(5);
-      if (mounted && data?.length) setMostViewed(data);
-    })();
-    return () => { mounted = false; };
-  }, []);
+  const { status, posts, total } = state;
 
   return (
-    <div className="pt-28 pb-24">
-      <div className="container-page">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <p className="section-label">Writing</p>
-          <h1 className="font-display text-3xl md:text-4xl font-bold">
-            From the <span className="text-gradient">Blog</span>
-          </h1>
-        </div>
+    <div className="pb-24" style={{ paddingTop: 'calc(var(--navbar-h) + 3rem)' }}>
+      <div className="container-page max-w-3xl">
+        <SectionHeader
+          as="h1"
+          eyebrow="Writing"
+          title={tag ? `Posts tagged “${tag}”` : 'Writing'}
+          description="Notes on what I build and what I learn along the way."
+        />
 
-        {page === 1 && mostViewed.length > 0 && (
-          <div className="max-w-4xl mx-auto mb-10">
-            <p className="text-xs uppercase tracking-wider text-ink/50 mb-3">Most Viewed</p>
-            <div className="flex flex-wrap gap-3">
-              {mostViewed.map((post) => (
-                <Link
-                  key={post.id || post.slug}
-                  to={`/blog/${post.slug}`}
-                  className="glass glass-hover rounded-full px-4 py-2 flex items-center gap-2 text-sm"
-                >
-                  <span className="text-ink/80">{post.title}</span>
-                  <span className="flex items-center gap-1 text-xs text-ink/50">
-                    <Eye size={12} /> {post.views ?? 0}
-                  </span>
-                </Link>
+        {status === 'loading' && <Skeleton className="h-48 w-full" />}
+        {status === 'error' && (
+          <ErrorState title="Posts could not be loaded" message="Check your connection, then try again." onRetry={() => window.location.reload()} />
+        )}
+        {status === 'ready' && posts.length === 0 && (
+          <EmptyState title="No posts yet" description={tag ? 'Nothing is tagged with this.' : 'New writing will appear here.'} />
+        )}
+        {status === 'ready' && posts.length > 0 && (
+          <>
+            <ul className="divide-y divide-line border-y border-line">
+              {posts.map((post) => (
+                <li key={post.id || post.slug}>
+                  <Link to={`/blog/${post.slug}`} className="group block py-6">
+                    <p className="text-sm text-muted">{formatDate(post.published_at)}</p>
+                    <h2 className="font-display text-2xl font-normal mt-1 group-hover:text-accent">{post.title}</h2>
+                    {post.excerpt && <p className="mt-2 text-muted max-w-prose">{post.excerpt}</p>}
+                    {Array.isArray(post.tags) && post.tags.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {post.tags.map((t) => <Tag key={t}>{t}</Tag>)}
+                      </div>
+                    )}
+                  </Link>
+                </li>
               ))}
-            </div>
-          </div>
+            </ul>
+            <Pagination basePath="/blog" page={page} limit={LIMIT} total={total} extraParams={tag ? { tag } : {}} />
+          </>
         )}
 
         {page === 1 && (
-          <div className="max-w-4xl mx-auto mb-10">
+          <div className="mt-16">
             <NewsletterSignup />
           </div>
         )}
-
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto items-stretch">
-          {posts.map((post) => (
-            <Link
-              key={post.id || post.slug}
-              to={`/blog/${post.slug}`}
-              className="glass glass-hover rounded-2xl overflow-hidden flex flex-col group h-full"
-            >
-              {/* Every card gets the same fixed-ratio media block, whether or
-                  not the post has a cover. Previously posts without one had
-                  no block at all, so their titles sat 160px higher than their
-                  neighbours' and the grid rows never lined up. */}
-              <div className="relative w-full aspect-[16/9] overflow-hidden bg-gradient-to-br from-accent/25 to-cyan-accent/15">
-                {post.cover_image_url ? (
-                  <img
-                    src={post.cover_image_url}
-                    alt=""
-                    className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center font-display text-3xl text-ink/20">
-                    {post.title?.slice(0, 2).toUpperCase()}
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-              </div>
-              <div className="p-6 flex flex-col flex-1">
-                <div className="flex items-center gap-4 text-xs text-ink/50 mb-3">
-                  <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(post.published_at)}</span>
-                  <span className="flex items-center gap-1"><Eye size={12} /> {post.views ?? 0}</span>
-                  {post.video_url && <span className="flex items-center gap-1"><Film size={12} /> Video</span>}
-                  {post.link_url && <span className="flex items-center gap-1"><Link2 size={12} /> Link</span>}
-                </div>
-                <h2 className="font-display font-semibold text-lg mb-2">{post.title}</h2>
-                <p className="text-sm text-ink/55 flex-1">{post.excerpt}</p>
-                {Array.isArray(post.tags) && post.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {post.tags.map((t) => (
-                      <span key={t} className="text-[11px] px-2.5 py-1 rounded-full bg-ink/5 text-ink/60 border border-ink/10">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {posts.length === 0 && (
-          <p className="text-center text-ink/50">No posts found.</p>
-        )}
-
-        <Pagination
-          basePath="/blog"
-          page={page}
-          limit={LIMIT}
-          total={total}
-          extraParams={tag ? { tag } : {}}
-        />
       </div>
     </div>
   );

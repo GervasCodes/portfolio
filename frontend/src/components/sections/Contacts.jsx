@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Mail, MapPin, Send, CheckCircle2 } from 'lucide-react';
+import { Send } from 'lucide-react';
 import Button from '@/components/ui/Buttons';
+import Field, { Input, Textarea } from '@/components/ui/Field';
 import { PortfolioAPI } from '@/services/api';
 
+const EMPTY = { name: '', email: '', subject: '', message: '' };
+
 export default function Contacts({ profile }) {
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [form, setForm] = useState(EMPTY);
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -21,112 +23,55 @@ export default function Contacts({ profile }) {
       return;
     }
     setStatus('success');
-    setForm({ name: '', email: '', subject: '', message: '' });
+    setForm(EMPTY);
   };
 
   return (
-    <section id="contact" className="py-24">
-      <div className="container-page grid md:grid-cols-5 gap-10">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="md:col-span-2"
-        >
-          <p className="section-label">Get In Touch</p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
-            Let&apos;s build something <span className="text-gradient">great together</span>
-          </h2>
-          <p className="text-ink/60 mb-8">
-            Have a project in mind or just want to say hi? My inbox is always open.
+    <section id="contact">
+      <div className="container-page grid gap-12 md:grid-cols-[1fr_2fr]">
+        <div>
+          <p className="section-label">Contact</p>
+          <h1 className="font-display text-4xl md:text-5xl font-normal leading-tight tracking-tight">
+            Let&apos;s talk
+          </h1>
+          <p className="mt-5 text-muted max-w-prose">
+            Tell me what you are working on and what you need. I will reply with how I would approach it.
           </p>
-
-          <div className="space-y-4 text-sm">
+          <dl className="mt-8 space-y-2 text-sm">
             {profile?.email && (
-              <div className="flex items-center gap-3 text-ink/70">
-                <Mail size={16} className="text-accent-dark" /> {profile.email}
+              <div>
+                <dt className="text-muted">Email</dt>
+                <dd className="m-0"><a href={`mailto:${profile.email}`} className="underline underline-offset-4">{profile.email}</a></dd>
               </div>
             )}
             {profile?.location && (
-              <div className="flex items-center gap-3 text-ink/70">
-                <MapPin size={16} className="text-accent-dark" /> {profile.location}
+              <div>
+                <dt className="text-muted">Based in</dt>
+                <dd className="m-0">{profile.location}</dd>
               </div>
             )}
-          </div>
-        </motion.div>
+          </dl>
+        </div>
 
-        <motion.form
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          onSubmit={handleSubmit}
-          className="md:col-span-3 glass rounded-2xl p-6 md:p-8 space-y-4"
-        >
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="contact-name" className="sr-only">Your name</label>
-              <input
-                id="contact-name"
-                required
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="Your name"
-                className="input-field px-4 py-3 text-sm w-full"
-              />
-            </div>
-            <div>
-              <label htmlFor="contact-email" className="sr-only">Your email</label>
-              <input
-                id="contact-email"
-                required
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="Your email"
-                className="input-field px-4 py-3 text-sm w-full"
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid sm:grid-cols-2 gap-5">
+            <Field label="Name" required><Input name="name" value={form.name} onChange={handleChange} autoComplete="name" /></Field>
+            <Field label="Email" required><Input type="email" name="email" value={form.email} onChange={handleChange} autoComplete="email" /></Field>
           </div>
-          <div>
-            <label htmlFor="contact-subject" className="sr-only">Subject</label>
-            <input
-              id="contact-subject"
-              name="subject"
-              value={form.subject}
-              onChange={handleChange}
-              placeholder="Subject"
-              className="w-full input-field px-4 py-3 text-sm"
-            />
-          </div>
-          <div>
-            <label htmlFor="contact-message" className="sr-only">Your message</label>
-            <textarea
-              id="contact-message"
-              required
-              name="message"
-              value={form.message}
-              onChange={handleChange}
-              placeholder="Your message"
-              rows={5}
-              className="w-full input-field px-4 py-3 text-sm resize-y form-scroll max-h-64"
-            />
-          </div>
+          <Field label="Subject"><Input name="subject" value={form.subject} onChange={handleChange} /></Field>
+          <Field label="Message" required><Textarea name="message" value={form.message} onChange={handleChange} rows={6} /></Field>
 
           <Button type="submit" disabled={status === 'loading'} icon={<Send size={16} />}>
-            {status === 'loading' ? 'Sending...' : 'Send Message'}
+            {status === 'loading' ? 'Sending…' : 'Send message'}
           </Button>
 
           {status === 'success' && (
-            <p role="status" aria-live="polite" className="flex items-center gap-2 text-sm text-emerald-400">
-              <CheckCircle2 size={16} /> Message sent — thank you for reaching out!
-            </p>
+            <p role="status" className="text-sm text-success">Message sent. Thank you, I will reply soon.</p>
           )}
           {status === 'error' && (
-            <p role="alert" aria-live="assertive" className="text-sm text-red-400">{errorMsg || 'Something went wrong. Please try again.'}</p>
+            <p role="alert" className="text-sm text-danger">{errorMsg || 'Something went wrong. Please try again.'}</p>
           )}
-        </motion.form>
+        </form>
       </div>
     </section>
   );

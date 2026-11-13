@@ -59,7 +59,7 @@ api.interceptors.response.use(
         if (data?.data?.csrfToken) window.localStorage.setItem('portfolio_csrf', data.data.csrfToken);
       }
       return api(config);
-    } catch (refreshErr) {
+    } catch {
       // Refresh failed — the admin session is dead (expired refresh token,
       // or it never reached the server at all, as happened with the
       // SameSite=Lax cross-site cookie bug). Whatever the admin was doing

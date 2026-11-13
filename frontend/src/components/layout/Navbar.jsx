@@ -1,35 +1,35 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, Search as SearchIcon } from 'lucide-react';
+import { usePostCount } from '@/hooks/usePostCount';
 
-const LINKS = [
-  { href: '/', label: 'Home' },
+// Primary navigation (5 items). Writing stays hidden until there are at
+// least MIN_POSTS published posts.
+const MIN_POSTS = 3;
+const BASE_LINKS = [
+  { href: '/projects', label: 'Work' },
   { href: '/about', label: 'About' },
-  { href: '/skills', label: 'Skills' },
-  { href: '/experience', label: 'Experience' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/blog', label: 'Blog' },
+  { href: '/blog', label: 'Writing', needsPosts: true },
   { href: '/resume', label: 'Resume' },
-  { href: '/contacts', label: 'Contact' },
+  { href: '/contact', label: 'Contact' },
 ];
+
+const linkClass = ({ isActive }) =>
+  `px-3 py-2 text-sm rounded border-b-2 transition-colors ${
+    isActive
+      ? 'text-ink font-medium border-accent'
+      : 'text-muted border-transparent hover:text-ink'
+  }`;
 
 export default function Navbar() {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const headerRef = useRef(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
+  const postCount = usePostCount();
 
-  // The header's real height changes across breakpoints (scrolled vs not,
-  // brand text wrapping on narrow phones, the mobile menu opening, etc.),
-  // so any page that reserves static top padding to avoid sitting under
-  // this fixed header can end up hidden behind it on some devices. Track
-  // the actual rendered height and publish it as a CSS var so pages can
-  // pad against the real number instead of a guessed constant.
+  const links = BASE_LINKS.filter((l) => !l.needsPosts || (postCount ?? 0) >= MIN_POSTS);
+
+  // Publish the real header height so pages can pad against it.
   useEffect(() => {
     const el = headerRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return undefined;
@@ -39,184 +39,89 @@ export default function Navbar() {
     setVar();
     const observer = new ResizeObserver(setVar);
     observer.observe(el);
-    window.addEventListener('resize', setVar);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('resize', setVar);
-    };
-  }, [scrolled, open, searchOpen]);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 12);
-      const doc = document.documentElement;
-      const max = doc.scrollHeight - doc.clientHeight;
-      setProgress(max > 0 ? Math.min(window.scrollY / max, 1) : 0);
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
     setOpen(false);
-    setSearchOpen(false);
   }, [pathname]);
 
-  const submitSearch = (e) => {
-    e.preventDefault();
-    if (!searchValue.trim()) return;
-    navigate(`/search?q=${encodeURIComponent(searchValue.trim())}`);
-    setSearchValue('');
-    setSearchOpen(false);
-    setOpen(false);
-  };
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
 
   return (
     <header
       ref={headerRef}
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? 'py-3' : 'py-5'
-      }`}
+      className="fixed top-0 inset-x-0 z-50 bg-bg border-b border-line"
     >
-      {/* Page-scroll progress indicator */}
-      <div className="absolute top-0 inset-x-0 h-[2px] bg-transparent">
-        <div
-          className="h-full bg-gradient-to-r from-accent to-cyan-accent transition-[width] duration-150"
-          style={{ width: `${progress * 100}%` }}
-        />
-      </div>
-
       <div className="container-page">
-        <nav
-          aria-label="Primary"
-          className={`glass rounded-2xl flex items-center justify-between px-5 py-3 transition-shadow duration-300 ${
-            scrolled ? 'shadow-glow border-ink/10' : ''
-          }`}
-        >
-          <Link to="/" className="font-display text-lg font-semibold tracking-tight">
-            <span className="text-gradient">GERRY&apos;S</span>
-            <span className="text-ink/50">Portfolio</span>
+        <nav aria-label="Primary" className="flex items-center justify-between h-16">
+          <Link to="/" className="font-display text-lg font-semibold tracking-tight text-ink">
+            Gerry&apos;s Portfolio
           </Link>
 
           <div className="hidden md:flex items-center gap-1">
-            {LINKS.map((link) => {
-              const active = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  aria-current={active ? 'page' : undefined}
-                  className={`relative px-3 py-2 text-sm rounded-lg transition-colors ${
-                    active ? 'text-accent-dark font-medium' : 'text-ink/60 hover:text-ink'
-                  }`}
-                >
-                  {active && (
-                    <motion.span
-                      layoutId="nav-pill"
-                      className="absolute inset-0 bg-accent/15 rounded-lg"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative z-10">{link.label}</span>
-                </Link>
-              );
-            })}
-
-            <div className="flex items-center ml-1">
-              <AnimatePresence mode="wait">
-                {searchOpen ? (
-                  <motion.form
-                    key="search-input"
-                    onSubmit={submitSearch}
-                    initial={{ width: 0, opacity: 0 }}
-                    animate={{ width: 200, opacity: 1 }}
-                    exit={{ width: 0, opacity: 0 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
-                    className="overflow-hidden"
-                  >
-                    <input
-                      autoFocus
-                      value={searchValue}
-                      onChange={(e) => setSearchValue(e.target.value)}
-                      onBlur={() => { if (!searchValue) setSearchOpen(false); }}
-                      placeholder="Search..."
-                      className="input-field px-3 py-1.5 text-sm w-full"
-                    />
-                  </motion.form>
-                ) : (
-                  <motion.button
-                    key="search-toggle"
-                    type="button"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setSearchOpen(true)}
-                    className="p-2 rounded-lg text-ink/60 hover:text-ink transition-colors"
-                    aria-label="Open search"
-                  >
-                    <SearchIcon size={16} />
-                  </motion.button>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1 md:hidden">
+            {links.map((link) => (
+              <NavLink key={link.href} to={link.href} end={link.href === '/'} className={linkClass}>
+                {link.label}
+              </NavLink>
+            ))}
             <Link
               to="/search"
-              className="p-2 rounded-lg glass active:scale-95 transition-transform"
               aria-label="Search"
+              className="ml-2 p-2 rounded text-muted hover:text-ink transition-colors"
             >
               <SearchIcon size={18} />
             </Link>
+          </div>
+
+          <div className="flex items-center gap-1 md:hidden">
+            <Link to="/search" aria-label="Search" className="p-2 rounded text-muted hover:text-ink">
+              <SearchIcon size={20} />
+            </Link>
             <button
+              type="button"
               onClick={() => setOpen((o) => !o)}
-              className="p-2 rounded-lg glass active:scale-95 transition-transform"
-              aria-label="Toggle menu"
+              className="p-2 rounded text-ink"
+              aria-label={open ? 'Close menu' : 'Open menu'}
               aria-expanded={open}
               aria-controls="mobile-nav-menu"
             >
-              {open ? <X size={18} /> : <Menu size={18} />}
+              {open ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </nav>
-
-        <AnimatePresence>
-          {open && (
-            <motion.nav
-              id="mobile-nav-menu"
-              aria-label="Mobile"
-              initial={{ opacity: 0, y: -10, height: 0 }}
-              animate={{ opacity: 1, y: 0, height: 'auto' }}
-              exit={{ opacity: 0, y: -10, height: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="md:hidden mt-2 glass rounded-2xl overflow-hidden"
-            >
-              <div className="flex flex-col p-2">
-                {LINKS.map((link, i) => (
-                  <motion.div
-                    key={link.href}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.03 }}
-                  >
-                    <Link
-                      to={link.href}
-                      aria-current={pathname === link.href ? 'page' : undefined}
-                      className={`block px-4 py-3 rounded-xl text-sm transition-colors ${
-                        pathname === link.href ? 'bg-accent/15 text-accent-dark font-medium' : 'text-ink/70 hover:bg-ink/5'
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.nav>
-          )}
-        </AnimatePresence>
       </div>
+
+      {open && (
+        <nav
+          id="mobile-nav-menu"
+          aria-label="Mobile"
+          className="md:hidden border-t border-line bg-bg"
+        >
+          <div className="container-page flex flex-col py-2">
+            {links.map((link) => (
+              <NavLink
+                key={link.href}
+                to={link.href}
+                className={({ isActive }) =>
+                  `py-3 text-base border-l-2 pl-3 ${
+                    isActive ? 'text-ink font-medium border-accent' : 'text-muted border-transparent'
+                  }`
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </div>
+        </nav>
+      )}
     </header>
   );
 }

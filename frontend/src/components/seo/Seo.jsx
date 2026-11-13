@@ -48,7 +48,6 @@ export default function Seo({
       {image && <meta name="twitter:image" content={image} />}
 
       {blocks.map((block, i) => (
-        // eslint-disable-next-line react/no-array-index-key
         <script key={i} type="application/ld+json">
           {JSON.stringify(block)}
         </script>

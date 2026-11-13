@@ -1,82 +1,42 @@
-import { motion } from 'framer-motion';
-import { MapPin, Briefcase, Mail } from 'lucide-react';
-
+/** About intro: bio, portrait, and the facts the profile actually contains. No invented stats. */
 export default function About({ profile }) {
-  const stats = [
-    { label: 'Years of Experience', value: `${profile?.years_experience ?? 3}+` },
-    { label: 'Projects Shipped', value: '3+' },
-    { label: 'Happy Clients', value: '3+' },
-  ];
+  const facts = [
+    profile?.title && ['Role', profile.title],
+    profile?.location && ['Based in', profile.location],
+    profile?.years_experience ? ['Experience', `${profile.years_experience} years`] : null,
+  ].filter(Boolean);
 
   return (
-    <section id="about" className="py-24">
-      <div className="container-page grid md:grid-cols-2 gap-14 items-center">
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <p className="section-label">About Me</p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
-            Turning ideas into <span className="text-gradient">reliable software</span>
-          </h2>
-          <p className="text-ink/60 leading-relaxed mb-6">
-            {profile?.bio ||
-              'Full-Stack Software Engineer passionate about building scalable, high-performance web applications with modern technologies, clean architecture, and intuitive user experiences. Dedicated to creating secure, maintainable, and impactful digital solutions that solve real-world problems.'}
-          </p>
-
-          <div className="flex flex-col gap-3 text-sm text-ink/70">
-            {profile?.location && (
-              <div className="flex items-center gap-3">
-                <MapPin size={16} className="text-accent-dark" /> {profile.location}
-              </div>
-            )}
-            <div className="flex items-center gap-3">
-              <Briefcase size={16} className="text-accent-dark" />
-              {profile?.title || 'Full-Stack Software Engineer'}
-            </div>
-            {profile?.email && (
-              <div className="flex items-center gap-3">
-                <Mail size={16} className="text-accent-dark" /> {profile.email}
-              </div>
-            )}
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="relative rounded-2xl overflow-hidden border border-ink/10 mb-4 aspect-[16/10]">
-            <img
-              src="https://images.pexels.com/photos/34803978/pexels-photo-34803978.jpeg?auto=compress&cs=tinysrgb&w=1200"
-              alt="Developer workspace with a laptop showing code, a plant, and a cup of coffee"
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 w-full h-full object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/0 to-background/0" />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 + i * 0.08 }}
-                className="card-premium glass-hover p-6 text-center"
-              >
-                <p className="font-display text-3xl font-bold text-gradient">{stat.value}</p>
-                <p className="text-xs text-ink/50 mt-2 tracking-wide">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+    <section id="about">
+      <div className="container-page pb-12 grid gap-10 md:grid-cols-[2fr_1fr]">
+        <div>
+          <p className="section-label">About</p>
+          <h1 className="font-display text-4xl md:text-5xl font-normal leading-tight tracking-tight">
+            {profile?.full_name || 'About'}
+          </h1>
+          {profile?.bio && (
+            <p className="mt-6 text-lg leading-relaxed max-w-prose whitespace-pre-line">{profile.bio}</p>
+          )}
+          {facts.length > 0 && (
+            <dl className="mt-8 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
+              {facts.map(([k, v]) => (
+                <div key={k} className="contents">
+                  <dt className="text-muted">{k}</dt>
+                  <dd className="m-0">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>
+        {profile?.avatar_url && (
+          <img
+            src={profile.avatar_url}
+            alt={profile.full_name ? `Portrait of ${profile.full_name}` : 'Portrait'}
+            loading="lazy"
+            decoding="async"
+            className="w-full max-w-xs aspect-square object-cover border border-line rounded-md md:justify-self-end"
+          />
+        )}
       </div>
     </section>
   );

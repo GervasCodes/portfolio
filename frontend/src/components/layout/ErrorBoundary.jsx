@@ -31,8 +31,8 @@ export default class ErrorBoundary extends Component {
 
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="card-premium p-8 max-w-md w-full text-center">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-accent to-cyan-accent mx-auto mb-4 flex items-center justify-center shadow-glow">
+        <div className="card p-8 max-w-md w-full text-center">
+          <div className="w-12 h-12 rounded-2xl bg-accent mx-auto mb-4 flex items-center justify-center">
             <AlertTriangle size={20} className="text-white" />
           </div>
           <h1 className="font-display text-xl font-bold mb-2">Something went wrong</h1>
@@ -41,7 +41,7 @@ export default class ErrorBoundary extends Component {
           </p>
           <button
             onClick={this.handleReload}
-            className="glass glass-hover rounded-xl px-5 py-2.5 text-sm inline-flex items-center gap-2 mx-auto"
+            className="surface surface-hover rounded-xl px-5 py-2.5 text-sm inline-flex items-center gap-2 mx-auto"
           >
             <RefreshCw size={15} /> Reload page
           </button>

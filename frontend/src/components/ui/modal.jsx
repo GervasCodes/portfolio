@@ -38,7 +38,7 @@ export default function Modal({ open, onClose, title, children, maxWidth = 'max-
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="absolute inset-0 bg-black/75 backdrop-blur-md"
+            className="absolute inset-0 bg-ink/60"
             onClick={onClose}
           />
           <motion.div
@@ -47,11 +47,11 @@ export default function Modal({ open, onClose, title, children, maxWidth = 'max-
             aria-modal="true"
             aria-labelledby={title ? titleId : undefined}
             tabIndex={-1}
-            initial={{ opacity: 0, scale: 0.95, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 12 }}
-            transition={{ type: 'spring', duration: 0.4 }}
-            className={`relative w-full ${maxWidth} card-premium p-6 max-h-[85vh] form-scroll shadow-[0_30px_80px_-20px_rgba(15,23,20,0.18)]`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
+            className={`relative w-full ${maxWidth} card p-6 max-h-[85vh] form-scroll shadow-overlay`}
           >
             <div className="flex items-center justify-between mb-4">
               {title && <h3 id={titleId} className="font-display text-lg font-semibold">{title}</h3>}

@@ -63,16 +63,16 @@ export default function AdminLoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="card-premium p-8 w-full max-w-md"
+        className="card p-8 w-full max-w-md"
       >
         {!mfaToken ? (
           <>
             <div className="text-center mb-8">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-accent to-cyan-accent mx-auto mb-4 flex items-center justify-center shadow-glow">
+              <div className="w-12 h-12 rounded-2xl bg-accent mx-auto mb-4 flex items-center justify-center">
                 <Lock size={20} className="text-white" />
               </div>
               <h1 className="font-display text-2xl font-bold">Admin Login</h1>
-              <p className="text-sm text-ink/50 mt-2">Sign in to manage your portfolio content.</p>
+              <p className="text-sm text-muted mt-2">Sign in to manage your portfolio content.</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -105,7 +105,7 @@ export default function AdminLoginPage() {
                 />
               </div>
 
-              {status === 'error' && <p role="alert" className="text-sm text-red-400">{errorMsg}</p>}
+              {status === 'error' && <p role="alert" className="text-sm text-danger">{errorMsg}</p>}
 
               <Button type="submit" disabled={status === 'loading'} className="w-full justify-center" icon={<LogIn size={16} />}>
                 {status === 'loading' ? 'Signing in...' : 'Sign In'}
@@ -115,11 +115,11 @@ export default function AdminLoginPage() {
         ) : (
           <>
             <div className="text-center mb-8">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-accent to-cyan-accent mx-auto mb-4 flex items-center justify-center shadow-glow">
+              <div className="w-12 h-12 rounded-2xl bg-accent mx-auto mb-4 flex items-center justify-center">
                 <ShieldCheck size={20} className="text-white" />
               </div>
               <h1 className="font-display text-2xl font-bold">Two-Factor Authentication</h1>
-              <p className="text-sm text-ink/50 mt-2">Enter the 6-digit code from your authenticator app.</p>
+              <p className="text-sm text-muted mt-2">Enter the 6-digit code from your authenticator app.</p>
             </div>
 
             <form onSubmit={handleVerifyCode} className="space-y-4">
@@ -138,7 +138,7 @@ export default function AdminLoginPage() {
                 className="w-full input-field px-4 py-3 text-center text-lg tracking-[0.5em]"
               />
 
-              {status === 'error' && <p role="alert" className="text-sm text-red-400">{errorMsg}</p>}
+              {status === 'error' && <p role="alert" className="text-sm text-danger">{errorMsg}</p>}
 
               <Button type="submit" disabled={status === 'loading' || code.length !== 6} className="w-full justify-center" icon={<ShieldCheck size={16} />}>
                 {status === 'loading' ? 'Verifying...' : 'Verify & Sign In'}
@@ -146,7 +146,7 @@ export default function AdminLoginPage() {
               <button
                 type="button"
                 onClick={() => { setMfaToken(null); setCode(''); setStatus('idle'); setErrorMsg(''); }}
-                className="w-full flex items-center justify-center gap-1.5 text-xs text-ink/50 hover:text-ink/70 transition-colors"
+                className="w-full flex items-center justify-center gap-1.5 text-xs text-muted hover:text-ink/70 transition-colors"
               >
                 <ArrowLeft size={12} /> Back to password
               </button>

@@ -1,26 +1,26 @@
 import { Link } from 'react-router-dom';
-import { Home } from 'lucide-react';
-import Button from '@/components/ui/Buttons';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { useSiteSettings, buildTitle } from '@/hooks/useSiteSettings';
+import TextLink from '@/components/ui/TextLink';
 
 export default function NotFoundPage() {
   const settings = useSiteSettings();
-  useDocumentTitle(buildTitle('Page Not Found', settings));
+  useDocumentTitle(buildTitle('Page not found', settings));
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 text-center pt-28">
-      <div>
-        <p className="font-display text-7xl font-bold text-gradient mb-4">404</p>
-        <h1 className="font-display text-2xl font-bold mb-2">Page not found</h1>
-        <p className="text-ink/55 mb-8">The page you&apos;re looking for doesn&apos;t exist or has moved.</p>
-        <Button href="/" icon={<Home size={16} />}>
-          Back to Home
-        </Button>
-        <p className="mt-6 text-sm">
-          <Link to="/" className="text-ink/50 hover:text-ink">Return to homepage</Link>
-        </p>
-      </div>
+    <div className="container-page" style={{ paddingTop: 'calc(var(--navbar-h) + 4rem)' }}>
+      <p className="text-sm text-muted">Error 404</p>
+      <h1 className="font-display text-5xl font-semibold mt-2 max-w-xl">This page doesn&apos;t exist.</h1>
+      <p className="text-muted mt-4 max-w-prose">
+        The link may be old or mistyped. Try one of these instead:
+      </p>
+      <ul className="mt-6 space-y-2">
+        <li><TextLink href="/projects">See the work</TextLink></li>
+        <li><TextLink href="/about">Read about me</TextLink></li>
+        <li><TextLink href="/contact">Get in touch</TextLink></li>
+        <li><TextLink href="/search">Search the site</TextLink></li>
+      </ul>
+      <p className="mt-8 text-sm"><Link to="/" className="text-muted hover:text-ink">← Back to home</Link></p>
     </div>
   );
 }

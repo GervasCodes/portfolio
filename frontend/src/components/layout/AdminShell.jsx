@@ -9,7 +9,7 @@ export default function AdminShell({ title, description, children }) {
         {(title || description) && (
           <div className="mb-6 pb-5 border-b border-ink/5">
             {title && <h1 className="font-display text-2xl font-bold tracking-tight">{title}</h1>}
-            {description && <p className="text-sm text-ink/50 mt-1.5">{description}</p>}
+            {description && <p className="text-sm text-muted mt-1.5">{description}</p>}
           </div>
         )}
         {children}

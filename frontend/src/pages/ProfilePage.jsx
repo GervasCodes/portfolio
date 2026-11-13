@@ -44,10 +44,10 @@ export default function ProfilePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="glass rounded-2xl p-8 md:p-10"
+          className="surface rounded-2xl p-8 md:p-10"
         >
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-            <div className="relative w-28 h-28 shrink-0 rounded-full p-[3px] bg-gradient-to-br from-accent to-cyan-accent shadow-glow">
+            <div className="relative w-28 h-28 shrink-0 rounded-full p-[3px] bg-accent">
               <div className="w-full h-full rounded-full overflow-hidden border-4 border-background bg-ink/5 flex items-center justify-center">
                 {profile?.avatar_url ? (
                   <img
@@ -77,11 +77,7 @@ export default function ProfilePage() {
               </h1>
               <p className="text-ink/60 mt-1">{profile?.title}</p>
               {profile?.available_for_work && (
-                <span className="inline-flex items-center gap-2 mt-3 px-3 py-1 rounded-full text-xs glass text-ink/70">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-                  </span>
+                <span className="inline-flex items-center gap-2 mt-3 px-3 py-1 rounded-full text-xs surface text-muted">
                   Available for new opportunities
                 </span>
               )}
@@ -95,22 +91,22 @@ export default function ProfilePage() {
           <div className="grid sm:grid-cols-2 gap-3 mt-8 text-sm">
             {profile?.location && (
               <div className="flex items-center gap-3 text-ink/70">
-                <MapPin size={16} className="text-accent-dark shrink-0" /> {profile.location}
+                <MapPin size={16} className="text-accent shrink-0" /> {profile.location}
               </div>
             )}
             {profile?.title && (
               <div className="flex items-center gap-3 text-ink/70">
-                <Briefcase size={16} className="text-accent-dark shrink-0" /> {profile.title}
+                <Briefcase size={16} className="text-accent shrink-0" /> {profile.title}
               </div>
             )}
             {profile?.email && (
               <div className="flex items-center gap-3 text-ink/70">
-                <Mail size={16} className="text-accent-dark shrink-0" /> {profile.email}
+                <Mail size={16} className="text-accent shrink-0" /> {profile.email}
               </div>
             )}
             {profile?.phone && (
               <div className="flex items-center gap-3 text-ink/70">
-                <Phone size={16} className="text-accent-dark shrink-0" /> {profile.phone}
+                <Phone size={16} className="text-accent shrink-0" /> {profile.phone}
               </div>
             )}
           </div>
@@ -122,7 +118,7 @@ export default function ProfilePage() {
                 href={profile[key]}
                 target="_blank"
                 rel="noreferrer"
-                className="glass glass-hover rounded-xl px-4 py-2 text-sm inline-flex items-center gap-2 text-ink/70 hover:text-ink"
+                className="surface surface-hover rounded-xl px-4 py-2 text-sm inline-flex items-center gap-2 text-ink/70 hover:text-ink"
               >
                 <Icon size={14} /> {label}
               </a>
@@ -132,7 +128,7 @@ export default function ProfilePage() {
                 href={whatsappHref}
                 target="_blank"
                 rel="noreferrer"
-                className="glass glass-hover rounded-xl px-4 py-2 text-sm inline-flex items-center gap-2 text-ink/70 hover:text-ink"
+                className="surface surface-hover rounded-xl px-4 py-2 text-sm inline-flex items-center gap-2 text-ink/70 hover:text-ink"
               >
                 <MessageCircle size={14} /> WhatsApp
               </a>

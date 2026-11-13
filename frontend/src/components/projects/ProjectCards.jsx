@@ -19,10 +19,10 @@ export function ProjectCard({ project, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.06 }}
-      className="card-premium glass-hover overflow-hidden group flex flex-col h-full"
+      className="card surface-hover overflow-hidden group flex flex-col h-full"
     >
       <Link to={`/projects/${project.slug}`} className="block">
-        <div className="relative w-full aspect-[16/10] bg-gradient-to-br from-accent/30 to-cyan-accent/20 overflow-hidden">
+        <div className="relative w-full aspect-[16/10] bg-surface overflow-hidden">
           {project.cover_image_url ? (
             <img
               src={project.cover_image_url}
@@ -32,14 +32,13 @@ export function ProjectCard({ project, index = 0 }) {
               className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center font-display text-2xl text-ink/20">
+            <div className="absolute inset-0 flex items-center justify-center font-display text-2xl text-muted">
               {project.title?.slice(0, 2).toUpperCase()}
             </div>
           )}
           {/* Gradient overlay + hover scrim so title/category always stay legible */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
           {project.featured && (
-            <span className="absolute top-3 right-3 text-[10px] font-medium px-2.5 py-1 rounded-full bg-gradient-to-r from-accent to-cyan-accent text-white shadow-glow">
+            <span className="absolute top-3 right-3 text-[10px] font-medium px-2.5 py-1 rounded-full bg-accent text-white">
               Featured
             </span>
           )}
@@ -48,10 +47,10 @@ export function ProjectCard({ project, index = 0 }) {
 
       <div className="p-5 flex flex-col flex-1">
         {project.category && (
-          <span className="text-xs uppercase tracking-wide text-accent-dark mb-2">{project.category}</span>
+          <span className="text-xs uppercase tracking-wide text-accent mb-2">{project.category}</span>
         )}
         <Link to={`/projects/${project.slug}`}>
-          <h3 className="font-display font-semibold text-lg mb-2 line-clamp-2 group-hover:text-gradient transition-colors">
+          <h3 className="font-display font-semibold text-lg mb-2 line-clamp-2 group-hover:text-accent transition-colors">
             {project.title}
           </h3>
         </Link>
@@ -65,7 +64,7 @@ export function ProjectCard({ project, index = 0 }) {
               </span>
             ))}
             {project.tech_stack.length > 4 && (
-              <span className="text-[11px] px-2.5 py-1 rounded-full bg-ink/5 text-ink/50 border border-ink/10">
+              <span className="text-[11px] px-2.5 py-1 rounded-full bg-ink/5 text-muted border border-ink/10">
                 +{project.tech_stack.length - 4}
               </span>
             )}
@@ -84,7 +83,7 @@ export function ProjectCard({ project, index = 0 }) {
               href={project.repo_url}
               target="_blank"
               rel="noreferrer"
-              className="ml-auto text-ink/50 hover:text-ink"
+              className="ml-auto text-muted hover:text-ink"
               aria-label="View source code"
             >
               <Github size={16} />

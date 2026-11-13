@@ -3,7 +3,7 @@ import Skeleton from '@/components/ui/Skeleton';
 /** Placeholder for Hero while `profile` is still loading. */
 export function HeroSkeleton() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-grid bg-noise">
+    <section className="relative min-h-screen overflow-hidden">
       <div className="container-page relative z-10 pt-40 md:pt-44 pb-20">
         <Skeleton className="w-28 h-28 md:w-32 md:h-32 rounded-full mb-8" />
         <Skeleton className="w-48 h-7 rounded-full mb-8" />
@@ -31,7 +31,7 @@ export function SkillsSkeleton() {
         </div>
         <div className="grid md:grid-cols-2 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="card-premium p-6">
+            <div key={i} className="card p-6">
               <Skeleton className="w-32 h-5 mb-4" />
               <div className="space-y-3">
                 <Skeleton className="w-full h-3" />
@@ -60,7 +60,7 @@ export function ProjectsSkeleton() {
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="card-premium overflow-hidden">
+            <div key={i} className="card overflow-hidden">
               <Skeleton className="w-full h-48 rounded-none" />
               <div className="p-5 space-y-3">
                 <Skeleton className="w-20 h-3" />

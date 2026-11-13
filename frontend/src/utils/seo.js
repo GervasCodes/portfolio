@@ -9,7 +9,10 @@
 // deployed on), NOT the backend API URL. Used to build absolute
 // canonical/OG links and the sitemap. Falls back to a placeholder so
 // local dev doesn't crash — set VITE_SITE_URL in production.
-export const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://example.com').replace(/\/+$/, '');
+// Without VITE_SITE_URL, use the origin the page is served from, so canonical and
+// Open Graph URLs are never a placeholder domain.
+const FALLBACK_ORIGIN = typeof window !== 'undefined' ? window.location.origin : '';
+export const SITE_URL = (import.meta.env.VITE_SITE_URL || FALLBACK_ORIGIN).replace(/\/+$/, '');
 
 /** Turns a relative path ("/projects/foo") into an absolute site URL. */
 export function absoluteUrl(path = '/') {
