@@ -34,7 +34,8 @@ export function Field({ label, hint, error, required = false, className = '', ch
   );
 }
 
-const CONTROL = 'input-field w-full px-3.5 py-2.5 text-base';
+// 16px+ text on touch avoids iOS zoom-on-focus; 44px minimum height for touch targets.
+const CONTROL = 'input-field w-full px-4 py-2.5 text-base min-h-11';
 
 export const Input = forwardRef(function Input({ className = '', ...rest }, ref) {
   return <input ref={ref} className={`${CONTROL} ${className}`} {...rest} />;

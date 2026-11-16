@@ -29,13 +29,14 @@ export default function Pagination({ basePath, page, limit, total, extraParams =
   const pages = buildPageRange(page, totalPages);
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-12">
+    <nav aria-label="Pagination" className="flex items-center justify-center gap-2 mt-12">
       <Link
         to={buildHref(Math.max(page - 1, 1))}
         aria-disabled={page <= 1}
-        className={`surface w-10 h-10 rounded-xl flex items-center justify-center ${page <= 1 ? 'opacity-30 pointer-events-none' : 'surface-hover'}`}
+        aria-label="Previous page"
+        className={`surface w-11 h-11 rounded-full flex items-center justify-center ${page <= 1 ? 'opacity-30 pointer-events-none' : 'surface-hover'}`}
       >
-        <ChevronLeft size={16} />
+        <ChevronLeft size={16} aria-hidden="true" />
       </Link>
 
       {pages.map((p) =>
@@ -44,14 +45,14 @@ export default function Pagination({ basePath, page, limit, total, extraParams =
             key={p}
             to={buildHref(p)}
             aria-current={p === page ? 'page' : undefined}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm transition-colors ${
-              p === page ? 'bg-accent text-white' : 'surface surface-hover text-ink/60'
+            className={`w-11 h-11 rounded-full flex items-center justify-center text-sm font-mono transition-colors ${
+              p === page ? 'bg-accent text-accent-ink' : 'surface surface-hover text-muted'
             }`}
           >
             {p}
           </Link>
         ) : (
-          <span key={p} className="w-10 h-10 flex items-center justify-center text-ink/60 text-sm select-none">
+          <span key={p} className="w-11 h-11 flex items-center justify-center text-muted text-sm select-none">
             …
           </span>
         )
@@ -60,10 +61,11 @@ export default function Pagination({ basePath, page, limit, total, extraParams =
       <Link
         to={buildHref(Math.min(page + 1, totalPages))}
         aria-disabled={page >= totalPages}
-        className={`surface w-10 h-10 rounded-xl flex items-center justify-center ${page >= totalPages ? 'opacity-30 pointer-events-none' : 'surface-hover'}`}
+        aria-label="Next page"
+        className={`surface w-11 h-11 rounded-full flex items-center justify-center ${page >= totalPages ? 'opacity-30 pointer-events-none' : 'surface-hover'}`}
       >
-        <ChevronRight size={16} />
+        <ChevronRight size={16} aria-hidden="true" />
       </Link>
-    </div>
+    </nav>
   );
 }

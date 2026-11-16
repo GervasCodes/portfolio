@@ -1,127 +1,263 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, Search as SearchIcon } from 'lucide-react';
-import { usePostCount } from '@/hooks/usePostCount';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Menu, Search as SearchIcon, X } from 'lucide-react';
+import ThemeToggle from '@/components/ui/ThemeToggle';
+import Button from '@/components/ui/Buttons';
+import { useNavLinks } from '@/hooks/useNavLinks';
+import { useProfile } from '@/hooks/useProfile';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { useCommandPalette } from '@/hooks/useCommandPalette';
+import { useLocalTime } from '@/hooks/useLocalTime';
 
-// Primary navigation (5 items). Writing stays hidden until there are at
-// least MIN_POSTS published posts.
-const MIN_POSTS = 3;
-const BASE_LINKS = [
-  { href: '/projects', label: 'Work' },
-  { href: '/about', label: 'About' },
-  { href: '/blog', label: 'Writing', needsPosts: true },
-  { href: '/resume', label: 'Resume' },
-  { href: '/contact', label: 'Contact' },
-];
+/**
+ * Floating glass navbar (glass is allowed only here and in the command palette).
+ *  - shrinks after 24 px of scroll (height + width; the page offset does NOT
+ *    change, so there is no layout shift)
+ *  - sliding active-link indicator (framer-motion layoutId; instant under
+ *    prefers-reduced-motion thanks to <MotionConfig reducedMotion="user">)
+ *  - theme toggle + Cmd/Ctrl+K button
+ *  - mobile: full-screen menu with staggered links, focus trap, Escape, scroll lock
+ */
 
-const linkClass = ({ isActive }) =>
-  `px-3 py-2 text-sm rounded border-b-2 transition-colors ${
-    isActive
-      ? 'text-ink font-medium border-accent'
-      : 'text-muted border-transparent hover:text-ink'
-  }`;
+// Page offset: 12 px gap above the bar + 64 px bar + 4 px breathing room.
+// Pages read it as `var(--navbar-h)`; it is fixed so shrinking never moves content.
+const NAV_OFFSET = '80px';
+const EASE = [0.22, 1, 0.36, 1];
+const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+const listVariants = { hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.08 } } };
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
+};
+
+const initialsOf = (name) =>
+  String(name || '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join('');
 
 export default function Navbar() {
   const { pathname } = useLocation();
+  const links = useNavLinks();
+  const profile = useProfile();
+  const settings = useSiteSettings();
+  const { openPalette } = useCommandPalette();
+  const time = useLocalTime();
+
   const headerRef = useRef(null);
+  const overlayRef = useRef(null);
+  const menuButtonRef = useRef(null);
   const [open, setOpen] = useState(false);
-  const postCount = usePostCount();
+  const [scrolled, setScrolled] = useState(false);
+  const [isMac, setIsMac] = useState(false);
 
-  const links = BASE_LINKS.filter((l) => !l.needsPosts || (postCount ?? 0) >= MIN_POSTS);
+  const name = profile?.full_name || settings?.site_title || 'Portfolio';
+  const initials = initialsOf(profile?.full_name);
+  const startHref = profile?.email ? `mailto:${profile.email}` : '/contact';
 
-  // Publish the real header height so pages can pad against it.
   useEffect(() => {
-    const el = headerRef.current;
-    if (!el || typeof ResizeObserver === 'undefined') return undefined;
-    const setVar = () => {
-      document.documentElement.style.setProperty('--navbar-h', `${el.offsetHeight}px`);
-    };
-    setVar();
-    const observer = new ResizeObserver(setVar);
-    observer.observe(el);
-    return () => observer.disconnect();
+    document.documentElement.style.setProperty('--navbar-h', NAV_OFFSET);
+    setIsMac(/Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent || ''));
   }, []);
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
+  const closeMenu = useCallback((restoreFocus = true) => {
+    setOpen(false);
+    if (restoreFocus) menuButtonRef.current?.focus();
+  }, []);
+
+  // Navigating closes the menu (focus is handled by ScrollToTop, not restored here).
+  useEffect(() => { setOpen(false); }, [pathname]);
+
+  // The mobile menu only exists below md: close it if the window is widened.
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const onChange = () => { if (mq.matches) setOpen(false); };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  // Open menu: lock page scroll, Escape closes, Tab stays inside header + overlay.
   useEffect(() => {
     if (!open) return undefined;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    overlayRef.current?.querySelector('a[href]')?.focus();
+
     const onKey = (e) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') { closeMenu(true); return; }
+      if (e.key !== 'Tab') return;
+      const items = [
+        ...headerRef.current.querySelectorAll(FOCUSABLE),
+        ...overlayRef.current.querySelectorAll(FOCUSABLE),
+      ].filter((n) => n.offsetParent !== null);
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open, closeMenu]);
 
   return (
-    <header
-      ref={headerRef}
-      className="fixed top-0 inset-x-0 z-50 bg-bg border-b border-line"
-    >
-      <div className="container-page">
-        <nav aria-label="Primary" className="flex items-center justify-between h-16">
-          <Link to="/" className="font-display text-lg font-semibold tracking-tight text-ink">
-            Gerry&apos;s Portfolio
-          </Link>
-
-          <div className="hidden md:flex items-center gap-1">
-            {links.map((link) => (
-              <NavLink key={link.href} to={link.href} end={link.href === '/'} className={linkClass}>
-                {link.label}
-              </NavLink>
-            ))}
+    <>
+      <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 pt-3 pointer-events-none">
+        <div className="container-page">
+          <nav
+            aria-label="Primary"
+            className={`pointer-events-auto glass mx-auto flex items-center justify-between gap-2 rounded-full pl-2 pr-2 md:pl-3
+              transition-[height,max-width] duration-slow ease-standard
+              ${scrolled ? 'h-12 max-w-4xl' : 'h-16 max-w-5xl'}`}
+          >
             <Link
-              to="/search"
-              aria-label="Search"
-              className="ml-2 p-2 rounded text-muted hover:text-ink transition-colors"
+              to="/"
+              aria-label={`${name} — home`}
+              className="flex min-h-11 min-w-0 shrink items-center gap-2.5 rounded-full pr-2 text-ink"
             >
-              <SearchIcon size={18} />
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-1 md:hidden">
-            <Link to="/search" aria-label="Search" className="p-2 rounded text-muted hover:text-ink">
-              <SearchIcon size={20} />
-            </Link>
-            <button
-              type="button"
-              onClick={() => setOpen((o) => !o)}
-              className="p-2 rounded text-ink"
-              aria-label={open ? 'Close menu' : 'Open menu'}
-              aria-expanded={open}
-              aria-controls="mobile-nav-menu"
-            >
-              {open ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          </div>
-        </nav>
-      </div>
-
-      {open && (
-        <nav
-          id="mobile-nav-menu"
-          aria-label="Mobile"
-          className="md:hidden border-t border-line bg-bg"
-        >
-          <div className="container-page flex flex-col py-2">
-            {links.map((link) => (
-              <NavLink
-                key={link.href}
-                to={link.href}
-                className={({ isActive }) =>
-                  `py-3 text-base border-l-2 pl-3 ${
-                    isActive ? 'text-ink font-medium border-accent' : 'text-muted border-transparent'
-                  }`
-                }
+              <span
+                aria-hidden="true"
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent font-mono text-xs font-medium text-accent-ink"
               >
-                {link.label}
-              </NavLink>
-            ))}
-          </div>
-        </nav>
-      )}
-    </header>
+                {initials || '•'}
+              </span>
+              <span className="truncate font-display text-lg leading-none tracking-tight">{name}</span>
+            </Link>
+
+            <ul className="hidden shrink-0 items-center gap-0.5 md:flex">
+              {links.map((link) => (
+                <li key={link.href}>
+                  <NavLink
+                    to={link.href}
+                    className={({ isActive }) =>
+                      `relative inline-flex min-h-11 items-center rounded-full px-4 text-sm transition-colors duration-fast ${
+                        isActive ? 'text-ink font-medium' : 'text-muted hover:text-ink'
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        {isActive && (
+                          <motion.span
+                            layoutId="nav-active"
+                            aria-hidden="true"
+                            className="absolute inset-0 rounded-full bg-ink/10"
+                            transition={{ duration: 0.3, ease: EASE }}
+                          />
+                        )}
+                        <span className="relative">{link.label}</span>
+                      </>
+                    )}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex shrink-0 items-center gap-1.5">
+              {time && !scrolled && (
+                <span className="mr-1 hidden whitespace-nowrap font-mono text-xs text-muted xl:inline" title="Local time, East Africa Time">
+                  {time} EAT
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={openPalette}
+                aria-label="Search and commands"
+                aria-haspopup="dialog"
+                aria-keyshortcuts="Control+K Meta+K"
+                className="hidden h-11 items-center gap-2 rounded-full border border-line px-3.5 text-sm text-muted transition-colors duration-fast hover:border-control hover:text-ink md:inline-flex"
+              >
+                <SearchIcon size={16} aria-hidden="true" />
+                <span>Search</span>
+                <kbd className="whitespace-nowrap rounded-md border border-line px-1.5 py-0.5 font-mono text-[0.6875rem] leading-none text-muted">
+                  {isMac ? '⌘K' : 'Ctrl K'}
+                </kbd>
+              </button>
+              <button
+                type="button"
+                onClick={openPalette}
+                aria-label="Search and commands"
+                aria-haspopup="dialog"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-muted transition-colors duration-fast hover:border-control hover:text-ink md:hidden"
+              >
+                <SearchIcon size={18} aria-hidden="true" />
+              </button>
+              <ThemeToggle />
+              <button
+                ref={menuButtonRef}
+                type="button"
+                onClick={() => (open ? closeMenu(true) : setOpen(true))}
+                aria-label={open ? 'Close menu' : 'Open menu'}
+                aria-expanded={open}
+                aria-controls="mobile-nav-menu"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink md:hidden"
+              >
+                {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            ref={overlayRef}
+            id="mobile-nav-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            className="fixed inset-0 z-40 overflow-y-auto bg-bg md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: EASE }}
+          >
+            <div className="container-page flex min-h-full flex-col justify-between pb-10 pt-28">
+              <motion.ul variants={listVariants} initial="hidden" animate="show" className="space-y-1">
+                {links.map((link, i) => (
+                  <motion.li key={link.href} variants={itemVariants}>
+                    <NavLink
+                      to={link.href}
+                      className={({ isActive }) =>
+                        `group flex min-h-14 items-baseline gap-4 border-b border-line py-3 ${
+                          isActive ? 'text-ink' : 'text-muted hover:text-ink'
+                        }`
+                      }
+                    >
+                      <span className="section-label w-6">{String(i + 1).padStart(2, '0')}</span>
+                      <span className="font-display text-5xl leading-none tracking-tight">{link.label}</span>
+                    </NavLink>
+                  </motion.li>
+                ))}
+              </motion.ul>
+
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0, transition: { delay: 0.1 + links.length * 0.06, duration: 0.45, ease: EASE } }}
+                className="mt-10 flex flex-wrap items-center gap-3"
+              >
+                <Button href={startHref} size="lg">Start a project</Button>
+                {time && <span className="font-mono text-xs text-muted">{time} EAT</span>}
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import SiteChrome from '@/components/layout/SiteChrome';
 import ScrollToTop from '@/components/layout/ScrollToTop';
 import PageViewTracker from '@/components/layout/PageViewTracker';
@@ -47,23 +47,29 @@ const AdminSettingsPage = lazyWithRetry(() => import('@/pages/admin/AdminSetting
 
 export default function App() {
   const location = useLocation();
+  const reduceMotion = useReducedMotion();
+  // Page transition: a short fade + 12 px rise on enter, a quicker fade on exit.
+  // Skipped entirely for prefers-reduced-motion (a clean static page swap).
+  const pageMotion = reduceMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 12 },
+        animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
+        exit: { opacity: 0, transition: { duration: 0.15, ease: 'easeOut' } },
+      };
 
   return (
     <SiteChrome>
       <ScrollToTop />
       <PageViewTracker />
       <Suspense fallback={<PageLoader />}>
-        {/* mode="wait" finishes the outgoing page's fade-out before the
-            incoming one fades in, so the two never cross-fade over each
-            other. Respects prefers-reduced-motion automatically via the
-            MotionConfig wrapping the whole app in main.jsx. */}
-        <AnimatePresence mode="wait">
+        {/* mode="wait" finishes the outgoing page's fade-out before the incoming
+            one enters, so the two never overlap. The scroll position resets once
+            the old page is gone, so it never visibly jumps. */}
+        <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
           <motion.div
             key={location.pathname}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease: 'easeInOut' }}
+            {...pageMotion}
           >
             <Routes location={location}>
               <Route path="/" element={<HomePage />} />

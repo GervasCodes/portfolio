@@ -24,7 +24,7 @@ export default function BarSeries({
             return (
               <div
                 key={d[labelKey]}
-                className="flex-1 bg-accent min-h-px rounded-t-sm"
+                className="flex-1 bg-accent min-h-px rounded-t-md"
                 style={{ height: `${(v / top) * 100}%` }}
                 title={`${d[labelKey]}: ${formatValue(v)}`}
               />
@@ -50,8 +50,8 @@ export default function BarSeries({
               <span>{d[labelKey]}</span>
               <span className="text-muted">{formatValue(v)}</span>
             </div>
-            <div className="h-2 bg-line rounded-sm overflow-hidden">
-              <div className="h-full bg-accent" style={{ width: `${Math.min(100, (v / top) * 100)}%` }} />
+            <div className="h-2 bg-ink/10 rounded-full overflow-hidden">
+              <div className="h-full bg-accent rounded-full" style={{ width: `${Math.min(100, (v / top) * 100)}%` }} />
             </div>
           </li>
         );

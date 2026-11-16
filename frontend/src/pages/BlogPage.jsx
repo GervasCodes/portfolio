@@ -1,32 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { X } from 'lucide-react';
 import Pagination from '@/components/ui/Pagination';
 import SectionHeader from '@/components/ui/SectionHeader';
-import Tag from '@/components/ui/Tag';
 import Skeleton from '@/components/ui/Skeleton';
 import ErrorState from '@/components/ui/ErrorState';
 import EmptyState from '@/components/ui/EmptyState';
+import Reveal from '@/components/ui/Reveal';
+import Seo from '@/components/seo/Seo';
+import PostCard from '@/components/blog/PostCard';
 import NewsletterSignup from '@/components/sections/NewsletterSignup';
 import { PortfolioAPI } from '@/services/api';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { useSiteSettings, buildTitle } from '@/hooks/useSiteSettings';
 
 const LIMIT = 10;
+const DESCRIPTION = 'Notes on what I build and what I learn along the way.';
 
-function formatDate(date) {
-  if (!date) return '';
-  return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
+// Writing index: the latest post gets a wide feature card on page 1 (no tag
+// filter), everything else is a card grid. Covers come from the post; a post
+// without one gets generated art. Reading time is computed from the post text.
 export default function BlogPage() {
   const settings = useSiteSettings();
-  useDocumentTitle(buildTitle('Writing', settings));
-
   const [searchParams] = useSearchParams();
   const tag = searchParams.get('tag') || undefined;
   const page = Math.max(parseInt(searchParams.get('page'), 10) || 1, 1);
 
   const [state, setState] = useState({ status: 'loading', posts: [], total: 0 });
+  const [attempt, setAttempt] = useState(0);
+  const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
   useEffect(() => {
     let mounted = true;
@@ -38,51 +39,76 @@ export default function BlogPage() {
       else setState({ status: 'ready', posts: data || [], total: meta?.total ?? (data || []).length });
     })();
     return () => { mounted = false; };
-  }, [page, tag]);
+  }, [page, tag, attempt]);
 
   const { status, posts, total } = state;
+  const showFeatured = status === 'ready' && page === 1 && !tag && posts.length > 0;
+  const [featured, ...rest] = showFeatured ? posts : [null, ...posts];
+  const grid = showFeatured ? rest : posts;
 
   return (
     <div className="pb-24" style={{ paddingTop: 'calc(var(--navbar-h) + 3rem)' }}>
-      <div className="container-page max-w-3xl">
+      <Seo title={buildTitle('Writing', settings)} description={DESCRIPTION} path="/blog" siteName={settings?.site_title} />
+      <div className="container-page">
         <SectionHeader
           as="h1"
           eyebrow="Writing"
-          title={tag ? `Posts tagged “${tag}”` : 'Writing'}
-          description="Notes on what I build and what I learn along the way."
+          title={tag ? <>Posts tagged <em>“{tag}”</em></> : <>Notes &amp; <em>writing</em></>}
+          description={DESCRIPTION}
         />
 
-        {status === 'loading' && <Skeleton className="h-48 w-full" />}
+        {tag && (
+          <p className="-mt-6 mb-10">
+            <Link
+              to="/blog"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-4 text-sm text-muted transition-colors duration-fast hover:border-control hover:text-ink"
+            >
+              <X size={14} aria-hidden="true" /> Clear filter
+            </Link>
+          </p>
+        )}
+
+        {status === 'loading' && (
+          <div aria-busy="true" aria-label="Loading posts" className="space-y-6">
+            <Skeleton className="h-80 w-full rounded-3xl" />
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {[0, 1, 2].map((i) => <Skeleton key={i} className="h-72 w-full rounded-3xl" />)}
+            </div>
+          </div>
+        )}
         {status === 'error' && (
-          <ErrorState title="Posts could not be loaded" message="Check your connection, then try again." onRetry={() => window.location.reload()} />
+          <ErrorState title="Posts could not be loaded" message="Check your connection, then try again." onRetry={retry} />
         )}
         {status === 'ready' && posts.length === 0 && (
-          <EmptyState title="No posts yet" description={tag ? 'Nothing is tagged with this.' : 'New writing will appear here.'} />
+          <EmptyState
+            title={tag ? 'Nothing with that tag' : 'No posts yet'}
+            description={tag ? 'No published post carries this tag.' : 'New writing will appear here.'}
+            seed="writing"
+          />
         )}
+
         {status === 'ready' && posts.length > 0 && (
           <>
-            <ul className="divide-y divide-line border-y border-line">
-              {posts.map((post) => (
-                <li key={post.id || post.slug}>
-                  <Link to={`/blog/${post.slug}`} className="group block py-6">
-                    <p className="text-sm text-muted">{formatDate(post.published_at)}</p>
-                    <h2 className="font-display text-2xl font-normal mt-1 group-hover:text-accent">{post.title}</h2>
-                    {post.excerpt && <p className="mt-2 text-muted max-w-prose">{post.excerpt}</p>}
-                    {Array.isArray(post.tags) && post.tags.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {post.tags.map((t) => <Tag key={t}>{t}</Tag>)}
-                      </div>
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {featured && (
+              <Reveal className="mb-6">
+                <PostCard post={featured} featured />
+              </Reveal>
+            )}
+            {grid.length > 0 && (
+              <ul className="m-0 grid list-none gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
+                {grid.map((post, i) => (
+                  <Reveal as="li" key={post.id || post.slug} delay={Math.min(i, 5) * 60}>
+                    <PostCard post={post} />
+                  </Reveal>
+                ))}
+              </ul>
+            )}
             <Pagination basePath="/blog" page={page} limit={LIMIT} total={total} extraParams={tag ? { tag } : {}} />
           </>
         )}
 
-        {page === 1 && (
-          <div className="mt-16">
+        {page === 1 && status !== 'loading' && (
+          <div className="mt-20">
             <NewsletterSignup />
           </div>
         )}

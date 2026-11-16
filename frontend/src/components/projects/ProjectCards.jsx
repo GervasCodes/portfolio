@@ -1,96 +1,98 @@
-import { motion } from 'framer-motion';
+import { forwardRef, useId } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, Github } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+import Card from '@/components/ui/Card';
+import Tag from '@/components/ui/Tag';
+import ProjectCover from '@/components/projects/ProjectCover';
+import { projectYear } from '@/utils/projectContent';
 
-export default function ProjectCards({ projects = [] }) {
+/**
+ * Wraps a grid/list item so filtering animates: items fade and the rest glide
+ * into place (transform only). With reduced motion it is a plain element.
+ */
+export const FilterItem = forwardRef(function FilterItem({ as = 'div', children }, ref) {
+  const reduce = useReducedMotion();
+  if (reduce) {
+    const Plain = as;
+    return <Plain ref={ref}>{children}</Plain>;
+  }
+  const Animated = motion[as];
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-      {projects.map((project, i) => (
-        <ProjectCard key={project.id || project.slug} project={project} index={i} />
-      ))}
-    </div>
+    <Animated
+      ref={ref}
+      layout="position"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.15, ease: 'easeOut' } }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </Animated>
+  );
+});
+
+/** Responsive grid of project cards. Used by the Work index; `eagerCount` covers load the first row eagerly. */
+export default function ProjectCards({ projects = [], eagerCount = 3, headingAs = 'h3' }) {
+  return (
+    <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+      <AnimatePresence mode="popLayout" initial={false}>
+        {projects.map((project, i) => (
+          <FilterItem as="li" key={project.id || project.slug}>
+            <ProjectCard project={project} index={i} eager={i < eagerCount} headingAs={headingAs} />
+          </FilterItem>
+        ))}
+      </AnimatePresence>
+    </ul>
   );
 }
 
-export function ProjectCard({ project, index = 0 }) {
+export function ProjectCard({ project, index = 0, eager = false, headingAs: Heading = 'h3' }) {
+  const titleId = useId();
+  const year = projectYear(project);
+  const stack = Array.isArray(project.tech_stack) ? project.tech_stack : [];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.06 }}
-      className="card surface-hover overflow-hidden group flex flex-col h-full"
+    <Card
+      as={Link}
+      to={`/projects/${project.slug}`}
+      interactive
+      aria-labelledby={titleId}
+      className="group flex h-full flex-col"
     >
-      <Link to={`/projects/${project.slug}`} className="block">
-        <div className="relative w-full aspect-[16/10] bg-surface overflow-hidden">
-          {project.cover_image_url ? (
-            <img
-              src={project.cover_image_url}
-              alt={project.title}
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center font-display text-2xl text-muted">
-              {project.title?.slice(0, 2).toUpperCase()}
-            </div>
-          )}
-          {/* Gradient overlay + hover scrim so title/category always stay legible */}
-          {project.featured && (
-            <span className="absolute top-3 right-3 text-[10px] font-medium px-2.5 py-1 rounded-full bg-accent text-white">
-              Featured
-            </span>
-          )}
-        </div>
-      </Link>
-
-      <div className="p-5 flex flex-col flex-1">
-        {project.category && (
-          <span className="text-xs uppercase tracking-wide text-accent mb-2">{project.category}</span>
+      <div className="relative">
+        <ProjectCover
+          project={project}
+          eager={eager}
+          imgClassName="transition-transform duration-slow ease-standard group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+        />
+        {project.featured && (
+          <span className="absolute left-3 top-3 inline-flex items-center rounded-md border border-accent/40 bg-bg/90 px-2 py-0.5 font-mono text-xs font-medium uppercase tracking-wider text-accent">Featured</span>
         )}
-        <Link to={`/projects/${project.slug}`}>
-          <h3 className="font-display font-semibold text-lg mb-2 line-clamp-2 group-hover:text-accent transition-colors">
-            {project.title}
-          </h3>
-        </Link>
-        <p className="text-sm text-ink/55 mb-4 flex-1 line-clamp-3">{project.summary}</p>
-
-        {Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {project.tech_stack.slice(0, 4).map((tech) => (
-              <span key={tech} className="text-[11px] px-2.5 py-1 rounded-full bg-ink/5 text-ink/60 border border-ink/10">
-                {tech}
-              </span>
-            ))}
-            {project.tech_stack.length > 4 && (
-              <span className="text-[11px] px-2.5 py-1 rounded-full bg-ink/5 text-muted border border-ink/10">
-                +{project.tech_stack.length - 4}
-              </span>
-            )}
+      </div>
+      <div className="flex flex-1 flex-col p-5 md:p-6">
+        <div className="flex items-center justify-between gap-3 font-mono text-xs uppercase tracking-[0.12em] text-muted">
+          <span><span aria-hidden="true">{String(index + 1).padStart(2, '0')} / </span>{project.category || 'Project'}</span>
+          {year && <span>{year}</span>}
+        </div>
+        <Heading
+          id={titleId}
+          className="mt-3 font-display text-2xl font-normal leading-[1.1] tracking-tight transition-colors duration-fast group-hover:text-accent"
+        >
+          {project.title}
+        </Heading>
+        {project.summary && <p className="mt-3 line-clamp-3 text-sm text-muted">{project.summary}</p>}
+        {stack.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {stack.slice(0, 3).map((t) => <Tag key={t}>{t}</Tag>)}
+            {stack.length > 3 && <Tag>+{stack.length - 3}</Tag>}
           </div>
         )}
-
-        <div className="flex items-center gap-3 pt-3 border-t border-ink/5">
-          <Link
-            to={`/projects/${project.slug}`}
-            className="text-sm text-ink/70 hover:text-ink flex items-center gap-1"
-          >
-            Details <ArrowUpRight size={14} />
-          </Link>
-          {project.repo_url && project.repo_url !== '#' && (
-            <a
-              href={project.repo_url}
-              target="_blank"
-              rel="noreferrer"
-              className="ml-auto text-muted hover:text-ink"
-              aria-label="View source code"
-            >
-              <Github size={16} />
-            </a>
-          )}
-        </div>
+        <p className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm text-accent">
+          {project.case_study_enabled ? 'Read the case study' : 'View project'}
+          <ArrowUpRight size={16} aria-hidden="true" className="transition-transform duration-base ease-standard group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+        </p>
       </div>
-    </motion.div>
+    </Card>
   );
 }

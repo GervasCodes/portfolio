@@ -219,7 +219,7 @@ function TwoFactorCard({ enabled, onChange }) {
     <form onSubmit={confirmSetup} className="space-y-4 max-w-sm">
       <p className="text-sm text-ink/60">Scan this QR code with an authenticator app (Google Authenticator, Authy, 1Password, ...), then enter the 6-digit code it shows.</p>
       {setup.qrCodeDataUrl && (
-        <img src={setup.qrCodeDataUrl} alt="2FA QR code" className="rounded-xl border border-ink/10 bg-white p-2 w-40 h-40" />
+        <img src={setup.qrCodeDataUrl} alt="2FA QR code" className="rounded-xl border border-ink/10 bg-on-scrim p-2 w-40 h-40" />
       )}
       <details className="text-xs text-muted">
         <summary className="cursor-pointer">Can&apos;t scan? Enter manually</summary>

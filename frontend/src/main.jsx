@@ -6,9 +6,15 @@ import { MotionConfig } from 'framer-motion';
 import App from './App.jsx';
 import ErrorBoundary from './components/layout/ErrorBoundary.jsx';
 import { ToastProvider } from './components/ui/Toast.jsx';
-// Self-hosted fonts (no third-party requests): body + heading faces.
-import '@fontsource-variable/hanken-grotesk';
-import '@fontsource-variable/newsreader';
+import { ThemeProvider } from './theme/ThemeProvider.jsx';
+// Self-hosted fonts (no third-party requests), 3 families, font-display: swap.
+// Instrument Serif has one weight (400) + italic: import only the Latin subset.
+// The two Geist variable files are split by unicode-range, so browsers download
+// only the Latin subset (latin-ext loads only if a CMS string needs it).
+import '@fontsource/instrument-serif/latin-400.css';
+import '@fontsource/instrument-serif/latin-400-italic.css';
+import '@fontsource-variable/geist/wght.css';
+import '@fontsource-variable/geist-mono/wght.css';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -22,9 +28,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               opacity fades still play) — one place to handle this instead of
               gating each of the ~14 files that use Framer Motion individually. */}
           <MotionConfig reducedMotion="user">
-            <ToastProvider>
-              <App />
-            </ToastProvider>
+            <ThemeProvider>
+              <ToastProvider>
+                <App />
+              </ToastProvider>
+            </ThemeProvider>
           </MotionConfig>
         </BrowserRouter>
       </HelmetProvider>

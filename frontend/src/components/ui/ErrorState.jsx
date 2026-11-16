@@ -3,8 +3,8 @@ import Button from './Buttons';
 /** Shown when a request fails. Always offers a retry when one is provided. */
 export default function ErrorState({ title = 'Something went wrong', message, onRetry, className = '' }) {
   return (
-    <div role="alert" className={`border border-danger/40 rounded-md px-6 py-10 text-center ${className}`}>
-      <p className="font-display text-xl text-danger">{title}</p>
+    <div role="alert" className={`rounded-3xl border border-danger/40 bg-danger/5 px-6 py-10 text-center ${className}`}>
+      <p className="font-display text-2xl text-danger tracking-tight">{title}</p>
       {message && <p className="mt-2 text-muted max-w-md mx-auto">{message}</p>}
       {onRetry && (
         <div className="mt-6 flex justify-center">

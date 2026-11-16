@@ -1,50 +1,125 @@
 /*
- * Design tokens — Direction B ("quiet editorial").
+ * Design tokens — v2 "editorial-tech, dark-first".
  *
  * Colours are space-separated RGB channels so Tailwind can apply opacity
- * (`text-ink/70`). To switch direction or add a dark theme, change the
- * values in this file only; no component should hard-code a colour.
+ * (`text-ink/70`, `bg-accent/10`). THIS FILE IS THE ONLY PLACE colours may
+ * be written as literals (scripts/check-design.js enforces it and also
+ * recomputes the WCAG contrast pairs below from these values).
  *
- * Contrast (WCAG 2.2): text 17.76:1, muted 6.81:1, accent on bg 9.61:1,
- * accent-ink on accent 10.05:1. `line` (1.27:1) is for decorative dividers
- * ONLY; form controls use `muted` as their border.
+ * Themes: dark is the default. `<html data-theme="light|dark">` is set before
+ * first paint by the inline script in index.html. Any subtree can force a
+ * theme with its own data-theme attribute (the styleguide does this).
+ *
+ * Contrast (computed by `npm run check:design -- --report`, WCAG 2.2):
+ * see docs/rebuild/03-design-system.md for the full table.
  */
-:root {
-  --bg: 250 250 246;        /* #FAFAF6 */
-  --surface: 255 255 255;   /* #FFFFFF */
-  --text: 20 19 15;         /* #14130F */
-  --muted: 90 88 80;        /* #5A5850 */
-  --line: 226 223 213;      /* #E2DFD5 */
-  --accent: 29 74 56;       /* #1D4A38 */
+
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: 11 11 15;            /* #0B0B0F */
+  --surface: 21 21 27;       /* #15151B */
+  --surface-2: 28 28 36;     /* #1C1C24 */
+  --line: 255 255 255;       /* hairline colour ...            */
+  --line-alpha: 0.09;        /* ... at 9% (decorative only)    */
+  --control: 125 122 115;    /* #7D7A73 form-control borders (non-text 3:1) */
+  --text: 245 243 238;       /* #F5F3EE */
+  --muted: 166 163 155;      /* #A6A39B */
+  --accent: 255 106 61;      /* #FF6A3D */
+  --accent-ink: 11 11 15;    /* text on accent fills */
+  --accent-2: 255 181 71;    /* #FFB547 amber: gradient partner, never text on its own */
+  --danger: 255 122 106;     /* #FF7A6A */
+  --success: 94 211 140;     /* #5ED38C */
+  --warning: 245 183 66;     /* #F5B742 */
+  --scrim: 0 0 0;            /* image overlays / lightbox backdrop */
+  --on-scrim: 255 255 255;   /* text/icons on a scrim */
+
+  --shadow-card:
+    inset 0 1px 0 rgb(255 255 255 / 0.04),
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 10px 28px -14px rgb(0 0 0 / 0.65);
+  --shadow-lift:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 2px 4px rgb(0 0 0 / 0.35),
+    0 22px 44px -18px rgb(0 0 0 / 0.75);
+  --shadow-overlay:
+    0 4px 12px rgb(0 0 0 / 0.4),
+    0 28px 70px -18px rgb(0 0 0 / 0.8);
+
+  --grain-opacity: 0.05;
+  --tint-alpha: 0.12;        /* accent tint behind accent text (tags, chips) */
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: 246 243 236;         /* #F6F3EC */
+  --surface: 255 255 255;    /* #FFFFFF */
+  --surface-2: 244 240 232;  /* #F4F0E8 */
+  --line: 20 19 15;
+  --line-alpha: 0.12;
+  --control: 128 125 117;    /* #807D75 */
+  --text: 20 19 15;          /* #14130F */
+  --muted: 92 89 81;         /* #5C5951 */
+  --accent: 194 65 12;       /* #C2410C */
   --accent-ink: 255 255 255;
-  --danger: 160 40 30;      /* #A0281E, 7.0:1 on bg */
-  --success: 30 100 60;     /* #1E643C */
-  --warning: 138 90 0;      /* #8A5A00, 5.7:1 on bg */
+  --accent-2: 180 83 9;      /* #B45309 deeper amber so white text stays AA on the hover gradient */
+  --danger: 180 35 24;       /* #B42318 */
+  --success: 21 112 57;      /* #157039 */
+  --warning: 138 90 0;       /* #8A5A00 */
+  --scrim: 0 0 0;
+  --on-scrim: 255 255 255;
 
-  --font-sans: 'Hanken Grotesk Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --shadow-card:
+    0 1px 2px rgb(20 19 15 / 0.06),
+    0 10px 28px -16px rgb(20 19 15 / 0.18);
+  --shadow-lift:
+    0 2px 4px rgb(20 19 15 / 0.06),
+    0 22px 44px -20px rgb(20 19 15 / 0.28);
+  --shadow-overlay:
+    0 4px 12px rgb(20 19 15 / 0.1),
+    0 28px 70px -20px rgb(20 19 15 / 0.35);
 
-  --radius-md: 8px;
+  --grain-opacity: 0.035;
+  --tint-alpha: 0;           /* light: accent text is 4.67:1 on bg, so no tint fits under it; Tags are outline-only */
+}
 
-  --shadow-overlay: 0 12px 32px -12px rgb(20 19 15 / 0.28);
+/* Theme-independent tokens ------------------------------------------------ */
+:root {
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  --dur-fast: 120ms;
-  --dur-base: 200ms;
-  --dur-slow: 400ms;
-  --ease: cubic-bezier(0.2, 0, 0, 1);
+  /* Radius scale: 8 / 14 / 22 / 32 + full */
+  --radius-1: 8px;    /* tags, code, small chips            */
+  --radius-2: 14px;   /* inputs, small cards, menus         */
+  --radius-3: 22px;   /* cards, panels                      */
+  --radius-4: 32px;   /* hero panels, bento tiles, media    */
 
-  /* Type scale (base 17px, ratio ~1.25) */
-  --text-xs: 0.8125rem;   /* 13 */
-  --text-sm: 0.9375rem;   /* 15 */
-  --text-base: 1.0625rem; /* 17 */
-  --text-lg: 1.25rem;     /* 20 */
-  --text-xl: 1.5625rem;   /* 25 */
-  --text-2xl: 1.9375rem;  /* 31 */
-  --text-3xl: 2.4375rem;  /* 39 */
-  --text-4xl: 3.0625rem;  /* 49 */
+  /* Accent glow for hover / focus (theme-aware through --accent) */
+  --glow: 0 0 0 1px rgb(var(--accent) / 0.55), 0 10px 48px -10px rgb(var(--accent) / 0.5);
+  --glow-focus: 0 0 0 4px rgb(var(--accent) / 0.22);
 
-  /* Spacing scale (4px base): 4 8 12 16 24 32 48 64 96 128 */
+  /* Motion: 150-600 ms, ease-out */
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 450ms;
+  --dur-slower: 600ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Type scale (body 17 -> 18 px fluid, line-height 1.6) */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: clamp(1.0625rem, 1.03rem + 0.15vw, 1.125rem);
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: clamp(2rem, 1.6rem + 1.6vw, 2.75rem);
+  --text-4xl: clamp(2.5rem, 1.9rem + 2.6vw, 3.75rem);
+  --text-display: clamp(2.75rem, 10vw, 9rem);
+
+  /* Spacing: 4 px base. Section rhythm is fluid. */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -55,7 +130,31 @@
   --space-8: 4rem;
   --space-9: 6rem;
   --space-10: 8rem;
+  --space-section: clamp(4.5rem, 3rem + 7vw, 9rem);
+  --gutter: clamp(1rem, 0.4rem + 3vw, 2.5rem);
 
   /* Fallback until the Navbar measures its real height on mount. */
-  --navbar-h: 64px;
+  --navbar-h: 72px;
+}
+
+/* Print: always the light palette, whatever the on-screen theme. ----------- */
+@media print {
+  :root,
+  [data-theme='dark'],
+  [data-theme='light'] {
+    color-scheme: light;
+    --bg: 255 255 255;
+    --surface: 255 255 255;
+    --surface-2: 245 245 245;
+    --line: 20 19 15;
+    --line-alpha: 0.25;
+    --text: 20 19 15;
+    --muted: 70 68 62;
+    --accent: 150 45 5;
+    --accent-ink: 255 255 255;
+    --shadow-card: none;
+    --shadow-lift: none;
+    --shadow-overlay: none;
+    --grain-opacity: 0;
+  }
 }

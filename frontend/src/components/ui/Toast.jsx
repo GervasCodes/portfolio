@@ -4,9 +4,9 @@ import { X } from 'lucide-react';
 const ToastContext = createContext(null);
 
 const TONE_CLASS = {
-  success: 'border-success',
-  error: 'border-danger',
-  info: 'border-ink/40',
+  success: 'border-l-success',
+  error: 'border-l-danger',
+  info: 'border-l-accent',
 };
 
 /**
@@ -44,11 +44,11 @@ export function ToastProvider({ children }) {
           <div
             key={t.id}
             role={t.tone === 'error' ? 'alert' : 'status'}
-            className={`bg-surface border-l-4 border border-line ${TONE_CLASS[t.tone]} rounded-md shadow-overlay px-4 py-3 flex items-start gap-3 text-sm`}
+            className={`bg-surface-2 border-l-4 border border-line ${TONE_CLASS[t.tone]} rounded-2xl shadow-overlay px-4 py-3 flex items-start gap-3 text-sm animate-fade-in`}
           >
             <p className="flex-1">{t.message}</p>
-            <button type="button" onClick={() => dismiss(t.id)} aria-label="Dismiss notification" className="text-muted hover:text-ink">
-              <X size={16} />
+            <button type="button" onClick={() => dismiss(t.id)} aria-label="Dismiss notification" className="-m-2 w-11 h-11 inline-flex items-center justify-center rounded-full text-muted hover:text-ink">
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
         ))}

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction B — Quiet editorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAFAF6; --surface:#FFFFFF; --text:#14130F; --muted:#5A5850; --line:#E2DFD5; --accent:#1D4A38; --accent-ink:#FFFFFF;
+  --font-serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --font-sans:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --radius-sm:0; --radius-md:8px;
+  --dur-fast:120ms; --dur-base:200ms; --ease:cubic-bezier(.2,0,0,1);
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px; --s9:96px; --s10:128px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);color:var(--text)}
+body{margin:0;font:400 17px/1.65 var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:960px;margin:0 auto;padding:0 var(--s5)}
+.label{font:500 13px/1 var(--font-sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header .wrap{display:flex;justify-content:space-between;align-items:center;height:80px}
+.brand{font:500 22px var(--font-serif);text-decoration:none}
+nav{display:flex;gap:var(--s6);font-size:15px}
+nav a{text-decoration:none;color:var(--muted);padding:4px 0;transition:color var(--dur-fast) var(--ease)}
+nav a:hover,nav a[aria-current]{color:var(--text)}
+nav a[aria-current]{border-bottom:1px solid var(--text)}
+.hero{padding:var(--s10) 0 var(--s9)}
+h1{font:400 clamp(40px,7vw,76px)/1.04 var(--font-serif);letter-spacing:-.025em;margin:var(--s5) 0 var(--s6);max-width:14em}
+h1 em{font-style:italic;color:var(--accent)}
+.lede{font:400 21px/1.55 var(--font-serif);max-width:32em;margin:0 0 var(--s5);color:var(--text)}
+.status{margin:0 0 var(--s7);color:var(--muted);font-size:15px}
+.cta{display:flex;gap:var(--s5);align-items:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:14px 24px;border-radius:var(--radius-md);text-decoration:none;font-weight:500;font-size:15px;transition:background var(--dur-base) var(--ease)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{background:var(--text)}
+.link{color:var(--accent);text-underline-offset:4px;font-weight:500;font-size:15px}
+section{padding:var(--s9) 0;border-top:1px solid var(--line)}
+h2{font:500 32px/1.15 var(--font-serif);margin:0 0 var(--s7);letter-spacing:-.01em}
+.project{display:grid;grid-template-columns:1fr 1.1fr;gap:var(--s7);align-items:center;text-decoration:none}
+.project .shot{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);aspect-ratio:4/3;display:grid;place-items:center;color:var(--muted);font-size:14px;transition:transform var(--dur-base) var(--ease)}
+.project:hover .shot{transform:translateY(-2px)}
+.project h3{font:500 30px/1.2 var(--font-serif);margin:var(--s3) 0 var(--s3);letter-spacing:-.01em}
+.project p{margin:0 0 var(--s4);color:var(--muted)}
+.year{font:400 14px var(--font-sans);color:var(--muted)}
+.facts{display:flex;gap:var(--s6);flex-wrap:wrap;font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:var(--s4)}
+.facts b{display:block;color:var(--text);font:500 20px var(--font-serif)}
+.tokens{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--s4);margin:var(--s6) 0}
+.sw{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden}
+.sw i{display:block;height:48px}
+.sw div{padding:var(--s3);font-size:13px;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:15px}
+td,th{text-align:left;padding:10px 12px 10px 0;border-top:1px solid var(--line)}
+th{font:500 13px var(--font-sans);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.scale p{margin:0 0 var(--s3)}
+footer{border-top:1px solid var(--line);padding:var(--s7) 0;color:var(--muted);font-size:15px}
+@media (max-width:760px){
+  header .wrap{height:64px}
+  nav{gap:var(--s4);font-size:14px}
+  .hero{padding:var(--s8) 0}
+  .project{grid-template-columns:1fr;gap:var(--s5)}
+  section{padding:var(--s8) 0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a class="brand" href="#">[Your Name]</a>
+  <nav aria-label="Primary"><a href="#" aria-current="page">Work</a><a href="#">About</a><a href="#">Writing</a><a href="#">Resume</a><a href="#">Contact</a></nav>
+</div></header>
+
+<main class="wrap">
+  <div class="hero">
+    <span class="label">[Role] — [City]</span>
+    <h1>[Your Name] builds <em>[type of product]</em> for [audience].</h1>
+    <p class="lede">[One concrete sentence about what you shipped.] [One sentence about how you work and what you choose over what.]</p>
+    <p class="status">Open to [freelance / full-time] from [month].</p>
+    <div class="cta"><a class="btn primary" href="#work">See the work</a><a class="link" href="#">Get in touch</a></div>
+  </div>
+
+  <section id="work">
+    <span class="label">Selected work</span>
+    <h2 style="margin-top:var(--s3)">Things I have built, and what happened.</h2>
+    <a class="project" href="#">
+      <div class="shot" role="img" aria-label="Placeholder for a project screenshot">[screenshot]</div>
+      <div>
+        <span class="year">[Year] · [Role]</span>
+        <h3>[Project name]</h3>
+        <p>[One-line outcome with a real number.]</p>
+        <div class="facts"><span><b>[value]</b>[metric label]</span><span><b>[value]</b>[metric label]</span><span><b>[stack]</b>built with</span></div>
+      </div>
+    </a>
+  </section>
+
+  <section>
+    <span class="label">Direction B tokens</span>
+    <h2 style="margin-top:var(--s3)">Type, colour and spacing</h2>
+    <div class="scale">
+      <p style="font:400 49px/1.1 var(--font-serif)">49 Display</p>
+      <p style="font:500 31px/1.2 var(--font-serif)">31 Heading 1</p>
+      <p style="font:500 25px/1.25 var(--font-serif)">25 Heading 2</p>
+      <p style="font:400 20px/1.5 var(--font-serif)">20 Lede — set in the serif for a quieter voice.</p>
+      <p>17 Body — the quick brown fox jumps over the lazy dog.</p>
+      <p style="font-size:15px">15 Small — navigation and secondary text.</p>
+      <p class="label">13 Label — eyebrow text and metadata</p>
+    </div>
+    <div class="tokens">
+      <div class="sw"><i style="background:#FAFAF6;border-bottom:1px solid #E2DFD5"></i><div>bg #FAFAF6</div></div>
+      <div class="sw"><i style="background:#FFFFFF;border-bottom:1px solid #E2DFD5"></i><div>surface #FFFFFF</div></div>
+      <div class="sw"><i style="background:#14130F"></i><div>text #14130F</div></div>
+      <div class="sw"><i style="background:#5A5850"></i><div>muted #5A5850</div></div>
+      <div class="sw"><i style="background:#E2DFD5"></i><div>line #E2DFD5</div></div>
+      <div class="sw"><i style="background:#1D4A38"></i><div>accent #1D4A38</div></div>
+    </div>
+    <table>
+      <tr><th>Pair</th><th>Contrast</th><th>WCAG AA</th></tr>
+      <tr><td>text on bg</td><td>17.76 : 1</td><td>Pass (AAA)</td></tr>
+      <tr><td>muted on bg</td><td>6.81 : 1</td><td>Pass</td></tr>
+      <tr><td>muted on surface</td><td>7.13 : 1</td><td>Pass</td></tr>
+      <tr><td>accent on bg (links, focus)</td><td>9.61 : 1</td><td>Pass (AAA)</td></tr>
+      <tr><td>accent-ink on accent (primary button)</td><td>10.05 : 1</td><td>Pass (AAA)</td></tr>
+      <tr><td>line on bg (decorative borders only)</td><td>1.27 : 1</td><td>Not text; form fields use muted as border</td></tr>
+    </table>
+  </section>
+</main>
+<footer><div class="wrap">© [year] [Your Name]</div></footer>
+</body>
+</html>

@@ -4,21 +4,36 @@
 @tailwind components;
 @tailwind utilities;
 
-* { scroll-behavior: smooth; }
-
-html { -webkit-tap-highlight-color: transparent; }
+html {
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+  /* Instrument Serif ships one weight: never fake-bold or fake-italic it. */
+  font-synthesis: none;
+  text-size-adjust: 100%;
+}
 
 body {
   background-color: rgb(var(--bg));
   color: rgb(var(--text));
   font-family: var(--font-sans);
   font-size: var(--text-base);
-  line-height: 1.65;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Display face: tight, optical. `em` inside a display heading becomes the
+   italic accent word(s): <h1>Building <em>things</em> that last</h1>. */
+.font-display, h1, h2, h3 { font-optical-sizing: auto; }
+.display-accent,
+.font-display em {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: rgb(var(--accent));
 }
 
 ::selection {
-  background: rgb(var(--accent) / 0.2);
+  background: rgb(var(--accent) / 0.3);
   color: rgb(var(--text));
 }
 
@@ -27,6 +42,7 @@ body {
   outline: 2px solid rgb(var(--accent));
   outline-offset: 3px;
 }
+:focus:not(:focus-visible) { outline: none; }
 
 /* Off-screen until keyboard-focused (see components/layout/SkipToContent.jsx) */
 .skip-to-content {
@@ -35,113 +51,364 @@ body {
   left: 1rem;
   z-index: 100;
   padding: 0.75rem 1.25rem;
-  background: rgb(var(--surface));
+  background: rgb(var(--surface-2));
   color: rgb(var(--text));
-  border: 1px solid rgb(var(--muted));
-  border-radius: var(--radius-md);
+  border: 1px solid rgb(var(--control));
+  border-radius: var(--radius-2);
   font-size: var(--text-sm);
   transition: top var(--dur-fast) var(--ease);
 }
 .skip-to-content:focus { top: 1rem; }
 
 /* ---- Surfaces ----------------------------------------------------------
-   Flat panels: a solid fill and a 1px divider-coloured border. No blur,
-   no translucency, no shadow. */
+   `.card` = standard panel. `.card-raised` sits one step higher.
+   `.surface` is kept for legacy markup (flat, hairline border).
+   Glass is NOT a surface: it exists only for the floating navbar and the
+   command palette (`.glass`, enforced by scripts/check-design.js). */
 .surface {
   background: rgb(var(--surface));
-  border: 1px solid rgb(var(--line));
+  border: 1px solid rgb(var(--line) / var(--line-alpha));
 }
 .surface-hover {
-  transition: border-color var(--dur-base) var(--ease), background-color var(--dur-base) var(--ease);
+  transition: border-color var(--dur-base) var(--ease), background-color var(--dur-base) var(--ease),
+    box-shadow var(--dur-base) var(--ease), transform var(--dur-base) var(--ease);
 }
-.surface-hover:hover {
-  border-color: rgb(var(--text) / 0.35);
-}
+.surface-hover:hover { border-color: rgb(var(--text) / 0.3); }
+
 .card {
+  position: relative;
   background: rgb(var(--surface));
-  border: 1px solid rgb(var(--line));
-  border-radius: var(--radius-md);
+  border: 1px solid rgb(var(--line) / var(--line-alpha));
+  border-radius: var(--radius-3);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
 }
+.card-raised { background: rgb(var(--surface-2)); }
 .card.is-active { border-color: rgb(var(--accent)); }
+.card-lift {
+  transition: transform var(--dur-base) var(--ease), box-shadow var(--dur-base) var(--ease),
+    border-color var(--dur-base) var(--ease);
+}
+.card-lift:hover, .card-lift:focus-visible {
+  transform: translate3d(0, -3px, 0);
+  box-shadow: var(--shadow-lift);
+  border-color: rgb(var(--accent) / 0.35);
+}
 
+/* Glass: floating navbar + command palette ONLY. Opaque fallback when
+   backdrop-filter is unsupported or the user asked for reduced transparency. */
+.glass {
+  background: rgb(var(--surface) / 0.92);
+  border: 1px solid rgb(var(--line) / var(--line-alpha));
+  box-shadow: var(--shadow-lift);
+}
+@supports (backdrop-filter: blur(1px)) {
+  .glass {
+    background: rgb(var(--surface) / 0.82);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    backdrop-filter: blur(18px) saturate(1.4);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass { background: rgb(var(--surface)); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+/* ---- Spotlight: pointer-follow highlight --------------------------------
+   Driven by --mx/--my set from one pointermove listener (hooks/usePointerEffects.js);
+   no React state, no per-frame renders. Only on fine hover pointers. */
+.spotlight { position: relative; isolation: isolate; }
+.spotlight::before,
+.spotlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease);
+}
+.spotlight::before {
+  z-index: -1;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(var(--accent) / 0.16), transparent 65%);
+}
+.spotlight::after {
+  padding: 1px;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgb(var(--accent) / 0.7), transparent 70%);
+  -webkit-mask: linear-gradient(rgb(var(--scrim)) 0 0) content-box, linear-gradient(rgb(var(--scrim)) 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(rgb(var(--scrim)) 0 0) content-box exclude, linear-gradient(rgb(var(--scrim)) 0 0);
+}
+.spotlight:hover::before,
+.spotlight:hover::after,
+.spotlight:focus-within::before { opacity: 1; }
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .spotlight::before, .spotlight::after { display: none; }
+}
+
+/* ---- Magnetic: element drifts toward the pointer (CTA buttons) ---------- */
+.magnetic {
+  transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0);
+  transition: transform var(--dur-base) var(--ease), background-color var(--dur-base) var(--ease),
+    border-color var(--dur-base) var(--ease), color var(--dur-base) var(--ease), box-shadow var(--dur-base) var(--ease);
+  will-change: transform;
+}
+
+/* ---- Accent gradient: ONLY hero glow, primary CTA hover, footer wordmark - */
+.glow-hero {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 80%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(48% 55% at 28% 38%, rgb(var(--accent) / 0.34), transparent 70%),
+    radial-gradient(40% 45% at 72% 30%, rgb(var(--accent-2) / 0.2), transparent 70%);
+  filter: blur(8px);
+}
+[data-theme='light'] .glow-hero { opacity: 0.7; }
+.btn-primary:hover:not(:disabled):not([aria-disabled='true']) {
+  background-image: linear-gradient(110deg, rgb(var(--accent)), rgb(var(--accent-2)));
+  border-color: transparent;
+  box-shadow: var(--glow);
+}
+.wordmark {
+  font-family: var(--font-display);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  background-image: linear-gradient(100deg, rgb(var(--accent)), rgb(var(--accent-2)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* The one allowed ambient effect: slow, CSS-only, paused while the tab is hidden
+   (src/theme/runtimeFlags.js sets data-tab-hidden) and removed for reduced motion. */
+.ambient { animation: ambient 28s ease-in-out infinite; will-change: transform; }
+html[data-tab-hidden='true'] .ambient,
+html[data-tab-hidden='true'] .marquee-track { animation-play-state: paused; }
+
+/* ---- Film grain: optional, < 2 KB, inline SVG noise ---------------------
+   Add `.grain` to a large section wrapper (hero, footer), not to body.
+   Off for reduced motion and data-saver. */
+.grain { position: relative; }
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 160px 160px;
+}
+html[data-save-data='1'] .grain::after { display: none; }
+
+/* ---- Marquee (Phase 3 uses it for the tools strip) ----------------------
+   Markup: .marquee > .marquee-track > [items][aria-hidden duplicate with .marquee-dup]
+   Pauses on hover/focus; static and wrapped for reduced motion. */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, rgb(var(--scrim)) 8%, rgb(var(--scrim)) 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, rgb(var(--scrim)) 8%, rgb(var(--scrim)) 92%, transparent);
+}
+.marquee-track { display: flex; width: max-content; gap: 2.5rem; animation: marquee 48s linear infinite; }
+.marquee:hover .marquee-track, .marquee:focus-within .marquee-track { animation-play-state: paused; }
+
+/* ---- Hero name reveal (Phase 3) ------------------------------------------
+   Each word rises out of its own mask. Delay is set inline per word. Plain
+   transform animation, plays once; reduced motion collapses it to the final
+   state (see the reduced-motion block). */
+.word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding: 0 0.07em 0.14em;
+  margin: 0 -0.07em -0.14em;
+}
+.word-rise { display: inline-block; animation: word-rise var(--dur-slower) var(--ease) both; }
+@keyframes word-rise {
+  from { transform: translate3d(0, 108%, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+
+/* Marquee pause control (WCAG 2.2.2): the button toggles .is-paused. */
+.marquee.is-paused .marquee-track { animation-play-state: paused; }
+
+/* Horizontal strip (certificates): scrolls on touch, hides the scrollbar track chrome. */
+.strip-scroll { scrollbar-width: thin; overscroll-behavior-x: contain; }
+
+/* ---- Image arrival (components/ui/ProgressiveImage.jsx) -------------------- */
+.img-fade { opacity: 0; transition: opacity var(--dur-base) var(--ease); }
+.img-fade.is-loaded { opacity: 1; }
+
+/* ---- Skill level bar (About) ------------------------------------------------
+   The baseline (--control, >= 3:1) is the full scale, the accent fill is the
+   level. The fill grows once while its Reveal ancestor is still hidden; with
+   no Reveal, or under reduced motion, it is simply full length. */
+.level-bar {
+  position: relative;
+  display: block;
+  height: 7px;
+  border-bottom: 1px solid rgb(var(--control));
+}
+.level-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--level, 0) * 100%);
+  background: rgb(var(--accent));
+  border-radius: 3px 3px 0 0;
+  transform-origin: left center;
+  transition: transform var(--dur-slower) var(--ease);
+}
+.reveal-on-scroll:not(.is-visible) .level-bar-fill { transform: scaleX(0); }
+
+/* ---- Timeline (About): scroll-linked line + dots ---------------------------- */
+.tl-track { background: rgb(var(--line) / var(--line-alpha)); }
+.tl-dot {
+  position: absolute;
+  left: -6px;
+  top: 0.6rem;
+  width: 11px;
+  height: 11px;
+  border-radius: 9999px;
+  background: rgb(var(--accent));
+  box-shadow: 0 0 0 4px rgb(var(--bg));
+}
+
+/* ---- Scroll reveal (once) ----------------------------------------------- */
+.reveal-on-scroll { opacity: 0; transform: translate3d(0, 14px, 0); }
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--dur-slower) var(--ease), transform var(--dur-slower) var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Short colour cross-fade while the theme switches (class added by ThemeProvider). */
+.theme-transition, .theme-transition *, .theme-transition *::before, .theme-transition *::after {
+  transition: background-color var(--dur-base) var(--ease), border-color var(--dur-base) var(--ease),
+    color var(--dur-base) var(--ease), fill var(--dur-base) var(--ease) !important;
+}
+
+/* ---- Scrollbar --------------------------------------------------------- */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: rgb(var(--bg)); }
-::-webkit-scrollbar-thumb { background: rgb(var(--muted) / 0.4); border-radius: 999px; }
+::-webkit-scrollbar-thumb { background: rgb(var(--muted) / 0.4); border-radius: 999px; border: 2px solid rgb(var(--bg)); }
 ::-webkit-scrollbar-thumb:hover { background: rgb(var(--muted)); }
 * { scrollbar-color: rgb(var(--muted) / 0.45) transparent; }
 
+/* ---- Layout ------------------------------------------------------------ */
 .container-page {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding-inline: var(--gutter);
 }
+.section-y { padding-block: var(--space-section); }
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(1rem, 0.5rem + 1.6vw, 1.5rem);
+}
+/* Bento: 1 col on phones, 2 at 640, 4 at 1024. Tiles choose their span. */
+.bento {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(0.75rem, 0.4rem + 1.2vw, 1.25rem);
+}
+@media (min-width: 640px) { .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .bento { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
-/* Eyebrow text above section headings. */
+/* Mono label: "01 / WORK". Decorative numerals use .section-number. */
 .section-label {
+  font-family: var(--font-mono);
   font-size: var(--text-xs);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   color: rgb(var(--muted));
-  margin-bottom: 0.75rem;
   font-weight: 500;
+}
+/* Decorative numerals are drawn from data-n so they are not text (WCAG 1.4.3 does not apply to decoration). */
+.section-number::before, .step-number::before { content: attr(data-n); }
+.step-number {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: rgb(var(--text) / 0.2);
+  user-select: none;
+}
+.section-number {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 2rem + 6vw, 7rem);
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  color: rgb(var(--text) / 0.16);
+  user-select: none;
 }
 
 /* ---- Form controls -----------------------------------------------------
-   Borders use `muted` (6.8:1) rather than the decorative `line` colour so
-   field boundaries meet WCAG 1.4.11 (non-text contrast). */
+   Borders use `--control` (>= 3:1 on every surface) rather than the
+   decorative hairline, so field boundaries meet WCAG 1.4.11. */
 .input-field {
   background: rgb(var(--surface));
-  border: 1px solid rgb(var(--muted));
-  border-radius: var(--radius-md);
+  border: 1px solid rgb(var(--control));
+  border-radius: var(--radius-2);
   color: rgb(var(--text));
   outline: none;
-  transition: border-color var(--dur-fast) var(--ease);
+  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
 }
-.input-field::placeholder { color: rgb(var(--muted) / 0.8); }
-.input-field:hover { border-color: rgb(var(--text)); }
+.input-field::placeholder { color: rgb(var(--muted) / 0.85); }
+.input-field:hover { border-color: rgb(var(--text) / 0.7); }
 .input-field:focus-visible {
   border-color: rgb(var(--accent));
   outline: 2px solid rgb(var(--accent));
-  outline-offset: 2px;
+  outline-offset: 1px;
+  box-shadow: var(--glow-focus);
 }
 .input-field[aria-invalid='true'],
-.input-field:invalid:not(:placeholder-shown) { border-color: rgb(var(--danger)); }
+.input-field[placeholder]:invalid:not(:placeholder-shown) { border-color: rgb(var(--danger)); }
+/* Only after the visitor has interacted: an untouched empty required field is not an error.
+   Separate rule so browsers without :user-invalid ignore just this one. */
+.input-field:user-invalid { border-color: rgb(var(--danger)); }
 .input-field:disabled { opacity: 0.55; cursor: not-allowed; }
+/* The search field has its own clear button; hide the browser's native one so there is only one. */
+input[type='search']::-webkit-search-cancel-button,
+input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appearance: none; display: none; }
+/* A heading focused by script (so a screen reader reads the new state) is not a control: no ring. */
+h1[tabindex='-1']:focus, h2[tabindex='-1']:focus { outline: none; }
+select.input-field { color-scheme: inherit; }
 
 /* A scrollable area inside a form (long textareas, previews, option lists). */
-.form-scroll {
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
+.form-scroll { overflow-y: auto; scrollbar-width: thin; }
 
-/* Loading placeholder: a calm opacity pulse, no moving highlight. */
+/* Loading placeholder: a calm opacity pulse (functional, removed for reduced motion). */
 .skeleton {
-  background: rgb(var(--line) / 0.7);
+  background: rgb(var(--text) / 0.08);
   animation: skeleton-pulse 1.6s ease-in-out infinite;
 }
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.55; }
+  50% { opacity: 0.5; }
 }
 
 /* ---- Prose -------------------------------------------------------------
-   Long-form content (blog posts, case studies). Hand-written because the
-   app never installed @tailwindcss/typography, so the old `prose` classes
-   on Markdown output were silently doing nothing. */
+   Long-form content (blog posts, case studies). Hand-written: the app never
+   installed @tailwindcss/typography. 65-72ch measure. */
 .prose {
   max-width: 68ch;
   font-size: var(--text-base);
-  line-height: 1.75;
-  color: rgb(var(--text));
+  line-height: 1.7;
+  color: rgb(var(--text) / 0.92);
 }
 .prose > * + * { margin-top: 1.25em; }
 .prose h1, .prose h2, .prose h3, .prose h4 {
   font-family: var(--font-display);
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   margin-top: 2em;
+  color: rgb(var(--text));
 }
 .prose h1 { font-size: var(--text-3xl); }
 .prose h2 { font-size: var(--text-2xl); }
@@ -149,73 +416,133 @@ body {
 .prose h4 { font-size: var(--text-lg); }
 .prose a { color: rgb(var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
 .prose a:hover { text-decoration-thickness: 2px; }
+.prose strong { color: rgb(var(--text)); font-weight: 600; }
 .prose ul, .prose ol { padding-left: 1.4em; }
 .prose ul { list-style: disc; }
 .prose ol { list-style: decimal; }
 .prose li + li { margin-top: 0.4em; }
+.prose li::marker { color: rgb(var(--accent)); }
 .prose blockquote {
   border-left: 2px solid rgb(var(--accent));
   padding-left: 1.1em;
   color: rgb(var(--muted));
   font-family: var(--font-display);
-  font-size: var(--text-lg);
+  font-style: italic;
+  font-size: var(--text-xl);
+  line-height: 1.35;
 }
 .prose code {
   font-family: var(--font-mono);
-  font-size: 0.9em;
-  background: rgb(var(--line) / 0.6);
-  padding: 0.15em 0.35em;
-  border-radius: 4px;
+  font-size: 0.88em;
+  background: rgb(var(--surface-2));
+  border: 1px solid rgb(var(--line) / var(--line-alpha));
+  padding: 0.12em 0.4em;
+  border-radius: var(--radius-1);
 }
 .prose pre {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
-  line-height: 1.6;
+  line-height: 1.65;
   background: rgb(var(--surface));
-  border: 1px solid rgb(var(--line));
-  border-radius: var(--radius-md);
-  padding: 1rem 1.1rem;
+  border: 1px solid rgb(var(--line) / var(--line-alpha));
+  border-radius: var(--radius-2);
+  padding: 1.1rem 1.25rem;
   overflow-x: auto;
 }
-.prose pre code { background: none; padding: 0; font-size: inherit; }
-.prose img { max-width: 100%; height: auto; border-radius: var(--radius-md); }
-.prose hr { border: 0; border-top: 1px solid rgb(var(--line)); margin: 2.5em 0; }
+.prose pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+.prose h2, .prose h3, .prose h4 { scroll-margin-top: calc(var(--navbar-h) + 1.5rem); }
+/* Code block with copy button (components/ui/Markdown.jsx) */
+.code-block {
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--line) / var(--line-alpha));
+  border-radius: var(--radius-2);
+  overflow: hidden;
+}
+.code-block-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 0.5rem 0.25rem 1.25rem;
+  border-bottom: 1px solid rgb(var(--line) / var(--line-alpha));
+}
+.code-block pre { margin: 0; border: 0; border-radius: 0; background: none; }
+.code-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border-radius: var(--radius-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: rgb(var(--muted));
+  transition: color var(--dur-fast) var(--ease);
+}
+.code-copy:hover { color: rgb(var(--text)); }
+
+.prose img { max-width: 100%; height: auto; border-radius: var(--radius-2); }
+.prose hr { border: 0; border-top: 1px solid rgb(var(--line) / var(--line-alpha)); margin: 2.5em 0; }
 .prose table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); display: block; overflow-x: auto; }
-.prose th, .prose td { text-align: left; padding: 0.6em 0.8em 0.6em 0; border-top: 1px solid rgb(var(--line)); }
+.prose th, .prose td { text-align: left; padding: 0.6em 0.8em 0.6em 0; border-top: 1px solid rgb(var(--line) / var(--line-alpha)); }
 .prose th { font-weight: 600; }
 
+/* ---- Forced colours (Windows high contrast) ------------------------------ */
+@media (forced-colors: active) {
+  .card, .surface, .glass, .input-field { border: 1px solid CanvasText; }
+  .btn-primary { border: 1px solid ButtonText; }
+  .spotlight::before, .spotlight::after, .grain::after, .glow-hero { display: none; }
+}
+
+/* ---- Reduced motion ------------------------------------------------------
+   Disables ALL non-essential motion: entrance, parallax, marquee, spotlight,
+   magnetic, ambient glow, grain, skeleton pulse. Leaves a clean static page. */
 @media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ambient, .marquee-track, .skeleton, .word-rise { animation: none !important; }
+  .marquee { -webkit-mask-image: none; mask-image: none; }
+  .marquee-track { flex-wrap: wrap; width: auto; }
+  .marquee-dup { display: none; }
+  .reveal-on-scroll { opacity: 1; transform: none; }
+  .magnetic { transform: none !important; }
+  .grain::after { display: none; }
 }
 
 /* ---- Print ---------------------------------------------------------------
-   Site chrome means nothing on paper. Hide it and print the Resume page as
-   plain black-on-white with hairline panels. */
+   tokens.css swaps in the light palette for print (whatever theme is on
+   screen), so these rules only need tokens. Site chrome means nothing on
+   paper. The resume is the one page designed for print: one column, black on
+   white, no shadows, entries kept whole across page breaks. */
+@page { size: A4; margin: 14mm 16mm; }
 @media print {
-  header,
-  footer,
-  .skip-to-content {
-    display: none !important;
-  }
-
-  body {
-    background: #fff !important;
-    color: #111 !important;
-  }
-
+  html { font-size: 13.5px; }
+  header, footer, nav, .skip-to-content, .glow-hero, .grain::after,
+  [data-print-hide] { display: none !important; }
+  body { background: rgb(var(--bg)) !important; color: rgb(var(--text)) !important; }
   .resume-print-area {
     padding-top: 0 !important;
-    color: #111 !important;
+    padding-bottom: 0 !important;
+    --text-base: 1rem;
+    --text-3xl: 1.5rem;
+    --text-4xl: 2.25rem;
   }
-
-  .resume-print-area .surface,
-  .resume-print-area .card {
-    background: #fff !important;
-    border: 1px solid #ccc !important;
+  /* The resume's own <header> (name, contact) must survive the chrome rule above. */
+  .resume-print-area header { display: block !important; }
+  .resume-print-area .container-page { max-width: none; padding-inline: 0; }
+  .resume-print-area .card,
+  .resume-print-area .surface {
+    background: rgb(var(--bg)) !important;
+    border: 1px solid rgb(var(--line) / var(--line-alpha)) !important;
+    box-shadow: none !important;
   }
-
-  .resume-print-area * {
-    color: #111 !important;
-    text-shadow: none !important;
-  }
+  .resume-print-area .reveal-on-scroll { opacity: 1 !important; transform: none !important; }
+  .resume-entry { break-inside: avoid; page-break-inside: avoid; }
+  .resume-print-area h2 { break-after: avoid; page-break-after: avoid; }
+  .resume-print-area a { color: rgb(var(--text)); text-decoration: none; }
 }

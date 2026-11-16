@@ -1,10 +1,18 @@
-/** Shown when a list or page has no content yet. Says what is missing and what to do next. */
-export default function EmptyState({ title, description, action, className = '' }) {
+import PlaceholderArt from './PlaceholderArt';
+
+/**
+ * Designed empty state: placeholder art + a short line + an optional action.
+ * Used whenever the CMS has no data yet. Never a blank gap, never fake content.
+ */
+export default function EmptyState({ title, description, action, seed, className = '' }) {
   return (
-    <div className={`border border-dashed border-line rounded-md px-6 py-14 text-center ${className}`}>
-      <p className="font-display text-xl">{title}</p>
-      {description && <p className="mt-2 text-muted max-w-md mx-auto">{description}</p>}
-      {action && <div className="mt-6 flex justify-center">{action}</div>}
+    <div className={`relative overflow-hidden rounded-3xl border border-dashed border-line bg-surface text-center ${className}`}>
+      <PlaceholderArt seed={seed || title || 'empty'} className="absolute inset-0 w-full h-full opacity-50" />
+      <div className="relative px-6 py-14 md:py-20">
+        <p className="font-display text-2xl md:text-3xl tracking-tight">{title}</p>
+        {description && <p className="mt-3 text-muted max-w-md mx-auto text-balance">{description}</p>}
+        {action && <div className="mt-6 flex justify-center">{action}</div>}
+      </div>
     </div>
   );
 }

@@ -15,3 +15,26 @@
 
 ## Verification
 lint 0 errors (same 5 old warnings) · build passes · `check:design` passes. Not viewed in a browser.
+
+---
+
+# Redesign v2 — Phase 4 (Work)
+
+The Work pages were rebuilt in the v2 language (dark-first, spotlight cards, device frames). Same routes, same API, same SEO tags and structured data.
+
+## Index (`/projects`)
+- All published projects are fetched once (`hooks/useAllProjects.js`, shared cache) and filtered on the client: text search, one category, one technology, combined with AND.
+- Filters live in the URL: `?q=&category=&tech=&view=list`. Old links with `?page=` still work.
+- Grid and list views. Items fade and glide when the filter changes (transform and opacity only); with reduced motion the list simply updates.
+- Cards never show a blank cover: a missing image becomes abstract art generated from the title (`PlaceholderArt`, same title = same art).
+- Loading shows a skeleton with the same boxes as the cards. Error has a retry. Empty has a designed state. Nothing is invented.
+
+## Case study (`/projects/:slug`)
+- Header, full-width device-framed hero screen, then a two-column story: sticky side facts (category, year, stack, links, jump list) and numbered sections. "Result" is set as a raised callout. Only fields that exist are shown.
+- Screens are drawn in a CSS laptop frame; portrait images switch to a phone frame inside the same 16:10 box (no layout shift). No screenshot at all = generated art, shown as art, not as a fake device.
+- Gallery opens a keyboard-accessible lightbox (dialog, focus trap, Esc, arrow keys, focus returns to the thumbnail, counter announced).
+- Next project card at the bottom, previous project as a quiet link.
+- A failed request now shows a retry instead of a 404; only a real "not found" answer shows the 404 page.
+
+## Test data
+`utils/sampleData.js` and the two unrouted pages that used it (`ProfilePage.jsx`, `ExperiencePage.jsx`) were deleted. No page falls back to invented content any more.

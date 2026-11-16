@@ -6,9 +6,61 @@
     <link rel="alternate icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#FAFAF6" />
+    <meta name="theme-color" content="#0B0B0F" />
+    <meta name="color-scheme" content="dark light" />
+    <!--
+      No-flash theme: runs before first paint. Uses the saved choice
+      (localStorage "theme": light | dark) or the system setting, defaulting
+      to dark. Keep in sync with src/theme/ThemeProvider.jsx.
+    -->
+    <script>
+      (function () {
+        var d = document.documentElement, t = 'dark';
+        try {
+          var s = localStorage.getItem('theme');
+          t = s === 'light' || s === 'dark' ? s
+            : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+          if (navigator.connection && navigator.connection.saveData) d.setAttribute('data-save-data', '1');
+        } catch (e) {}
+        d.setAttribute('data-theme', t);
+        d.style.colorScheme = t;
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', t === 'light' ? '#F6F3EC' : '#0B0B0F');
+      })();
+    </script>
+    <script>
+      /* Deep links (/projects/:slug, /blog/:slug): start the data request now and preload the
+         cover image the moment its URL is known, instead of waiting for the app bundle, the
+         route chunk and the API call to run one after another. src/services/api.js reuses the
+         request (window.__early) so nothing is fetched twice. If anything here fails, the app
+         simply makes its normal request. The fallback host must match api.js. */
+      (function () {
+        try {
+          var m = location.pathname.match(/^\/(projects|blog)\/([^/]+)\/?$/);
+          if (!m || !window.fetch) return;
+          var base = '%VITE_API_URL%';
+          if (base.charAt(0) === '%') base = 'https://portfolio-backend-7o3j.onrender.com';
+          var slug = decodeURIComponent(m[2]);
+          var key = '/' + m[1] + '/' + slug;
+          var p = fetch(base + '/api/' + m[1] + '/' + encodeURIComponent(slug), { credentials: 'include' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .catch(function () { return null; });
+          window.__early = {};
+          window.__early[key] = p;
+          p.then(function (j) {
+            var u = j && j.data && j.data.cover_image_url;
+            if (u && /^https?:\/\//.test(u)) {
+              var l = document.createElement('link');
+              l.rel = 'preload'; l.as = 'image'; l.href = u;
+              l.setAttribute('fetchpriority', 'high');
+              document.head.appendChild(l);
+            }
+          });
+        } catch (e) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Full-stack developer portfolio and personal CMS." />
+    <meta name="description" content="Full-stack developer portfolio." />
     <!--
       This is only the pre-JS fallback shown for a split second before
       React mounts. The real, per-page title (driven by the "Site Title"
@@ -25,8 +77,10 @@
     -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Portfolio" />
-    <meta property="og:description" content="Full-stack developer portfolio and personal CMS." />
+    <meta property="og:description" content="Full-stack developer portfolio." />
     <meta property="og:image" content="/og-default.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="/og-default.jpg" />
     <!-- Fonts are self-hosted via @fontsource (imported in src/main.jsx). -->

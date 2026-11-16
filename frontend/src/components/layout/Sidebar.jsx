@@ -66,7 +66,7 @@ export default function Sidebar() {
         <div className="w-full flex items-center justify-between gap-2 md:block">
           <div className="flex items-center gap-2.5 px-2 pb-0 md:pb-6">
             <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shrink-0">
-              <LayoutDashboard size={16} className="text-white" />
+              <LayoutDashboard size={16} className="text-accent-ink" />
             </div>
             <span className="font-display font-semibold">Admin Panel</span>
           </div>

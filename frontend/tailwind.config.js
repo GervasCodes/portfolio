@@ -2,82 +2,127 @@
 
 // Colours are CSS variables holding space-separated RGB channels (see
 // src/styles/tokens.css) so Tailwind opacity modifiers keep working
-// (`text-ink/70`, `bg-accent/10`) AND a theme or direction can be swapped
-// by changing the variables only.
+// (`text-ink/70`, `bg-accent/10`) and the dark/light themes swap by changing
+// the variables only. Never write a colour literal in a component.
 const channel = (name) => `rgb(var(--${name}) / <alpha-value>)`;
 
 export default {
-  content: [
-    './index.html',
-    './src/**/*.{js,jsx}',
-  ],
+  content: ['./index.html', './src/**/*.{js,jsx}'],
+  // Tokens already swap per theme, so `dark:` variants are rarely needed, but
+  // they work off the same attribute the theme provider sets.
+  darkMode: ['selector', "[data-theme='dark']"],
   theme: {
-    // Radius is deliberately limited to two real values (0 and 8px) plus
-    // `full` for avatars and dots. Every rounded-* utility resolves to one of
-    // them, so no component can introduce a third corner style.
+    // Radius scale 8 / 14 / 22 / 32 + full.
+    //   rounded-md  (8)  tags, code, chips      rounded-lg / xl (14) inputs, menus
+    //   rounded-2xl (22) cards, panels          rounded-3xl (32) hero + bento tiles
+    // sm and DEFAULT also resolve to 8 so legacy classes stay on the scale.
     borderRadius: {
       none: '0',
-      sm: '0',
-      DEFAULT: 'var(--radius-md)',
-      md: 'var(--radius-md)',
-      lg: 'var(--radius-md)',
-      xl: 'var(--radius-md)',
-      '2xl': 'var(--radius-md)',
-      '3xl': 'var(--radius-md)',
+      sm: 'var(--radius-1)',
+      DEFAULT: 'var(--radius-1)',
+      md: 'var(--radius-1)',
+      lg: 'var(--radius-2)',
+      xl: 'var(--radius-2)',
+      '2xl': 'var(--radius-3)',
+      '3xl': 'var(--radius-4)',
       full: '9999px',
     },
-    // Type scale (base 17px, ratio ~1.25), matching --text-* in tokens.css.
+    // Type scale: body 17-18 px fluid, line-height 1.6.
     fontSize: {
       xs: ['0.8125rem', { lineHeight: '1.25rem' }],
-      sm: ['0.9375rem', { lineHeight: '1.45rem' }],
-      base: ['1.0625rem', { lineHeight: '1.65rem' }],
-      lg: ['1.25rem', { lineHeight: '1.85rem' }],
-      xl: ['1.5625rem', { lineHeight: '2.1rem' }],
-      '2xl': ['1.9375rem', { lineHeight: '2.4rem' }],
-      '3xl': ['2.4375rem', { lineHeight: '2.8rem' }],
-      '4xl': ['3.0625rem', { lineHeight: '3.3rem' }],
-      '5xl': ['3.8125rem', { lineHeight: '1.05' }],
-      '6xl': ['4.75rem', { lineHeight: '1.04' }],
-      '7xl': ['5.9375rem', { lineHeight: '1' }],
+      sm: ['0.9375rem', { lineHeight: '1.5rem' }],
+      base: ['var(--text-base)', { lineHeight: '1.6' }],
+      lg: ['1.25rem', { lineHeight: '1.7rem' }],
+      xl: ['1.5rem', { lineHeight: '2rem' }],
+      '2xl': ['1.875rem', { lineHeight: '2.3rem' }],
+      '3xl': ['var(--text-3xl)', { lineHeight: '1.1' }],
+      '4xl': ['var(--text-4xl)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
+      '5xl': ['clamp(3rem, 2rem + 5vw, 5.5rem)', { lineHeight: '1', letterSpacing: '-0.03em' }],
+      '6xl': ['clamp(3.5rem, 2rem + 7vw, 7rem)', { lineHeight: '0.95', letterSpacing: '-0.035em' }],
+      '7xl': ['clamp(4rem, 2rem + 9vw, 8.5rem)', { lineHeight: '0.92', letterSpacing: '-0.04em' }],
+      // Hero headline: fluid up to ~10vw, tight tracking.
+      display: ['var(--text-display)', { lineHeight: '0.92', letterSpacing: '-0.045em' }],
     },
-    // Shadows exist for overlays only (menus, dialogs, toasts).
+    // Layered soft shadows. `shadow` (no suffix) = card.
     boxShadow: {
       none: 'none',
+      DEFAULT: 'var(--shadow-card)',
+      card: 'var(--shadow-card)',
+      lift: 'var(--shadow-lift)',
       overlay: 'var(--shadow-overlay)',
+      glow: 'var(--glow)',
     },
     extend: {
       colors: {
         background: channel('bg'),
         bg: channel('bg'),
-        surface: channel('surface'),
+        surface: { DEFAULT: channel('surface'), 2: channel('surface-2') },
         ink: channel('text'),
         muted: channel('muted'),
-        line: channel('line'),
-        // Kept as `border` so existing `border-border` style utilities,
-        // if any appear later, resolve to the same token as `line`.
-        border: channel('line'),
+        // Hairline: colour + a fixed alpha, so it has no `/NN` modifier.
+        line: 'rgb(var(--line) / var(--line-alpha))',
+        // Kept as `border` so `border-border` style utilities resolve to the same token.
+        border: 'rgb(var(--line) / var(--line-alpha))',
+        control: channel('control'),
         accent: {
           DEFAULT: channel('accent'),
           ink: channel('accent-ink'),
+          2: channel('accent-2'),
         },
         danger: channel('danger'),
         success: channel('success'),
         warning: channel('warning'),
+        scrim: channel('scrim'),
+        'on-scrim': channel('on-scrim'),
       },
       fontFamily: {
         sans: ['var(--font-sans)'],
-        // `display` is the heading face (serif in direction B).
+        // `display` = expressive heading face (Instrument Serif, with italic accents).
         display: ['var(--font-display)'],
         serif: ['var(--font-display)'],
         mono: ['var(--font-mono)'],
+      },
+      spacing: {
+        section: 'var(--space-section)',
+        gutter: 'var(--gutter)',
+        18: '4.5rem',
+        22: '5.5rem',
+        30: '7.5rem',
+      },
+      maxWidth: {
+        page: '1280px',
+        measure: '68ch',
       },
       transitionDuration: {
         fast: 'var(--dur-fast)',
         base: 'var(--dur-base)',
         slow: 'var(--dur-slow)',
+        slower: 'var(--dur-slower)',
       },
       transitionTimingFunction: {
         standard: 'var(--ease)',
+      },
+      keyframes: {
+        reveal: {
+          from: { opacity: '0', transform: 'translate3d(0, 14px, 0)' },
+          to: { opacity: '1', transform: 'translate3d(0, 0, 0)' },
+        },
+        'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
+        marquee: {
+          from: { transform: 'translate3d(0, 0, 0)' },
+          to: { transform: 'translate3d(-50%, 0, 0)' },
+        },
+        // The ONE allowed ambient effect: a very slow drift of the hero glow.
+        ambient: {
+          '0%, 100%': { transform: 'translate3d(0, 0, 0) scale(1)' },
+          '50%': { transform: 'translate3d(4%, -3%, 0) scale(1.08)' },
+        },
+      },
+      animation: {
+        reveal: 'reveal var(--dur-slower) var(--ease) both',
+        'fade-in': 'fade-in var(--dur-slow) var(--ease) both',
+        marquee: 'marquee 48s linear infinite',
+        ambient: 'ambient 28s ease-in-out infinite',
       },
     },
   },

@@ -97,7 +97,7 @@ export default function ProjectMediaManager({ projectId, projectTitle, open, onC
                   {item.media_type === 'video' ? (
                     <>
                       <video src={item.url} className="w-full h-full object-cover" muted />
-                      <span className="absolute inset-0 flex items-center justify-center bg-black/30">
+                      <span className="absolute inset-0 flex items-center justify-center bg-scrim/30">
                         <PlayCircle size={18} className="text-ink/90" />
                       </span>
                     </>

@@ -1,14 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ThumbsUp, Heart, Flame, PartyPopper, Lightbulb, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
 import Markdown from '@/components/ui/Markdown';
 import Seo from '@/components/seo/Seo';
-import { PortfolioAPI } from '@/services/api';
-import Tag from '@/components/ui/Tag';
+import SectionHeader from '@/components/ui/SectionHeader';
 import Skeleton from '@/components/ui/Skeleton';
+import Tag from '@/components/ui/Tag';
+import PostCard from '@/components/blog/PostCard';
+import ReactionBar from '@/components/blog/ReactionBar';
+import ShareBar from '@/components/blog/ShareBar';
+import TableOfContents from '@/components/blog/TableOfContents';
+import NewsletterSignup from '@/components/sections/NewsletterSignup';
 import NotFoundPage from '@/pages/NotFoundPage';
+import { PortfolioAPI } from '@/services/api';
 import { useSiteSettings, buildTitle } from '@/hooks/useSiteSettings';
 import { absoluteUrl, truncate, stripMarkdown, resolveImage } from '@/utils/seo';
+import { formatLongDate, postTags, readingMinutes } from '@/utils/blogContent';
+import ProgressiveImage from '@/components/ui/ProgressiveImage';
 
 // Recognizes YouTube/Vimeo links and returns an embeddable iframe URL;
 // returns null for anything else (a directly-uploaded video file, which
@@ -48,85 +56,35 @@ function VideoEmbed({ url }) {
           allowFullScreen
         />
       ) : (
-        <video src={url} controls className="w-full h-full object-contain bg-black" />
+        <video src={url} controls className="w-full h-full object-contain bg-scrim" />
       )}
     </div>
   );
 }
 
-// Kept in sync with backend `ALLOWED_REACTIONS` (blogEngagement.service.js).
-// Icon-based instead of emoji so reactions match the rest of the site's
-// visual language instead of relying on native emoji glyphs.
-const REACTIONS = [
-  { id: 'like', label: 'Like', Icon: ThumbsUp },
-  { id: 'love', label: 'Love', Icon: Heart },
-  { id: 'fire', label: 'Fire', Icon: Flame },
-  { id: 'celebrate', label: 'Celebrate', Icon: PartyPopper },
-  { id: 'idea', label: 'Insightful', Icon: Lightbulb },
-];
-
-function formatDate(date) {
-  if (!date) return '';
-  return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-function ReactionBar({ slug }) {
-  const [counts, setCounts] = useState({});
-  const [mine, setMine] = useState(null);
-  const [busy, setBusy] = useState(false);
-
+function useRelatedPosts(post) {
+  const [related, setRelated] = useState([]);
+  const slug = post?.slug;
+  const firstTag = postTags(post)[0];
   useEffect(() => {
+    if (!slug) return undefined;
     let mounted = true;
     (async () => {
-      const { data } = await PortfolioAPI.getReactions(slug);
-      if (!mounted || !data) return;
-      setCounts(data.counts || {});
-      setMine(data.mine || null);
+      const pick = (list) => (list || []).filter((p) => p.slug !== slug).slice(0, 3);
+      let found = [];
+      if (firstTag) found = pick((await PortfolioAPI.getPosts({ limit: 6, tag: firstTag })).data);
+      if (!found.length) found = pick((await PortfolioAPI.getPosts({ limit: 4 })).data);
+      if (mounted) setRelated(found);
     })();
     return () => { mounted = false; };
-  }, [slug]);
-
-  async function handleClick(reactionId) {
-    if (busy) return;
-    setBusy(true);
-    const { data } = mine === reactionId
-      ? await PortfolioAPI.removeReaction(slug)
-      : await PortfolioAPI.setReaction(slug, reactionId);
-    if (data) {
-      setCounts(data.counts || {});
-      setMine(data.mine ?? null);
-    }
-    setBusy(false);
-  }
-
-  return (
-    <div className="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-line">
-      {REACTIONS.map(({ id, label, Icon }) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => handleClick(id)}
-          disabled={busy}
-          aria-label={label}
-          aria-pressed={mine === id}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm border transition-colors disabled:opacity-50 ${
-            mine === id
-              ? 'bg-accent/20 border-accent/50 text-accent'
-              : 'bg-ink/5 border-ink/10 text-ink/60 hover:text-ink hover:bg-ink/10'
-          }`}
-        >
-          <Icon size={15} />
-          <span className="text-xs">{counts[id] ?? 0}</span>
-        </button>
-      ))}
-    </div>
-  );
+  }, [slug, firstTag]);
+  return related;
 }
 
 export default function BlogDetailPage() {
   const { slug } = useParams();
   const [state, setState] = useState({ status: 'loading', post: null });
-
+  const bodyRef = useRef(null);
   const settings = useSiteSettings();
 
   useEffect(() => {
@@ -140,16 +98,26 @@ export default function BlogDetailPage() {
     return () => { mounted = false; };
   }, [slug]);
 
+  const related = useRelatedPosts(state.post);
+
   if (state.status === 'missing') return <NotFoundPage />;
   if (state.status === 'loading') {
     return (
       <div className="pb-24" style={{ paddingTop: 'calc(var(--navbar-h) + 3rem)' }}>
-        <div className="container-page max-w-3xl space-y-4"><Skeleton className="h-12 w-3/4" /><Skeleton className="h-48 w-full" /></div>
+        <div className="container-page max-w-3xl space-y-4" aria-busy="true" aria-label="Loading post">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-14 w-3/4" />
+          <Skeleton className="h-6 w-1/2" />
+          <Skeleton className="aspect-[16/9] w-full rounded-3xl" />
+        </div>
       </div>
     );
   }
   const { post } = state;
-  const pageTitle = buildTitle(post.title, settings);
+  const tags = postTags(post);
+  const minutes = readingMinutes(post.content);
+  const meta = [formatLongDate(post.published_at), minutes ? `${minutes} min read` : ''].filter(Boolean).join(' · ');
+  const url = absoluteUrl(`/blog/${post.slug}`);
 
   const description = truncate(post.excerpt || stripMarkdown(post.content));
   const image = resolveImage(post.cover_image_url);
@@ -158,17 +126,17 @@ export default function BlogDetailPage() {
     '@type': 'Article',
     headline: post.title,
     description,
-    url: absoluteUrl(`/blog/${post.slug}`),
+    url,
     ...(image ? { image } : {}),
     ...(post.published_at ? { datePublished: post.published_at, dateModified: post.published_at } : {}),
-    ...(Array.isArray(post.tags) && post.tags.length ? { keywords: post.tags.join(', ') } : {}),
+    ...(tags.length ? { keywords: tags.join(', ') } : {}),
     author: { '@type': 'Person', name: settings?.site_title || 'Author' },
   };
 
   return (
     <div className="pb-24" style={{ paddingTop: 'calc(var(--navbar-h) + 3rem)' }}>
       <Seo
-        title={pageTitle}
+        title={buildTitle(post.title, settings)}
         description={description}
         path={`/blog/${post.slug}`}
         image={image}
@@ -176,52 +144,88 @@ export default function BlogDetailPage() {
         siteName={settings?.site_title}
         structuredData={structuredData}
       />
-      <div className="container-page max-w-3xl">
-        <Link to="/blog" className="inline-flex items-center gap-2 text-sm text-muted hover:text-ink mb-10">
-          <ArrowLeft size={16} /> All posts
-        </Link>
+      <article className="container-page">
+        <div className="mx-auto grid max-w-6xl gap-16 xl:grid-cols-[minmax(0,46rem)_15rem] xl:justify-center">
+          <div className="min-w-0">
+            <Link to="/blog" className="mb-10 inline-flex min-h-11 items-center gap-2 text-sm text-muted transition-colors duration-fast hover:text-ink">
+              <ArrowLeft size={16} aria-hidden="true" /> All posts
+            </Link>
 
-        <p className="text-sm text-muted mb-4">{formatDate(post.published_at)}</p>
+            <header>
+              {meta && <p className="m-0 font-mono text-xs uppercase tracking-[0.12em] text-muted">{meta}</p>}
+              <h1 className="mt-4 text-balance font-display text-4xl font-normal leading-[1.02] tracking-tight md:text-6xl">{post.title}</h1>
+              {post.excerpt && <p className="mt-6 max-w-measure text-xl leading-relaxed text-muted">{post.excerpt}</p>}
+            </header>
 
-        <h1 className="font-display text-4xl md:text-5xl font-normal leading-tight tracking-tight mb-8">{post.title}</h1>
+            {post.cover_image_url && (
+              <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border border-line bg-surface-2">
+                <ProgressiveImage
+                  src={post.cover_image_url}
+                  width="1280"
+                  height="720"
+                  priority
+                  sizes="(min-width: 1280px) 46rem, 100vw"
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                />
+              </div>
+            )}
 
-        {post.cover_image_url && (
-          <div className="rounded-md overflow-hidden border border-line mb-8">
-            <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-ink/5">
-              <img
-                src={post.cover_image_url}
-                alt=""
-                loading="eager"
-                decoding="async"
-                className="absolute inset-0 w-full h-full object-cover object-center"
-              />
+            <div className="mt-10">
+              <TableOfContents containerRef={bodyRef} contentKey={post.slug} variant="inline" />
+              {post.video_url && <VideoEmbed url={post.video_url} />}
+              <div ref={bodyRef}>
+                <Markdown>{post.content}</Markdown>
+              </div>
+
+              {post.link_url && (
+                <a
+                  href={post.link_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-8 inline-flex min-h-11 items-center gap-2 text-sm text-accent underline underline-offset-4"
+                >
+                  <ExternalLink size={16} aria-hidden="true" /> Visit related link
+                </a>
+              )}
             </div>
+
+            <footer className="mt-14 space-y-8 border-t border-line pt-8">
+              {tags.length > 0 && (
+                <ul className="m-0 flex list-none flex-wrap gap-x-2 p-0">
+                  {tags.map((t) => (
+                    <li key={t}>
+                      <Link to={`/blog?tag=${encodeURIComponent(t)}`} className="inline-flex min-h-11 items-center" aria-label={`More posts tagged ${t}`}>
+                        <Tag>{t}</Tag>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <ShareBar url={url} title={post.title} />
+              <ReactionBar slug={post.slug} />
+            </footer>
           </div>
-        )}
 
-        {post.video_url && <VideoEmbed url={post.video_url} />}
+          <aside className="hidden xl:block">
+            <div className="sticky top-[calc(var(--navbar-h)+2rem)]">
+              <TableOfContents containerRef={bodyRef} contentKey={post.slug} />
+            </div>
+          </aside>
+        </div>
+      </article>
 
-        <Markdown>{post.content}</Markdown>
+      {related.length > 0 && (
+        <div className="mt-24">
+          <section aria-labelledby="related-title" className="container-page">
+            <SectionHeader eyebrow="Keep reading" title={<span id="related-title">More <em>writing</em></span>} />
+            <ul className="m-0 grid list-none gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
+              {related.map((p) => <li key={p.id || p.slug}><PostCard post={p} as="h3" /></li>)}
+            </ul>
+          </section>
+        </div>
+      )}
 
-        {post.link_url && (
-          <a
-            href={post.link_url}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 mt-8 text-sm text-accent underline underline-offset-4"
-          >
-            <ExternalLink size={16} /> Visit related link
-          </a>
-        )}
-
-        {Array.isArray(post.tags) && post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-10 pt-8 border-t border-line">
-            {post.tags.map((tag) => <Tag key={tag}>{tag}</Tag>)}
-          </div>
-        )}
-
-        <ReactionBar slug={post.slug} />
-      </div>
+      <div className="mt-20"><div className="container-page"><NewsletterSignup /></div></div>
     </div>
   );
 }

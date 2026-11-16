@@ -123,7 +123,7 @@ export default function AdminAchievementsPage() {
                   <button
                     type="button"
                     onClick={() => removeGalleryImage(url)}
-                    className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
+                    className="absolute inset-0 bg-scrim/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-on-scrim"
                     aria-label="Remove image"
                   >
                     <X size={16} />

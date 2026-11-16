@@ -1,22 +1,53 @@
 import Skeleton from '@/components/ui/Skeleton';
 
-/** Placeholder for Hero while `profile` is still loading. */
+/** Placeholder for Hero while `profile` is still loading. Same box model as Hero, so nothing shifts. */
 export function HeroSkeleton() {
   return (
-    <section className="relative min-h-screen overflow-hidden">
-      <div className="container-page relative z-10 pt-40 md:pt-44 pb-20">
-        <Skeleton className="w-28 h-28 md:w-32 md:h-32 rounded-full mb-8" />
-        <Skeleton className="w-48 h-7 rounded-full mb-8" />
-        <Skeleton className="w-full max-w-2xl h-14 mb-3" />
-        <Skeleton className="w-2/3 max-w-lg h-14 mb-6" />
-        <Skeleton className="w-full max-w-xl h-5 mb-2" />
-        <Skeleton className="w-2/3 max-w-md h-5 mb-10" />
-        <div className="flex gap-4">
-          <Skeleton className="w-40 h-12 rounded-xl" />
-          <Skeleton className="w-44 h-12 rounded-xl" />
+    <section className="relative overflow-hidden" aria-hidden="true">
+      <div
+        className="container-page grid gap-12 pb-20 lg:min-h-[min(calc(100svh-4rem),56rem)] lg:grid-cols-12 lg:items-center lg:gap-8 lg:pb-24"
+        style={{ paddingTop: 'calc(var(--navbar-h) + 2.5rem)' }}
+      >
+        <div className="lg:col-span-8">
+          <Skeleton className="h-8 w-56 rounded-full" />
+          <Skeleton className="mt-8 h-4 w-40" />
+          <Skeleton className="mt-4 h-16 w-full max-w-2xl md:h-28" />
+          <Skeleton className="mt-3 h-16 w-2/3 max-w-lg md:h-28" />
+          <Skeleton className="mt-8 h-6 w-full max-w-xl" />
+          <div className="mt-10 flex gap-3">
+            <Skeleton className="h-14 w-44 rounded-full" />
+            <Skeleton className="h-14 w-36 rounded-full" />
+          </div>
+        </div>
+        <div className="mx-auto w-full max-w-xs sm:max-w-sm lg:col-span-4 lg:max-w-none">
+          <Skeleton className="aspect-[4/5] w-full rounded-3xl" />
         </div>
       </div>
     </section>
+  );
+}
+
+/** Placeholder for the sections under the hero while their data loads. */
+export function BelowFoldSkeleton() {
+  return (
+    <div aria-hidden="true">
+      <div className="border-y border-line py-6">
+        <Skeleton className="mx-auto h-5 w-3/4 max-w-3xl" />
+      </div>
+      <section className="py-section">
+        <div className="container-page">
+          <Skeleton className="mb-4 h-4 w-28" />
+          <Skeleton className="mb-10 h-12 w-72" />
+          <div className="grid gap-5 lg:grid-cols-6">
+            <div className="card lg:col-span-6">
+              <Skeleton className="aspect-[16/10] w-full rounded-none lg:aspect-[16/6]" />
+            </div>
+            <div className="card lg:col-span-3"><Skeleton className="aspect-[16/10] w-full rounded-none" /></div>
+            <div className="card lg:col-span-3"><Skeleton className="aspect-[16/10] w-full rounded-none" /></div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
 

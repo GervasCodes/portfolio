@@ -1,53 +1,48 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Search as SearchIcon, Calendar, Eye } from 'lucide-react';
+import { Search as SearchIcon, X } from 'lucide-react';
 import Pagination from '@/components/ui/Pagination';
+import SectionHeader from '@/components/ui/SectionHeader';
+import Card from '@/components/ui/Card';
+import Tag from '@/components/ui/Tag';
+import Skeleton from '@/components/ui/Skeleton';
+import EmptyState from '@/components/ui/EmptyState';
+import ErrorState from '@/components/ui/ErrorState';
+import Button from '@/components/ui/Buttons';
 import Seo from '@/components/seo/Seo';
 import { PortfolioAPI } from '@/services/api';
 import { useSiteSettings, buildTitle } from '@/hooks/useSiteSettings';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { formatLongDate, postTags, resultsLabel } from '@/utils/blogContent';
 
 const LIMIT = 9;
 const TYPES = [
   { value: 'all', label: 'All' },
   { value: 'projects', label: 'Projects' },
-  { value: 'blog', label: 'Blog' },
+  { value: 'blog', label: 'Writing' },
 ];
-
-function formatDate(date) {
-  if (!date) return '';
-  return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
 
 function ResultCard({ item }) {
   const isProject = item.resultType === 'project';
   const href = isProject ? `/projects/${item.slug}` : `/blog/${item.slug}`;
   const summary = isProject ? item.summary : item.excerpt;
-  const tags = isProject ? item.tech_stack : item.tags;
+  const tags = (isProject ? (Array.isArray(item.tech_stack) ? item.tech_stack : []) : postTags(item)).slice(0, 5);
+  const date = !isProject ? formatLongDate(item.published_at) : '';
 
   return (
-    <Link to={href} className="surface surface-hover rounded-2xl p-6 flex flex-col h-full">
-      <div className="flex items-center gap-3 text-xs text-muted mb-3">
-        <span className="uppercase tracking-widest text-accent">{isProject ? 'Project' : 'Blog'}</span>
-        {!isProject && item.published_at && (
-          <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(item.published_at)}</span>
-        )}
-        {!isProject && (
-          <span className="flex items-center gap-1"><Eye size={12} /> {item.views ?? 0}</span>
-        )}
-      </div>
-      <h2 className="font-display font-semibold text-lg mb-2">{item.title}</h2>
-      {summary && <p className="text-sm text-ink/55 flex-1 line-clamp-3">{summary}</p>}
-      {Array.isArray(tags) && tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-4">
-          {tags.slice(0, 6).map((t) => (
-            <span key={t} className="text-[11px] px-2.5 py-1 rounded-full bg-ink/5 text-ink/60 border border-ink/10">
-              {t}
-            </span>
-          ))}
+    <Card as={Link} to={href} interactive className="flex h-full flex-col p-6">
+      <p className="m-0 flex flex-wrap items-center gap-x-3 font-mono text-xs uppercase tracking-[0.12em]">
+        <span className="text-accent">{isProject ? 'Project' : 'Writing'}</span>
+        {date && <span className="text-muted">{date}</span>}
+      </p>
+      <h2 className="mt-3 font-display text-2xl font-normal leading-tight tracking-tight">{item.title}</h2>
+      {summary && <p className="mt-3 line-clamp-3 flex-1 text-muted">{summary}</p>}
+      {tags.length > 0 && (
+        <div className="mt-5 flex flex-wrap gap-2">
+          {tags.map((t) => <Tag key={t}>{t}</Tag>)}
         </div>
       )}
-    </Link>
+    </Card>
   );
 }
 
@@ -56,28 +51,27 @@ export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const urlQ = searchParams.get('q') || '';
-  const type = searchParams.get('type') || 'all';
+  const type = TYPES.some((t) => t.value === searchParams.get('type')) ? searchParams.get('type') : 'all';
   const page = Math.max(parseInt(searchParams.get('page'), 10) || 1, 1);
 
-  // Local input state, debounced before it drives the actual query — the
-  // URL (and therefore the request) only updates once typing pauses.
+  // Local input state, debounced before it drives the actual query: the URL
+  // (and therefore the request) only updates once typing pauses.
   const [inputValue, setInputValue] = useState(urlQ);
   const debouncedQ = useDebouncedValue(inputValue, 350);
 
   const [results, setResults] = useState([]);
   const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [status, setStatus] = useState('idle'); // idle | loading | ready | error
+  const [attempt, setAttempt] = useState(0);
 
-  const pageTitle = buildTitle(urlQ ? `Search: ${urlQ}` : 'Search', settings);
+  // Only focus the field by itself where there is no on-screen keyboard to pop up.
+  const autoFocus = typeof window !== 'undefined' && window.matchMedia?.('(pointer: fine)').matches;
 
   // Keep the input in sync if the URL changes from outside (back/forward nav).
-  useEffect(() => {
-    setInputValue(urlQ);
-  }, [urlQ]);
+  useEffect(() => { setInputValue(urlQ); }, [urlQ]);
 
   // Push debounced input into the URL (resetting to page 1), replacing
-  // history instead of pushing so every keystroke doesn't add an entry.
+  // history so every keystroke does not add an entry.
   useEffect(() => {
     if (debouncedQ === urlQ) return;
     const next = new URLSearchParams(searchParams);
@@ -95,72 +89,85 @@ export default function SearchPage() {
     if (!activeQuery) {
       setResults([]);
       setTotal(0);
-      setHasSearched(false);
+      setStatus('idle');
       return undefined;
     }
     let mounted = true;
-    setLoading(true);
+    setStatus('loading');
     (async () => {
-      const { data, meta } = await PortfolioAPI.search({ q: activeQuery, type, page, limit: LIMIT });
+      const { data, meta, error } = await PortfolioAPI.search({ q: activeQuery, type, page, limit: LIMIT });
       if (!mounted) return;
+      if (error) {
+        setStatus('error');
+        return;
+      }
       setResults(data || []);
-      setTotal(meta?.total ?? 0);
-      setLoading(false);
-      setHasSearched(true);
+      setTotal(meta?.total ?? (data || []).length);
+      setStatus('ready');
     })();
     return () => { mounted = false; };
-  }, [activeQuery, type, page]);
+  }, [activeQuery, type, page, attempt]);
 
-  const handleTypeChange = (nextType) => {
+  const retry = useCallback(() => setAttempt((n) => n + 1), []);
+
+  const setParam = (mutate) => {
     const next = new URLSearchParams(searchParams);
-    if (nextType === 'all') next.delete('type');
-    else next.set('type', nextType);
+    mutate(next);
     next.delete('page');
     setSearchParams(next);
   };
-
+  const handleTypeChange = (nextType) => setParam((n) => (nextType === 'all' ? n.delete('type') : n.set('type', nextType)));
   const handleSubmit = (e) => {
     e.preventDefault();
-    const next = new URLSearchParams(searchParams);
-    if (inputValue) next.set('q', inputValue);
-    else next.delete('q');
-    next.delete('page');
-    setSearchParams(next);
+    setParam((n) => (inputValue.trim() ? n.set('q', inputValue.trim()) : n.delete('q')));
   };
+  const clear = () => { setInputValue(''); setParam((n) => n.delete('q')); };
 
   return (
-    <div className="pt-28 pb-24">
-      <Seo title={pageTitle} noindex path="/search" />
+    <div className="pb-24" style={{ paddingTop: 'calc(var(--navbar-h) + 3rem)' }}>
+      <Seo title={buildTitle(urlQ ? `Search: ${urlQ}` : 'Search', settings)} noindex path="/search" />
       <div className="container-page">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <p className="section-label">Search</p>
-          <h1 className="font-display text-3xl md:text-4xl font-bold">
-            Find <span className="text-accent">Projects &amp; Posts</span>
-          </h1>
-        </div>
+        <SectionHeader as="h1" eyebrow="Search" title={<>Find a <em>project</em> or post</>} />
 
-        <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 justify-center mb-6">
-          <div className="relative w-full sm:w-96">
-            <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
+        <form role="search" onSubmit={handleSubmit} className="flex max-w-3xl flex-col gap-3 sm:flex-row">
+          <div className="relative flex-1">
+            <label htmlFor="site-search" className="sr-only">Search projects and writing</label>
+            <SearchIcon size={18} aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
             <input
+              id="site-search"
+              type="search"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Search projects and blog posts..."
-              className="input-field pl-11 pr-4 py-2.5 text-sm w-full"
-              autoFocus
+              placeholder="Search projects and writing…"
+              autoComplete="off"
+              autoFocus={autoFocus}
+              className="input-field min-h-12 w-full pl-12 pr-12 text-base"
             />
+            {inputValue && (
+              <button
+                type="button"
+                onClick={clear}
+                aria-label="Clear search"
+                className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted transition-colors duration-fast hover:text-ink"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            )}
           </div>
-          <button className="surface surface-hover rounded-xl px-5 py-2.5 text-sm">Search</button>
+          <Button type="submit" size="lg">Search</Button>
         </form>
 
-        <div className="flex items-center justify-center gap-2 mb-12">
+        <div role="group" aria-label="Filter results by type" className="mt-5 flex flex-wrap gap-2">
           {TYPES.map((t) => (
             <button
               key={t.value}
               type="button"
+              aria-pressed={type === t.value}
               onClick={() => handleTypeChange(t.value)}
-              className={`px-4 py-2 rounded-xl text-sm transition-colors ${
-                type === t.value ? 'bg-accent text-white' : 'surface surface-hover text-ink/60'
+              className={`inline-flex min-h-11 items-center rounded-full border px-5 text-sm transition-colors duration-fast ${
+                type === t.value
+                  ? 'border-accent bg-accent text-accent-ink'
+                  : 'border-line text-muted hover:border-control hover:text-ink'
               }`}
             >
               {t.label}
@@ -168,34 +175,64 @@ export default function SearchPage() {
           ))}
         </div>
 
-        {!activeQuery && (
-          <p className="text-center text-muted">Start typing to search projects and blog posts.</p>
-        )}
+        {/* Announced to screen readers whenever the results change. */}
+        <p role="status" aria-live="polite" className="mt-8 font-mono text-xs uppercase tracking-[0.12em] text-muted">
+          {status === 'loading' && 'Searching…'}
+          {status === 'ready' && total > 0 && resultsLabel(total, activeQuery)}
+          {status === 'ready' && total === 0 && `No results for “${activeQuery}”`}
+        </p>
 
-        {activeQuery && loading && (
-          <p className="text-center text-muted">Searching…</p>
-        )}
-
-        {activeQuery && !loading && hasSearched && results.length === 0 && (
-          <p className="text-center text-muted">No results for &quot;{activeQuery}&quot;.</p>
-        )}
-
-        {activeQuery && !loading && results.length > 0 && (
-          <>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {results.map((item) => (
-                <ResultCard key={`${item.resultType}-${item.id || item.slug}`} item={item} />
-              ))}
-            </div>
-            <Pagination
-              basePath="/search"
-              page={page}
-              limit={LIMIT}
-              total={total}
-              extraParams={{ q: activeQuery, ...(type !== 'all' ? { type } : {}) }}
+        <div className="mt-6">
+          {status === 'idle' && (
+            <EmptyState
+              title="What are you looking for?"
+              description="Type a technology, a project name or a topic to search my work and writing."
+              seed="search"
+              action={(
+                <div className="flex flex-wrap justify-center gap-3">
+                  <Button href="/projects" variant="secondary">Browse the work</Button>
+                  <Button href="/blog" variant="ghost">Read the writing</Button>
+                </div>
+              )}
             />
-          </>
-        )}
+          )}
+
+          {status === 'loading' && (
+            <div aria-hidden="true" className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {[0, 1, 2].map((i) => <Skeleton key={i} className="h-56 w-full rounded-3xl" />)}
+            </div>
+          )}
+
+          {status === 'error' && (
+            <ErrorState title="Search is not working right now" message="Check your connection, then try again." onRetry={retry} />
+          )}
+
+          {status === 'ready' && results.length === 0 && (
+            <EmptyState
+              title="Nothing found"
+              description={type === 'all' ? 'Try a different word, or a shorter one.' : 'Try a different word, or search everything.'}
+              seed={`none-${activeQuery}`}
+              action={type !== 'all' ? <Button variant="secondary" onClick={() => handleTypeChange('all')}>Search everything</Button> : undefined}
+            />
+          )}
+
+          {status === 'ready' && results.length > 0 && (
+            <>
+              <ul className="m-0 grid list-none gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
+                {results.map((item) => (
+                  <li key={`${item.resultType}-${item.id || item.slug}`}><ResultCard item={item} /></li>
+                ))}
+              </ul>
+              <Pagination
+                basePath="/search"
+                page={page}
+                limit={LIMIT}
+                total={total}
+                extraParams={{ q: activeQuery, ...(type !== 'all' ? { type } : {}) }}
+              />
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

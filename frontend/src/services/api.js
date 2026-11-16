@@ -92,6 +92,22 @@ async function request(promise) {
   }
 }
 
+/**
+ * index.html starts the request for a deep link (/projects/:slug, /blog/:slug) before the app
+ * has loaded and parks the promise on window.__early. Use it once if it succeeded; otherwise
+ * (no early request, failed, not found, or a draft that needs the admin token) make the normal call.
+ */
+async function requestEarly(path, normal) {
+  const early = typeof window !== 'undefined' ? window.__early : null;
+  const pending = early && early[path];
+  if (pending) {
+    delete early[path];
+    const json = await pending;
+    if (json && json.data) return { data: json.data, meta: json.meta, error: null };
+  }
+  return normal();
+}
+
 export const PortfolioAPI = {
   // Profile
   getProfile: () => request(api.get('/profile')),
@@ -100,7 +116,7 @@ export const PortfolioAPI = {
   // Projects
   getProjects: (params) => request(api.get('/projects', { params })),
   getFeaturedProjects: (limit = 6) => request(api.get('/projects/featured', { params: { limit } })),
-  getProjectBySlug: (slug) => request(api.get(`/projects/${slug}`)),
+  getProjectBySlug: (slug) => requestEarly(`/projects/${slug}`, () => request(api.get(`/projects/${slug}`))),
   getProjectById: (id) => request(api.get(`/projects/id/${id}`)),
   createProject: (payload) => request(api.post('/projects', payload)),
   updateProject: (id, payload) => request(api.put(`/projects/${id}`, payload)),
@@ -130,7 +146,7 @@ export const PortfolioAPI = {
   // Blog
   getPosts: (params) => request(api.get('/blog', { params })),
   getMostViewedPosts: (limit = 5) => request(api.get('/blog/most-viewed', { params: { limit } })),
-  getPostBySlug: (slug) => request(api.get(`/blog/${slug}`)),
+  getPostBySlug: (slug) => requestEarly(`/blog/${slug}`, () => request(api.get(`/blog/${slug}`))),
   getAllPostsAdmin: () => request(api.get('/blog/admin/all')),
   createPost: (payload) => request(api.post('/blog', payload)),
   updatePost: (id, payload) => request(api.put(`/blog/${id}`, payload)),

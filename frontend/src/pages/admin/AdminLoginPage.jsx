@@ -69,7 +69,7 @@ export default function AdminLoginPage() {
           <>
             <div className="text-center mb-8">
               <div className="w-12 h-12 rounded-2xl bg-accent mx-auto mb-4 flex items-center justify-center">
-                <Lock size={20} className="text-white" />
+                <Lock size={20} className="text-accent-ink" />
               </div>
               <h1 className="font-display text-2xl font-bold">Admin Login</h1>
               <p className="text-sm text-muted mt-2">Sign in to manage your portfolio content.</p>
@@ -116,7 +116,7 @@ export default function AdminLoginPage() {
           <>
             <div className="text-center mb-8">
               <div className="w-12 h-12 rounded-2xl bg-accent mx-auto mb-4 flex items-center justify-center">
-                <ShieldCheck size={20} className="text-white" />
+                <ShieldCheck size={20} className="text-accent-ink" />
               </div>
               <h1 className="font-display text-2xl font-bold">Two-Factor Authentication</h1>
               <p className="text-sm text-muted mt-2">Enter the 6-digit code from your authenticator app.</p>

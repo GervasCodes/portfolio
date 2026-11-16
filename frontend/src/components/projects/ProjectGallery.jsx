@@ -1,139 +1,84 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, X, PlayCircle } from 'lucide-react';
+import { PlayCircle } from 'lucide-react';
+import DeviceFrame from '@/components/projects/DeviceFrame';
+import Lightbox from '@/components/projects/Lightbox';
 
 /**
  * Normalizes either shape into { id, media_type, url, caption }:
- *  - `media`  — the new project_media rows (images AND videos)
- *  - `images` — legacy array of plain URL strings (images only)
+ *  - `media`  : project_media rows (images AND videos)
+ *  - `images` : legacy array of plain URL strings (images only)
  */
 function normalize(media, images) {
   if (Array.isArray(media) && media.length) {
-    return media.map((m, i) => ({
+    return media.filter((m) => m?.url).map((m, i) => ({
       id: m.id ?? i,
-      media_type: m.media_type || 'image',
+      media_type: m.media_type === 'video' ? 'video' : 'image',
       url: m.url,
       caption: m.caption || '',
     }));
   }
   if (Array.isArray(images)) {
-    return images.map((url, i) => ({ id: i, media_type: 'image', url, caption: '' }));
+    return images.filter(Boolean).map((url, i) => ({ id: i, media_type: 'image', url, caption: '' }));
   }
   return [];
 }
 
-export default function ProjectGallery({ media, images = [] }) {
-  const items = normalize(media, images);
-  const [activeIndex, setActiveIndex] = useState(null);
+const OPEN = 'group block w-full text-left rounded-2xl focus-visible:outline-offset-4';
 
-  if (!items.length) return null;
+/**
+ * Clickable thumbnails that open a keyboard-accessible lightbox.
+ *  - variant "devices": laptop/phone frames (case studies); `columns={1}` makes each one full width
+ *  - variant "plain"  : simple grid (certificates, achievements)
+ * Pass `items` (already normalised) to skip normalising `media` / `images`.
+ */
+export default function ProjectGallery({ media, images = [], items: given, variant = 'plain', from = 0, to, columns = 2, priority = false, label }) {
+  const all = given || normalize(media, images);
+  const [active, setActive] = useState(null);
+  if (!all.length) return null;
 
-  const close = () => setActiveIndex(null);
-  const prev = () => setActiveIndex((i) => (i - 1 + items.length) % items.length);
-  const next = () => setActiveIndex((i) => (i + 1) % items.length);
-  const active = activeIndex !== null ? items[activeIndex] : null;
+  // `from`/`to` pick which screens this instance draws (the case study shows the first one as a
+  // full-width hero and the rest further down); every instance's lightbox still holds all screens.
+  const shown = all.slice(from, to);
+  const offset = from;
+  if (!shown.length) return null;
+  const describe = (item, i) => item.caption || `Screen ${i + 1} of ${all.length}`;
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {items.map((item, i) => (
-          <button
-            key={item.id}
-            onClick={() => setActiveIndex(i)}
-            className="relative aspect-video rounded-xl overflow-hidden surface surface-hover group"
-          >
-            {item.media_type === 'video' ? (
-              <video
-                src={item.url}
-                className="absolute inset-0 w-full h-full object-cover"
-                muted
-                playsInline
-                preload="metadata"
-              />
-            ) : (
-              <img
-                src={item.url}
-                alt={item.caption || `Screenshot ${i + 1}`}
-                loading="lazy"
-                decoding="async"
-                className="absolute inset-0 w-full h-full object-cover object-center"
-              />
-            )}
-            {item.media_type === 'video' && (
-              <span className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                <PlayCircle size={32} className="text-ink/90" />
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-6"
-            onClick={close}
-          >
-            <button
-              onClick={close}
-              className="absolute top-5 right-5 z-10 p-2 rounded-full text-ink/70 hover:text-ink hover:bg-white/10 transition-colors"
-              aria-label="Close gallery"
-            >
-              <X size={24} />
-            </button>
-
-            {items.length > 1 && (
-              <button
-                onClick={(e) => { e.stopPropagation(); prev(); }}
-                className="absolute left-3 md:left-8 top-1/2 -translate-y-1/2 p-2 rounded-full text-ink/60 hover:text-ink hover:bg-white/10 transition-colors"
-                aria-label="Previous item"
-              >
-                <ChevronLeft size={32} />
+      {variant === 'devices' ? (
+        <ul className={`grid gap-8 md:gap-10 ${columns === 1 ? '' : 'md:grid-cols-2'}`}>
+          {shown.map((item, i) => (
+            <li key={item.id}>
+              <button type="button" className={OPEN} onClick={() => setActive(i + offset)} aria-label={`${item.media_type === 'video' ? 'Play' : 'Open'}: ${describe(item, i + offset)}`}>
+                <DeviceFrame item={item} priority={priority && i === 0} className="transition-transform duration-base ease-standard group-hover:-translate-y-1 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0" />
               </button>
-            )}
-
-            <motion.div
-              key={active.id}
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="relative w-full max-w-4xl flex flex-col items-center gap-4 px-10 md:px-16"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {active.media_type === 'video' ? (
-                <video
-                  src={active.url}
-                  className="max-w-full max-h-[78vh] rounded-lg"
-                  controls
-                  autoPlay
-                />
-              ) : (
-                <img
-                  src={active.url}
-                  alt={active.caption || ''}
-                  decoding="async"
-                  className="max-w-full max-h-[78vh] w-auto h-auto object-contain rounded-lg"
-                />
-              )}
-              {active.caption && (
-                <p className="text-center text-sm text-ink/60 max-w-2xl">{active.caption}</p>
-              )}
-            </motion.div>
-
-            {items.length > 1 && (
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <ul className="grid grid-cols-2 gap-3 md:grid-cols-3">
+          {shown.map((item, i) => (
+            <li key={item.id}>
               <button
-                onClick={(e) => { e.stopPropagation(); next(); }}
-                className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 p-2 rounded-full text-ink/60 hover:text-ink hover:bg-white/10 transition-colors"
-                aria-label="Next item"
+                type="button"
+                onClick={() => setActive(i + offset)}
+                aria-label={`${item.media_type === 'video' ? 'Play' : 'Open'}: ${describe(item, i + offset)}`}
+                className="surface surface-hover group relative block aspect-video w-full overflow-hidden rounded-lg"
               >
-                <ChevronRight size={32} />
+                {item.media_type === 'video' ? (
+                  <>
+                    <video src={`${item.url}#t=0.1`} muted playsInline preload="metadata" tabIndex={-1} aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
+                    <span className="absolute inset-0 flex items-center justify-center bg-scrim/30"><PlayCircle size={32} aria-hidden="true" className="text-on-scrim" /></span>
+                  </>
+                ) : (
+                  <img src={item.url} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-center" />
+                )}
               </button>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </li>
+          ))}
+        </ul>
+      )}
+      <Lightbox items={all} index={active} onIndex={setActive} onClose={() => setActive(null)} label={label} />
     </>
   );
 }
