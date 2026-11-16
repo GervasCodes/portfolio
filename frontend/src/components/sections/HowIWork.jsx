@@ -37,8 +37,7 @@ export default function HowIWork({ steps = [], number, ownerPlaceholders = false
             <li key={s.title || `p-${i}`}>
               <Reveal delay={i * 80} className="h-full">
                 <Card spotlight={Boolean(s.title)} className={`h-full p-6 ${s.placeholder ? 'border-dashed' : ''}`}>
-                  <span className="step-number" aria-hidden="true" data-n={String(i + 1).padStart(2, '0')} />
-                  <h3 className="mt-6 font-display text-2xl font-normal leading-tight tracking-tight">
+                  <h3 className="font-display text-2xl font-normal leading-tight tracking-tight">
                     {s.title || `Step ${i + 1} (placeholder)`}
                   </h3>
                   {s.text && <p className="mt-3 text-muted">{s.text}</p>}

@@ -25,9 +25,8 @@ export default function ExperienceSnapshot({ items = [], number }) {
               <ol className="relative m-0 list-none border-l border-line p-0">
                 {items.map((item, i) => (
                   <li key={item.id || i} className="relative pb-10 pl-8 last:pb-0 md:pl-10">
-                    <span aria-hidden="true" className="absolute -left-[5px] top-2 h-2.5 w-2.5 rounded-full bg-accent shadow-glow" />
                     <Reveal delay={i * 80}>
-                      <p className="font-mono text-xs uppercase tracking-[0.12em] text-muted">
+                      <p className="text-sm text-muted">
                         {formatMonthYear(item.start_date)}
                         {' – '}
                         {item.is_current ? 'Present' : formatMonthYear(item.end_date) || 'Present'}

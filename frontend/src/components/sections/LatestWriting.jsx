@@ -36,7 +36,7 @@ export default function LatestWriting({ posts = [], number }) {
                     )}
                   </div>
                   <div className="flex flex-1 flex-col p-6">
-                    <p className="font-mono text-xs uppercase tracking-[0.12em] text-muted">
+                    <p className="text-sm text-muted">
                       {formatMonthYear(post.published_at)}
                     </p>
                     <h3 className="mt-3 font-display text-2xl font-normal leading-tight tracking-tight transition-colors duration-fast group-hover:text-accent">

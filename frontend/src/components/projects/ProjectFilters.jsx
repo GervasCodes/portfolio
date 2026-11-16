@@ -3,7 +3,7 @@ import { LayoutGrid, List, Search, X } from 'lucide-react';
 import Button from '@/components/ui/Buttons';
 
 const CHIP =
-  'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-mono text-xs uppercase tracking-wider ' +
+  'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs ' +
   'transition-colors duration-fast [@media(pointer:coarse)]:min-h-11 ';
 const CHIP_OFF = 'border-line text-muted hover:border-control hover:text-ink';
 const CHIP_ON = 'border-accent bg-accent text-accent-ink';
@@ -98,7 +98,7 @@ export default function ProjectFilters({
       )}
 
       <div className="flex items-center gap-3">
-        <p role="status" aria-live="polite" className="font-mono text-xs uppercase tracking-[0.12em] text-muted">
+        <p role="status" aria-live="polite" className="text-sm text-muted">
           {active ? `${shown} of ${total} projects` : `${total} ${total === 1 ? 'project' : 'projects'}`}
         </p>
         {active && (

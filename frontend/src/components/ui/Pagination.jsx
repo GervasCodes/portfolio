@@ -45,7 +45,7 @@ export default function Pagination({ basePath, page, limit, total, extraParams =
             key={p}
             to={buildHref(p)}
             aria-current={p === page ? 'page' : undefined}
-            className={`w-11 h-11 rounded-full flex items-center justify-center text-sm font-mono transition-colors ${
+            className={`w-11 h-11 rounded-full flex items-center justify-center text-sm transition-colors ${
               p === page ? 'bg-accent text-accent-ink' : 'surface surface-hover text-muted'
             }`}
           >

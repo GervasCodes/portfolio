@@ -31,10 +31,7 @@ export default function About({ profile, jump = [] }) {
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <p className="section-label">About</p>
             {profile?.available_for_work && (
-              <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-ink">
-                <span aria-hidden="true" className="h-2 w-2 rounded-full bg-success" />
-                Available for new projects
-              </span>
+              <span className="text-sm text-ink">Available for new projects</span>
             )}
           </div>
 
@@ -100,7 +97,7 @@ export default function About({ profile, jump = [] }) {
                   <li key={j.id}>
                     <a
                       href={`#${j.id}`}
-                      className="inline-flex min-h-11 items-center rounded-full border border-line px-4 font-mono text-xs uppercase tracking-[0.12em] text-muted transition-colors duration-fast hover:border-control hover:text-ink"
+                      className="inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm text-muted transition-colors duration-fast hover:border-control hover:text-ink"
                     >
                       {j.label}
                     </a>

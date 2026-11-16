@@ -8,7 +8,6 @@ import { useNavLinks } from '@/hooks/useNavLinks';
 import { useProfile } from '@/hooks/useProfile';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { useCommandPalette } from '@/hooks/useCommandPalette';
-import { useLocalTime } from '@/hooks/useLocalTime';
 
 /**
  * Floating glass navbar (glass is allowed only here and in the command palette).
@@ -32,36 +31,24 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
 };
 
-const initialsOf = (name) =>
-  String(name || '')
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0].toUpperCase())
-    .join('');
-
 export default function Navbar() {
   const { pathname } = useLocation();
   const links = useNavLinks();
   const profile = useProfile();
   const settings = useSiteSettings();
   const { openPalette } = useCommandPalette();
-  const time = useLocalTime();
 
   const headerRef = useRef(null);
   const overlayRef = useRef(null);
   const menuButtonRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isMac, setIsMac] = useState(false);
 
   const name = profile?.full_name || settings?.site_title || 'Portfolio';
-  const initials = initialsOf(profile?.full_name);
   const startHref = profile?.email ? `mailto:${profile.email}` : '/contact';
 
   useEffect(() => {
     document.documentElement.style.setProperty('--navbar-h', NAV_OFFSET);
-    setIsMac(/Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent || ''));
   }, []);
 
   useEffect(() => {
@@ -129,12 +116,6 @@ export default function Navbar() {
               aria-label={`${name} — home`}
               className="flex min-h-11 min-w-0 shrink items-center gap-2.5 rounded-full pr-2 text-ink"
             >
-              <span
-                aria-hidden="true"
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent font-mono text-xs font-medium text-accent-ink"
-              >
-                {initials || '•'}
-              </span>
               <span className="truncate font-display text-lg leading-none tracking-tight">{name}</span>
             </Link>
 
@@ -168,31 +149,22 @@ export default function Navbar() {
             </ul>
 
             <div className="flex shrink-0 items-center gap-1.5">
-              {time && !scrolled && (
-                <span className="mr-1 hidden whitespace-nowrap font-mono text-xs text-muted xl:inline" title="Local time, East Africa Time">
-                  {time} EAT
-                </span>
-              )}
               <button
                 type="button"
                 onClick={openPalette}
                 aria-label="Search and commands"
                 aria-haspopup="dialog"
                 aria-keyshortcuts="Control+K Meta+K"
-                className="hidden h-11 items-center gap-2 rounded-full border border-line px-3.5 text-sm text-muted transition-colors duration-fast hover:border-control hover:text-ink md:inline-flex"
+                className="hidden h-11 w-11 items-center justify-center rounded-full text-muted transition-colors duration-fast hover:text-ink md:inline-flex"
               >
-                <SearchIcon size={16} aria-hidden="true" />
-                <span>Search</span>
-                <kbd className="whitespace-nowrap rounded-md border border-line px-1.5 py-0.5 font-mono text-[0.6875rem] leading-none text-muted">
-                  {isMac ? '⌘K' : 'Ctrl K'}
-                </kbd>
+                <SearchIcon size={18} aria-hidden="true" />
               </button>
               <button
                 type="button"
                 onClick={openPalette}
                 aria-label="Search and commands"
                 aria-haspopup="dialog"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-muted transition-colors duration-fast hover:border-control hover:text-ink md:hidden"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors duration-fast hover:text-ink md:hidden"
               >
                 <SearchIcon size={18} aria-hidden="true" />
               </button>
@@ -229,7 +201,7 @@ export default function Navbar() {
           >
             <div className="container-page flex min-h-full flex-col justify-between pb-10 pt-28">
               <motion.ul variants={listVariants} initial="hidden" animate="show" className="space-y-1">
-                {links.map((link, i) => (
+                {links.map((link) => (
                   <motion.li key={link.href} variants={itemVariants}>
                     <NavLink
                       to={link.href}
@@ -239,7 +211,6 @@ export default function Navbar() {
                         }`
                       }
                     >
-                      <span className="section-label w-6">{String(i + 1).padStart(2, '0')}</span>
                       <span className="font-display text-5xl leading-none tracking-tight">{link.label}</span>
                     </NavLink>
                   </motion.li>
@@ -252,7 +223,6 @@ export default function Navbar() {
                 className="mt-10 flex flex-wrap items-center gap-3"
               >
                 <Button href={startHref} size="lg">Start a project</Button>
-                {time && <span className="font-mono text-xs text-muted">{time} EAT</span>}
               </motion.div>
             </div>
           </motion.div>

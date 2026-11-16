@@ -9,7 +9,7 @@ import { dateRange, durationLabel } from '@/utils/aboutContent';
  * One vertical timeline. A thin accent line fills as the list scrolls
  * through the viewport (a transform driven by a motion value, so it never
  * re-renders React). Under reduced motion the line is simply drawn in full.
- * Each entry reveals once and carries its own dot.
+ * Each entry reveals once.
  */
 export function Timeline({ items = [], label }) {
   const ref = useRef(null);
@@ -32,9 +32,8 @@ export function Timeline({ items = [], label }) {
         const current = Boolean(item.is_current);
         return (
           <Reveal as="li" key={item.id || i} delay={Math.min(i, 3) * 60} className="relative pb-12 last:pb-0">
-            <span aria-hidden="true" className="tl-dot -ml-8 md:-ml-10" />
             {(range || span || current) && (
-              <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs uppercase tracking-[0.12em] text-muted">
+              <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
                 {range && <span>{range}</span>}
                 {span && <span>{span}</span>}
                 {current && <Tag tone="accent">Current</Tag>}

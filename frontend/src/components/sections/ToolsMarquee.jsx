@@ -17,7 +17,7 @@ export default function ToolsMarquee({ skills = [] }) {
   if (skills.length < 6) {
     return (
       <section aria-label="Tools and technologies" className="border-y border-line py-6">
-        <ul className="container-page flex flex-wrap gap-x-10 gap-y-3 font-mono text-sm uppercase tracking-[0.12em] text-muted">
+        <ul className="container-page flex flex-wrap gap-x-10 gap-y-3 text-base text-muted">
           {skills.map((s) => <li key={s}>{s}</li>)}
         </ul>
       </section>
@@ -36,10 +36,9 @@ export default function ToolsMarquee({ skills = [] }) {
               <li
                 key={`${c}-${s}`}
                 aria-hidden={c > 0 ? 'true' : undefined}
-                className={`flex items-center gap-10 pr-10 font-mono text-sm uppercase tracking-[0.12em] text-muted ${c > 0 ? 'marquee-dup' : ''}`}
+                className={`pr-10 text-base text-muted ${c > 0 ? 'marquee-dup' : ''}`}
               >
                 {s}
-                <span aria-hidden="true" className="h-1.5 w-1.5 rotate-45 bg-accent" />
               </li>
             ))
           )}
@@ -50,7 +49,7 @@ export default function ToolsMarquee({ skills = [] }) {
           type="button"
           onClick={() => setPaused((p) => !p)}
           aria-pressed={paused}
-          className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 font-mono text-xs uppercase tracking-[0.12em] text-muted transition-colors duration-fast hover:text-ink motion-reduce:hidden"
+          className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-sm text-muted transition-colors duration-fast hover:text-ink motion-reduce:hidden"
         >
           {paused ? <Play size={14} aria-hidden="true" /> : <Pause size={14} aria-hidden="true" />}
           {paused ? 'Play motion' : 'Pause motion'}

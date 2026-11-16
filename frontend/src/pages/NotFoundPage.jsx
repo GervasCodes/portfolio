@@ -4,7 +4,6 @@ import { ArrowUpRight, Search as SearchIcon } from 'lucide-react';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { useSiteSettings, buildTitle } from '@/hooks/useSiteSettings';
 import { useNavLinks } from '@/hooks/useNavLinks';
-import { useCommandPalette } from '@/hooks/useCommandPalette';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Buttons';
 
@@ -20,7 +19,6 @@ export default function NotFoundPage() {
   const settings = useSiteSettings();
   const links = useNavLinks();
   const navigate = useNavigate();
-  const { openPalette } = useCommandPalette();
   const [q, setQ] = useState('');
   useDocumentTitle(buildTitle('Page not found', settings));
 
@@ -32,15 +30,11 @@ export default function NotFoundPage() {
 
   return (
     <div className="relative isolate overflow-hidden">
-      <div className="glow-hero" aria-hidden="true" />
       <div
         className="container-page relative z-[1] pb-24"
         style={{ paddingTop: 'calc(var(--navbar-h) + clamp(2rem, 6vw, 5rem))' }}
       >
-        <p aria-hidden="true" className="section-number select-none" style={{ fontSize: 'clamp(7rem, 32vw, 22rem)' }}>
-          4<em className="display-accent">0</em>4
-        </p>
-        <p className="section-label mt-6">Error 404</p>
+        <p className="section-label">Error 404</p>
         <h1 className="mt-3 max-w-3xl font-display text-5xl leading-[0.95] tracking-tight md:text-6xl">
           This page <em>doesn’t</em> exist.
         </h1>
@@ -61,18 +55,12 @@ export default function NotFoundPage() {
           />
           <Button type="submit" size="lg" icon={<SearchIcon size={16} aria-hidden="true" />}>Search</Button>
         </form>
-        <p className="mt-3 hidden text-sm text-muted md:block">
-          Or press <kbd className="rounded-md border border-line px-1.5 py-0.5 font-mono text-xs">Ctrl</kbd>{' '}
-          <kbd className="rounded-md border border-line px-1.5 py-0.5 font-mono text-xs">K</kbd> (
-          <button type="button" onClick={openPalette} className="underline underline-offset-4 hover:text-ink">open the command menu</button>).
-        </p>
 
         <ul className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {links.map((l, i) => (
+          {links.map((l) => (
             <li key={l.href}>
               <Card as={Link} to={l.href} interactive className="block h-full p-6">
-                <span className="flex items-start justify-between">
-                  <span className="section-label">{String(i + 1).padStart(2, '0')}</span>
+                <span className="flex items-start justify-end">
                   <ArrowUpRight size={18} className="text-muted" aria-hidden="true" />
                 </span>
                 <span className="mt-6 block font-display text-3xl leading-none tracking-tight">{l.label}</span>

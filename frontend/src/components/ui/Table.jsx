@@ -23,7 +23,7 @@ export default function Table({ columns, rows, caption, rowKey = 'id', empty, cl
               <th
                 key={col.key}
                 scope="col"
-                className={`py-3 px-4 font-mono text-xs font-medium uppercase tracking-wider text-muted border-b border-line whitespace-nowrap ${col.className || ''}`}
+                className={`py-3 px-4 text-xs font-medium text-muted border-b border-line whitespace-nowrap ${col.className || ''}`}
               >
                 {col.header}
               </th>

@@ -30,10 +30,7 @@ export default function WhatIDo({ categories = [], number }) {
             {categories.map((c, i) => (
               <Reveal key={c.name} delay={i * 80} className={SPANS[i]}>
                 <Card spotlight raised={i === 0} className="h-full p-6 md:p-8">
-                  <p className="font-mono text-xs uppercase tracking-[0.12em] text-muted" aria-hidden="true">
-                    {String(i + 1).padStart(2, '0')}
-                  </p>
-                  <h3 className={`mt-6 font-display font-normal leading-[1.05] tracking-tight ${i === 0 ? 'text-4xl md:text-5xl' : 'text-3xl'}`}>
+                  <h3 className={`font-display font-normal leading-[1.05] tracking-tight ${i === 0 ? 'text-4xl md:text-5xl' : 'text-3xl'}`}>
                     {c.name}
                   </h3>
                   <ul className="mt-6 flex flex-wrap gap-2">

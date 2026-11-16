@@ -67,9 +67,8 @@ function WorkCard({ project, index, feature, className = '' }) {
       >
         <Cover project={project} video={video} />
         <div className="flex flex-col p-6 md:p-8">
-          <div className="flex items-center justify-between gap-4 font-mono text-xs uppercase tracking-[0.12em] text-muted">
+          <div className="flex items-center justify-between gap-4 text-sm text-muted">
             <span>
-              <span aria-hidden="true">{String(index + 1).padStart(2, '0')} / </span>
               {project.category || 'Project'}
             </span>
             {year && <span>{year}</span>}

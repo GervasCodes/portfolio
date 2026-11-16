@@ -68,7 +68,7 @@ export default function CertificatesAchievements({ certificates = [], achievemen
                       <div className="flex flex-1 flex-col p-5 md:p-6">
                         {c.issuer && <p className="m-0 text-sm text-muted">{c.issuer}</p>}
                         <h4 className="mt-1 font-display text-2xl font-normal leading-tight tracking-tight">{c.title}</h4>
-                        {dates && <p className="mt-2 font-mono text-xs uppercase tracking-[0.12em] text-muted">{dates}</p>}
+                        {dates && <p className="mt-2 text-sm text-muted">{dates}</p>}
                         {isRealUrl(c.credential_url) && (
                           <a
                             href={c.credential_url}
@@ -117,7 +117,7 @@ export default function CertificatesAchievements({ certificates = [], achievemen
                               className="h-full w-full object-cover transition-transform duration-slow ease-standard group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                             />
                             {images.length > 1 && (
-                              <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-scrim/70 px-3 py-1 font-mono text-xs text-on-scrim">
+                              <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-scrim/70 px-3 py-1 text-xs text-on-scrim">
                                 <Images size={14} aria-hidden="true" /> {images.length} photos
                               </span>
                             )}
@@ -126,7 +126,7 @@ export default function CertificatesAchievements({ certificates = [], achievemen
                       )}
                       <div className="flex flex-1 flex-col p-5 md:p-6">
                         {images.length === 0 && <Trophy size={22} aria-hidden="true" className="mb-4 text-accent" />}
-                        {year && <p className="m-0 font-mono text-xs uppercase tracking-[0.12em] text-muted">{year}</p>}
+                        {year && <p className="m-0 text-sm text-muted">{year}</p>}
                         <h4 className="mt-2 font-display text-2xl font-normal leading-tight tracking-tight">{a.title}</h4>
                         {a.description && <p className="mt-3 max-w-measure whitespace-pre-line text-sm text-muted">{a.description}</p>}
                       </div>

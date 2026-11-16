@@ -22,8 +22,7 @@ export default function ProjectList({ projects = [], eagerCount = 3, headingAs: 
               >
                 <ProjectCover project={p} eager={i < eagerCount} className="rounded-lg border border-line" />
                 <div className="min-w-0">
-                  <p className="font-mono text-xs uppercase tracking-[0.12em] text-muted">
-                    <span aria-hidden="true">{String(i + 1).padStart(2, '0')} / </span>
+                  <p className="text-sm text-muted">
                     {p.category || 'Project'}{year ? ` · ${year}` : ''}
                   </p>
                   <Heading className="mt-1.5 font-display text-2xl font-normal leading-tight tracking-tight transition-colors duration-fast group-hover:text-accent">

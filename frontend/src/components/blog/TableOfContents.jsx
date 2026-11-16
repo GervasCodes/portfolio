@@ -53,7 +53,7 @@ export default function TableOfContents({ containerRef, contentKey, variant = 'r
   if (variant === 'inline') {
     return (
       <details className="mb-10 rounded-2xl border border-line bg-surface px-5 py-1 xl:hidden">
-        <summary className="flex min-h-11 cursor-pointer items-center font-mono text-xs uppercase tracking-[0.12em] text-muted">
+        <summary className="flex min-h-11 cursor-pointer items-center text-sm text-muted">
           On this page
         </summary>
         <nav aria-label="On this page" className="pb-3">{list}</nav>

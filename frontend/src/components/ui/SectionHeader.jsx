@@ -1,11 +1,8 @@
 /**
- * Section header: oversized decorative number + mono label + heading.
- *   <SectionHeader number="01" eyebrow="Work" title={<>Selected <em>work</em></>} />
- * renders a big "01" followed by the mono label "/ WORK". Wrap one or two words of the title in <em> for the
- * italic serif accent. Backwards compatible: `eyebrow` alone still works.
+ * Section header: small label + heading.
+ *   <SectionHeader eyebrow="Work" title="Selected work" />
  *  - sticky: pins under the navbar on desktop (use inside a two-column layout)
- *  - The number is decorative: it is drawn with CSS (data-n + ::before), so it is not text for
- *    screen readers or contrast checkers; the label carries the meaning.
+ *  - `number` is still accepted so existing callers keep working, but is no longer shown.
  */
 export default function SectionHeader({
   number, eyebrow, title, description, as: Heading = 'h2', sticky = false, className = '',
@@ -15,11 +12,9 @@ export default function SectionHeader({
       className={`mb-10 md:mb-14 ${sticky ? 'md:sticky md:top-[calc(var(--navbar-h)+1rem)] md:self-start' : ''} ${className}`}
     >
       {(number || eyebrow) && (
-        <div className="flex items-end gap-4 mb-4">
-          {number && <span aria-hidden="true" data-n={number} className="section-number" />}
+        <div className="mb-3">
           {eyebrow && (
-            <p className="section-label pb-1">
-              {number && <span aria-hidden="true">/ </span>}
+            <p className="section-label">
               {eyebrow}
             </p>
           )}

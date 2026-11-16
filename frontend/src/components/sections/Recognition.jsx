@@ -44,7 +44,7 @@ export default function Recognition({ items = [], number }) {
                     </span>
                   )}
                 </div>
-                <p className="mt-4 font-mono text-xs uppercase tracking-[0.12em] text-muted">{it.kind}</p>
+                <p className="mt-4 text-sm text-muted">{it.kind}</p>
                 <h3 className="mt-2 font-display text-2xl font-normal leading-tight tracking-tight">{it.title}</h3>
                 {it.meta && <p className="mt-2 line-clamp-2 text-sm text-muted">{it.meta}</p>}
                 {it.href && (

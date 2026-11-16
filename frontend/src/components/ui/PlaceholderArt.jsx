@@ -41,12 +41,8 @@ export default function PlaceholderArt({ seed = 'portfolio', className = '', lab
             <stop offset="100%" stopColor={stroke(b.tone)} stopOpacity="0" />
           </radialGradient>
         ))}
-        <pattern id={`${uid}-dots`} width="6" height="6" patternUnits="userSpaceOnUse">
-          <circle cx="1" cy="1" r="0.6" fill="rgb(var(--text))" fillOpacity="0.14" />
-        </pattern>
       </defs>
       <rect width="100" height="100" fill="rgb(var(--surface-2))" />
-      <rect width="100" height="100" fill={`url(#${uid}-dots)`} />
       {blobs.map((b, i) => (
         <circle key={i} cx={b.cx} cy={b.cy} r={b.r} fill={`url(#${uid}-g${i})`} />
       ))}

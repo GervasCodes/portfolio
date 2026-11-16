@@ -7,12 +7,9 @@ import App from './App.jsx';
 import ErrorBoundary from './components/layout/ErrorBoundary.jsx';
 import { ToastProvider } from './components/ui/Toast.jsx';
 import { ThemeProvider } from './theme/ThemeProvider.jsx';
-// Self-hosted fonts (no third-party requests), 3 families, font-display: swap.
-// Instrument Serif has one weight (400) + italic: import only the Latin subset.
-// The two Geist variable files are split by unicode-range, so browsers download
-// only the Latin subset (latin-ext loads only if a CMS string needs it).
-import '@fontsource/instrument-serif/latin-400.css';
-import '@fontsource/instrument-serif/latin-400-italic.css';
+// Self-hosted fonts (no third-party requests), font-display: swap. Geist for
+// everything; Geist Mono only for code blocks. Files are split by unicode-range,
+// so browsers download only the Latin subset unless a CMS string needs more.
 import '@fontsource-variable/geist/wght.css';
 import '@fontsource-variable/geist-mono/wght.css';
 import './index.css';

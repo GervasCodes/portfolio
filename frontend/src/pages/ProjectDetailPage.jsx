@@ -149,14 +149,11 @@ export default function ProjectDetailPage() {
 
           <div className="min-w-0 max-w-[72ch] space-y-14 md:space-y-16">
             {project.case_study_enabled && sections.length > 0 ? (
-              sections.map(({ key, label }, i) => {
+              sections.map(({ key, label }) => {
                 const isResult = key === 'case_study_results';
                 return (
                   <Reveal as="section" key={key} id={key} className="scroll-mt-28" aria-labelledby={`${key}-h`}>
-                    <p className="font-mono text-xs uppercase tracking-[0.12em] text-muted" aria-hidden="true">
-                      {String(i + 1).padStart(2, '0')} / {label}
-                    </p>
-                    <h2 id={`${key}-h`} className="mt-3 font-display text-3xl font-normal leading-tight tracking-tight">{label}</h2>
+                    <h2 id={`${key}-h`} className="font-display text-3xl font-normal leading-tight tracking-tight">{label}</h2>
                     <div className={isResult ? 'card card-raised mt-5 border-accent/30 p-5 md:p-7' : 'mt-5'}>
                       <Markdown>{project[key]}</Markdown>
                     </div>

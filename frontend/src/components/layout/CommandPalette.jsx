@@ -2,7 +2,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  ArrowRight, Copy, CornerDownLeft, FileText, Folder, Mail, Moon, Search as SearchIcon, Sun,
+  ArrowRight, Copy, FileText, Folder, Mail, Moon, Search as SearchIcon, Sun,
 } from 'lucide-react';
 import { PortfolioAPI } from '@/services/api';
 import { useProfile } from '@/hooks/useProfile';
@@ -246,7 +246,6 @@ export default function CommandPalette() {
                 spellCheck={false}
                 className="h-14 min-w-0 flex-1 bg-transparent text-base text-ink placeholder:text-muted focus:outline-none"
               />
-              <kbd className="hidden rounded-md border border-line px-1.5 py-0.5 font-mono text-[0.6875rem] text-muted sm:inline">Esc</kbd>
             </div>
 
             <div ref={listRef} id={listId} role="listbox" aria-label="Results" className="max-h-[min(52vh,26rem)] overflow-y-auto p-2">
@@ -272,8 +271,7 @@ export default function CommandPalette() {
                           <Icon size={16} aria-hidden="true" />
                         </span>
                         <span className="min-w-0 flex-1 truncate text-sm">{item.label}</span>
-                        <span className="hidden max-w-[40%] truncate font-mono text-xs text-muted sm:inline">{item.hint}</span>
-                        {isActive && <CornerDownLeft size={14} className="shrink-0 text-muted" aria-hidden="true" />}
+                        <span className="hidden max-w-[40%] truncate text-xs text-muted sm:inline">{item.hint}</span>
                       </div>
                     );
                   })}
@@ -286,9 +284,8 @@ export default function CommandPalette() {
               )}
             </div>
 
-            <div className="flex items-center justify-between gap-4 border-t border-line px-4 py-2.5 font-mono text-xs text-muted">
-              <span className="hidden sm:inline">↑↓ move · ↵ open · esc close</span>
-              <span className="sm:hidden">Tap a result</span>
+            <div className="flex items-center justify-between gap-4 border-t border-line px-4 py-2.5 text-xs text-muted">
+              <span />
               <span aria-live="polite">{remote.loading ? 'Searching…' : `${flat.length} result${flat.length === 1 ? '' : 's'}`}</span>
             </div>
           </motion.div>

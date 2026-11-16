@@ -59,7 +59,7 @@ export default function ReactionBar({ slug }) {
           }`}
         >
           <Icon size={15} aria-hidden="true" />
-          <span className="font-mono text-xs">{counts[id] ?? 0}</span>
+          <span className="text-xs">{counts[id] ?? 0}</span>
         </button>
       ))}
     </div>

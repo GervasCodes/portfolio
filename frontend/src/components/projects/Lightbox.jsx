@@ -80,7 +80,7 @@ export default function Lightbox({ items, index, onClose, onIndex, label = 'Proj
             <figcaption className="max-w-2xl text-center text-sm text-on-scrim/85">
               {item.caption && <span className="block">{item.caption}</span>}
               {count > 1 && (
-                <span className="mt-1 block font-mono text-xs uppercase tracking-[0.12em]" aria-live="polite">
+                <span className="mt-1 block text-sm" aria-live="polite">
                   {index + 1} / {count}
                 </span>
               )}

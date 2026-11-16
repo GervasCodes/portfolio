@@ -67,12 +67,12 @@ export function ProjectCard({ project, index = 0, eager = false, headingAs: Head
           imgClassName="transition-transform duration-slow ease-standard group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
         />
         {project.featured && (
-          <span className="absolute left-3 top-3 inline-flex items-center rounded-md border border-accent/40 bg-bg/90 px-2 py-0.5 font-mono text-xs font-medium uppercase tracking-wider text-accent">Featured</span>
+          <span className="absolute left-3 top-3 inline-flex items-center rounded-md border border-accent/40 bg-bg/90 px-2 py-0.5 text-xs font-medium text-accent">Featured</span>
         )}
       </div>
       <div className="flex flex-1 flex-col p-5 md:p-6">
-        <div className="flex items-center justify-between gap-3 font-mono text-xs uppercase tracking-[0.12em] text-muted">
-          <span><span aria-hidden="true">{String(index + 1).padStart(2, '0')} / </span>{project.category || 'Project'}</span>
+        <div className="flex items-center justify-between gap-3 text-sm text-muted">
+          <span>{project.category || 'Project'}</span>
           {year && <span>{year}</span>}
         </div>
         <Heading

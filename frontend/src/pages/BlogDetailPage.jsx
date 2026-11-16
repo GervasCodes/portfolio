@@ -152,7 +152,7 @@ export default function BlogDetailPage() {
             </Link>
 
             <header>
-              {meta && <p className="m-0 font-mono text-xs uppercase tracking-[0.12em] text-muted">{meta}</p>}
+              {meta && <p className="m-0 text-sm text-muted">{meta}</p>}
               <h1 className="mt-4 text-balance font-display text-4xl font-normal leading-[1.02] tracking-tight md:text-6xl">{post.title}</h1>
               {post.excerpt && <p className="mt-6 max-w-measure text-xl leading-relaxed text-muted">{post.excerpt}</p>}
             </header>

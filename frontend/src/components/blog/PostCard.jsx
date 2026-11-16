@@ -38,7 +38,7 @@ export default function PostCard({ post, featured = false, as: Heading = 'h2' })
         )}
       </div>
       <div className={`flex flex-1 flex-col p-6 ${featured ? 'lg:col-span-5 lg:justify-center lg:p-10' : ''}`}>
-        {meta && <p className="m-0 font-mono text-xs uppercase tracking-[0.12em] text-muted">{meta}</p>}
+        {meta && <p className="m-0 text-sm text-muted">{meta}</p>}
         <Heading
           className={`mt-3 font-display font-normal leading-tight tracking-tight transition-colors duration-fast group-hover:text-accent ${featured ? 'text-3xl md:text-4xl' : 'text-2xl'}`}
         >

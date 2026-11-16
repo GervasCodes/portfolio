@@ -124,10 +124,7 @@ export default function Contacts({ profile }) {
           />
 
           {profile?.available_for_work && (
-            <p className="mb-8 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-ink">
-              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-success" />
-              Available for new projects
-            </p>
+            <p className="mb-8 text-sm text-ink">Available for new projects</p>
           )}
 
           <div className="flex flex-wrap gap-2">
@@ -159,7 +156,7 @@ export default function Contacts({ profile }) {
           )}
 
           {profile?.location && (
-            <p className="mt-8 font-mono text-xs uppercase tracking-[0.12em] text-muted">
+            <p className="mt-8 text-sm text-muted">
               Based in {profile.location}{time ? ` · ${time} EAT` : ''}
             </p>
           )}

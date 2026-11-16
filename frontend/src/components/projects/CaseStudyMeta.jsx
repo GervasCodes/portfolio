@@ -3,7 +3,7 @@ import Tag from '@/components/ui/Tag';
 import { isRealUrl, projectYear } from '@/utils/projectContent';
 
 const ROW = 'border-t border-line py-4 first:border-t-0 first:pt-0';
-const LABEL = 'font-mono text-xs uppercase tracking-[0.12em] text-muted';
+const LABEL = 'text-sm text-muted';
 const LINK =
   'inline-flex items-center gap-1.5 text-sm text-ink underline-offset-4 hover:text-accent hover:underline [@media(pointer:coarse)]:min-h-11';
 
@@ -59,10 +59,9 @@ export default function CaseStudyMeta({ project, sections = [] }) {
         <nav aria-label="In this case study" className="mt-1 hidden border-t border-line pt-4 lg:block">
           <p className={LABEL}>In this case study</p>
           <ol className="mt-2 space-y-0.5">
-            {sections.map(({ key, label }, i) => (
+            {sections.map(({ key, label }) => (
               <li key={key}>
                 <a href={`#${key}`} className="flex gap-2 py-1 text-sm text-muted transition-colors duration-fast hover:text-ink">
-                  <span aria-hidden="true" className="font-mono text-xs leading-6">{String(i + 1).padStart(2, '0')}</span>
                   {label}
                 </a>
               </li>

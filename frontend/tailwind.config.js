@@ -36,12 +36,12 @@ export default {
       xl: ['1.5rem', { lineHeight: '2rem' }],
       '2xl': ['1.875rem', { lineHeight: '2.3rem' }],
       '3xl': ['var(--text-3xl)', { lineHeight: '1.1' }],
-      '4xl': ['var(--text-4xl)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
-      '5xl': ['clamp(3rem, 2rem + 5vw, 5.5rem)', { lineHeight: '1', letterSpacing: '-0.03em' }],
-      '6xl': ['clamp(3.5rem, 2rem + 7vw, 7rem)', { lineHeight: '0.95', letterSpacing: '-0.035em' }],
-      '7xl': ['clamp(4rem, 2rem + 9vw, 8.5rem)', { lineHeight: '0.92', letterSpacing: '-0.04em' }],
-      // Hero headline: fluid up to ~10vw, tight tracking.
-      display: ['var(--text-display)', { lineHeight: '0.92', letterSpacing: '-0.045em' }],
+      '4xl': ['var(--text-4xl)', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+      '5xl': ['clamp(2.25rem, 1.8rem + 2.4vw, 3.5rem)', { lineHeight: '1.08', letterSpacing: '-0.02em' }],
+      '6xl': ['clamp(2.5rem, 1.9rem + 3vw, 4rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
+      '7xl': ['clamp(2.75rem, 2rem + 4vw, 4.5rem)', { lineHeight: '1.05', letterSpacing: '-0.025em' }],
+      // Hero headline.
+      display: ['var(--text-display)', { lineHeight: '1.05', letterSpacing: '-0.025em' }],
     },
     // Layered soft shadows. `shadow` (no suffix) = card.
     boxShadow: {
@@ -77,7 +77,7 @@ export default {
       },
       fontFamily: {
         sans: ['var(--font-sans)'],
-        // `display` = expressive heading face (Instrument Serif, with italic accents).
+        // `display` = heading face (same family as the body).
         display: ['var(--font-display)'],
         serif: ['var(--font-display)'],
         mono: ['var(--font-mono)'],
@@ -112,17 +112,11 @@ export default {
           from: { transform: 'translate3d(0, 0, 0)' },
           to: { transform: 'translate3d(-50%, 0, 0)' },
         },
-        // The ONE allowed ambient effect: a very slow drift of the hero glow.
-        ambient: {
-          '0%, 100%': { transform: 'translate3d(0, 0, 0) scale(1)' },
-          '50%': { transform: 'translate3d(4%, -3%, 0) scale(1.08)' },
-        },
       },
       animation: {
         reveal: 'reveal var(--dur-slower) var(--ease) both',
         'fade-in': 'fade-in var(--dur-slow) var(--ease) both',
         marquee: 'marquee 48s linear infinite',
-        ambient: 'ambient 28s ease-in-out infinite',
       },
     },
   },

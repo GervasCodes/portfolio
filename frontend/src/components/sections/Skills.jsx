@@ -43,7 +43,7 @@ export default function Skills({ grouped = {}, number }) {
                 <Card className="flex w-full flex-col p-6 md:p-8">
                   <div className="flex items-baseline justify-between gap-4">
                     <h3 className="font-display text-2xl font-normal leading-tight tracking-tight md:text-3xl">{category.name}</h3>
-                    <p className="shrink-0 font-mono text-xs uppercase tracking-[0.12em] text-muted">
+                    <p className="shrink-0 text-sm text-muted">
                       {category.skills.length} {category.skills.length === 1 ? 'skill' : 'skills'}
                     </p>
                   </div>

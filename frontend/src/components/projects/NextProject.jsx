@@ -16,7 +16,7 @@ export default function NextProject({ status, prev, next }) {
     <nav aria-label="More projects" className="mt-20 md:mt-28">
       <Card as={Link} to={`/projects/${next.slug}`} interactive aria-label={`Next project: ${next.title}`} className="group grid md:grid-cols-[1fr_1.1fr]">
         <div className="flex flex-col justify-center p-6 md:p-10">
-          <p className="font-mono text-xs uppercase tracking-[0.12em] text-muted">Next project</p>
+          <p className="text-sm text-muted">Next project</p>
           <p className="mt-4 font-display text-4xl font-normal leading-[1.05] tracking-tight transition-colors duration-fast group-hover:text-accent md:text-5xl">
             {next.title}
           </p>

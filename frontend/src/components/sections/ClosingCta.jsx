@@ -47,7 +47,7 @@ export default function ClosingCta({ profile }) {
               )}
             </div>
             {email && (
-              <p className="mt-6 break-all font-mono text-sm text-muted">{email}</p>
+              <p className="mt-6 break-all text-sm text-muted">{email}</p>
             )}
             <span className="sr-only" role="status">{copied ? 'Email address copied to clipboard' : ''}</span>
           </div>

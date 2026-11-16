@@ -31,7 +31,7 @@ function ResultCard({ item }) {
 
   return (
     <Card as={Link} to={href} interactive className="flex h-full flex-col p-6">
-      <p className="m-0 flex flex-wrap items-center gap-x-3 font-mono text-xs uppercase tracking-[0.12em]">
+      <p className="m-0 flex flex-wrap items-center gap-x-3 text-sm">
         <span className="text-accent">{isProject ? 'Project' : 'Writing'}</span>
         {date && <span className="text-muted">{date}</span>}
       </p>
@@ -176,7 +176,7 @@ export default function SearchPage() {
         </div>
 
         {/* Announced to screen readers whenever the results change. */}
-        <p role="status" aria-live="polite" className="mt-8 font-mono text-xs uppercase tracking-[0.12em] text-muted">
+        <p role="status" aria-live="polite" className="mt-8 text-sm text-muted">
           {status === 'loading' && 'Searching…'}
           {status === 'ready' && total > 0 && resultsLabel(total, activeQuery)}
           {status === 'ready' && total === 0 && `No results for “${activeQuery}”`}
